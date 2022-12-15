@@ -61,18 +61,21 @@ jobs:
             ./scripts/build-windows.sh
 
         - name: Upload artifacts macOS
+          if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-macos
             path: exporter-darwin-*.zip
 
         - name: Upload artifacts linux
+          if: matrix.os == 'ubuntu-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-linux
             path: exporter-linux-amd64.tar.gz
 
         - name: Upload artifacts windows
+          if: matrix.os == 'ubuntu-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-windows
