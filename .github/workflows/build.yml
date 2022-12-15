@@ -51,4 +51,4 @@ jobs:
           if: startsWith(github.ref, 'refs/tags/')
           with:
             files: |
-                /build/bin/exporter-windows.tar.gz
+                build/bin/exporter-windows.tar.gz
