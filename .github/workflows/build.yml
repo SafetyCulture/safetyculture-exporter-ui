@@ -51,7 +51,4 @@ jobs:
           if: startsWith(github.ref, 'refs/tags/')
           with:
             files: |
-                build/bin/macos/exporter-darwin-amd64.zip
-                build/bin/macos/exporter-darwin-arm64.zip
-                build/bin/linux/exporter.tar.gz
-                exporter-windows.tar.gz
+                /build/bin/exporter-windows.tar.gz
