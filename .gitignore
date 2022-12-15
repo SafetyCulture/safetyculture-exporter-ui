@@ -13,3 +13,21 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.idea
+*.out
+.DS_Store
+dist/
+
+*swp
+.vscode/
+
+.release-env
+
+*.log
+perf.md
+
+/build/
+/frontend/dist/
+/frontend/node_modules/
