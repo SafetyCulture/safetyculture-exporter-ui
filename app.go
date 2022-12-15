@@ -127,22 +127,17 @@ func CreateSettingsDirectory() (string, error) {
 }
 
 func GetSettingDirectoryPath() (string, error) {
-	homeDir, err := os.UserHomeDir()
-	var settingDir string
+	if runtime2.GOOS == "darwin" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return "", errors.New("can't get user's home directory")
+		}
+		return filepath.Join(homeDir, "/Library/Application Support/safetyculture-exporter"), nil
+	}
 
+	wd, err := os.Getwd()
 	if err != nil {
 		return "", errors.New("can't get user's home directory")
 	}
-
-	switch runtime2.GOOS {
-	case "windows":
-		settingDir = filepath.Join(homeDir, "/AppData/Local/safetyculture-exporter")
-	case "darwin":
-		settingDir = filepath.Join(homeDir, "/Library/Application Support/safetyculture-exporter")
-	case "linux":
-		settingDir = filepath.Join(homeDir, "/.var/app/app.safetyculture.Exporter/data")
-	default:
-		return "", errors.New("unsupported platform")
-	}
-	return settingDir, nil
+	return wd, nil
 }
