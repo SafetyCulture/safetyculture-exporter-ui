@@ -15,7 +15,7 @@ jobs:
         matrix:
           go-version: [1.18]
           node-version: [16]
-          os: [ubuntu-latest, macos-latest]
+          os: [ubuntu-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -38,15 +38,6 @@ jobs:
         - name: Install wails
           run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
-        - name: Build package linux
-          if: matrix.os == 'ubuntu-latest'
-          run: |
-            export PATH=$PATH:$(go env GOPATH)/bin
-            echo "building on ${{ matrix.os }}"
-            echo ${{ env.GITHUB_REF }}
-            echo ${{ env.GITHUB_HEAD_REF }}
-            ./scripts/build-linux.sh
-
         - name: Build package windows
           if: matrix.os == 'ubuntu-latest'
           run: |
@@ -56,14 +47,8 @@ jobs:
             echo ${{ env.GITHUB_HEAD_REF }}
             ./scripts/build-windows.sh
 
-        - name: Build package linux
-          if: matrix.os == 'macos-latest'
-          run: |
-            ./scripts/build-macos.sh
-
         - name: release
           uses: softprops/action-gh-release@v1
-          if: startsWith(github.ref, 'refs/tags/')
           with:
             files: |
                 build/bin/macos/exporter-darwin-amd64.zip
