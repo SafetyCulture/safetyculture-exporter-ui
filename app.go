@@ -7,7 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	runtime2 "runtime"
+	osRuntime "runtime"
 	"strings"
 
 	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
@@ -110,6 +110,11 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 	return true
 }
 
+// GetSettings gets the configuration
+func (a *App) GetSettings() *exporterAPI.ExporterConfiguration {
+	return a.cm.Configuration
+}
+
 func CreateSettingsDirectory() (string, error) {
 	settingDir, err := GetSettingDirectoryPath()
 	if err != nil {
@@ -127,7 +132,7 @@ func CreateSettingsDirectory() (string, error) {
 }
 
 func GetSettingDirectoryPath() (string, error) {
-	if runtime2.GOOS == "darwin" {
+	if osRuntime.GOOS == "darwin" {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			return "", errors.New("can't get user's home directory")
