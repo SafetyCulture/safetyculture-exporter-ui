@@ -8,6 +8,8 @@ export function ExportCSV():Promise<void>;
 
 export function GetSettings():Promise<api.ExporterConfiguration>;
 
+export function GetTemplates():Promise<Array<api.TemplateResponseItem>>;
+
 export function Greet(arg1:string):Promise<string>;
 
 export function ValidateApiKey(arg1:string):Promise<boolean>;
