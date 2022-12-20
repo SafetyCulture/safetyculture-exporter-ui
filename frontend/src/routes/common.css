@@ -2,9 +2,6 @@ body {
     font-style: normal;
     font-size: 1rem;
     font-family: Tahoma, sans-serif;
-    -ms-overflow-style: none; /* for Internet Explorer, Edge */
-    scrollbar-width: none; /* for Firefox */
-    overflow-y: hidden;
     overflow-x: hidden;
     letter-spacing: .005rem;
     color: #1D2330;

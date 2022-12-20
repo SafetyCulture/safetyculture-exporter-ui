@@ -143,6 +143,12 @@
 </div>
 
 <style>
+	body {
+		-ms-overflow-style: none; /* for Internet Explorer, Edge */
+		scrollbar-width: none; /* for Firefox */
+		overflow-y: hidden;
+	}
+
 	.nav-left .arrow-left {
 		padding: 8px;
 	}

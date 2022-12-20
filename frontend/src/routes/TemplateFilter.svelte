@@ -1,24 +1,10 @@
 <script>
     import './common.css';
-    import {shadowConfig} from "../lib/store.js";
+    import {shadowConfig, templateCache} from "../lib/store.js";
+    import {GetTemplates} from "../../wailsjs/go/main/App.js"
+    import {push} from "svelte-spa-router";
 
-    let data = [
-        {
-            "id": "1",
-            "name": "Template 1",
-            "date_modified": "21 Apr 2022"
-        },
-        {
-            "id": "2",
-            "name": "Template 2",
-            "date_modified": "20 Apr 2022"
-        },
-        {
-            "id": "3",
-            "name": "Sample - Electronic Flight Bag (EFB) Assessment for approval Class 1 Software Type A restricted to VFR - duplicate",
-            "date_modified": "19 Apr 2022"
-        },
-    ]
+    let searchFilter = ""
 
     function trim(org) {
         if (org.length > 80) {
@@ -27,6 +13,15 @@
         return org
     }
 
+    function gotoConfig() {
+        push("/config")
+    }
+
+    if (Array.isArray($templateCache) && $templateCache.length === 0) {
+        GetTemplates().then((result) => {
+            templateCache.set(result)
+        })
+    }
 </script>
 
 <div class="template-filter-page p-48">
@@ -35,7 +30,7 @@
             <div class="h1">Export Configuration</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12">Done</button>
+            <button class="button button-white border-round-12" on:click={gotoConfig}>Done</button>
         </div>
     </section>
 
@@ -44,7 +39,7 @@
             <div class="h2">Choose a template</div>
         </div>
         <div class="nav-right">
-            <input class="input search" placeholder="Search"/>
+            <input class="input search" placeholder="Search" bind:value={searchFilter}/>
         </div>
     </section>
 
@@ -62,17 +57,19 @@
             </div>
         </div>
         <div class="table-body text-gray-2 m-top-8">
-        {#each data as { id, name, date_modified }, i}
-            <div class="table-row flex-spaced p-horiz-8">
-                <div class="nav-left">
-                    <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
-                    <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
-                    <div class="m-left-8">{trim(name)}</div>
+        {#each $templateCache as { id, name, modified_at }, i}
+            {#if (searchFilter.length > 2 && name.toLowerCase().includes(searchFilter.toLowerCase())) || searchFilter.length <= 2}
+                <div class="table-row flex-spaced p-horiz-8">
+                    <div class="nav-left">
+                        <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
+                        <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
+                        <div class="m-left-8">{trim(name)}</div>
+                    </div>
+                    <div class="nav-right">
+                        <div>{modified_at}</div>
+                    </div>
                 </div>
-                <div class="nav-right">
-                    <div>{date_modified}</div>
-                </div>
-            </div>
+            {/if}
         {/each}
         </div>
     </section>

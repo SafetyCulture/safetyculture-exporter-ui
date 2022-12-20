@@ -17,8 +17,9 @@ import (
 
 // App struct
 type App struct {
-	ctx context.Context
-	cm  *exporterAPI.ConfigurationManager
+	ctx      context.Context
+	cm       *exporterAPI.ConfigurationManager
+	exporter *exporterAPI.SafetyCultureExporter
 }
 
 // NewApp creates a new App application struct
@@ -53,6 +54,11 @@ func (a *App) startup(ctx context.Context) {
 		a.cm = cm
 	}
 
+	a.exporter, err = exporterAPI.NewSafetyCultureExporterInferredApiClient(a.cm.Configuration)
+	if err != nil {
+		runtime.LogError(ctx, err.Error())
+		panic("failed to load configuration")
+	}
 	a.ctx = ctx
 }
 
@@ -70,6 +76,15 @@ func (a *App) Greet(name string) string {
 
 func (a *App) ExportCSV() {
 
+}
+
+func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
+	res, err := a.exporter.GetTemplateList()
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "cannot obtain the template list: %s", err.Error())
+		return []exporterAPI.TemplateResponseItem{}
+	}
+	return res
 }
 
 // CheckApiKey validates the api key from the config file if it exists
@@ -132,17 +147,18 @@ func CreateSettingsDirectory() (string, error) {
 }
 
 func GetSettingDirectoryPath() (string, error) {
-	if osRuntime.GOOS == "darwin" {
+	switch osRuntime.GOOS {
+	case "darwin":
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			return "", errors.New("can't get user's home directory")
 		}
 		return filepath.Join(homeDir, "/Library/Application Support/safetyculture-exporter"), nil
+	default:
+		wd, err := os.Getwd()
+		if err != nil {
+			return "", errors.New("can't get user's home directory")
+		}
+		return wd, nil
 	}
-
-	wd, err := os.Getwd()
-	if err != nil {
-		return "", errors.New("can't get user's home directory")
-	}
-	return wd, nil
 }
