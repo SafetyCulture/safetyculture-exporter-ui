@@ -10,8 +10,7 @@
         return org
     }
 
-    if (typeof $templateCache === "object" && $templateCache === null) {
-        console.log("loading templates...")
+    if (Array.isArray($templateCache) && $templateCache.length === 0) {
         GetTemplates().then((result) => {
             templateCache.set(result)
         })

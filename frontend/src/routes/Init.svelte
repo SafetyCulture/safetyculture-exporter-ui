@@ -1,9 +1,9 @@
 <script>
     import {push} from 'svelte-spa-router'
     import {GetSettings, ValidateApiKey} from "../../wailsjs/go/main/App.js"
-    import {shadowConfig} from '../lib/store.js';
+    import {shadowConfig, templateCache} from '../lib/store.js';
 
-
+    templateCache.set([])
     GetSettings().then(result => {
         shadowConfig.set(result);
 
