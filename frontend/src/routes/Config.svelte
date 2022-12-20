@@ -174,10 +174,6 @@
 		overflow-y: hidden;
 	}
 
-	.nav-left .arrow-left {
-		padding: 8px;
-	}
-
 	.config-body {
 		display: flex;
 		justify-content: space-between;
