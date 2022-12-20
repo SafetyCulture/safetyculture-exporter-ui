@@ -79,6 +79,12 @@
 </div>
 
 <style>
+	body {
+		-ms-overflow-style: none; /* for Internet Explorer, Edge */
+		scrollbar-width: none; /* for Firefox */
+		overflow-y: hidden;
+	}
+
 	.welcome-page {
 		display: flex;
 	}
