@@ -1,24 +1,7 @@
 <script>
     import './common.css';
-    import {shadowConfig} from "../lib/store.js";
-
-    let data = [
-        {
-            "id": "1",
-            "name": "Template 1",
-            "date_modified": "21 Apr 2022"
-        },
-        {
-            "id": "2",
-            "name": "Template 2",
-            "date_modified": "20 Apr 2022"
-        },
-        {
-            "id": "3",
-            "name": "Sample - Electronic Flight Bag (EFB) Assessment for approval Class 1 Software Type A restricted to VFR - duplicate",
-            "date_modified": "19 Apr 2022"
-        },
-    ]
+    import {shadowConfig, templateCache} from "../lib/store.js";
+    import {GetTemplates} from "../../wailsjs/go/main/App.js"
 
     function trim(org) {
         if (org.length > 80) {
@@ -27,6 +10,12 @@
         return org
     }
 
+    if (typeof $templateCache === "object" && $templateCache === null) {
+        console.log("loading templates...")
+        GetTemplates().then((result) => {
+            templateCache.set(result)
+        })
+    }
 </script>
 
 <div class="template-filter-page p-48">
@@ -62,7 +51,7 @@
             </div>
         </div>
         <div class="table-body text-gray-2 m-top-8">
-        {#each data as { id, name, date_modified }, i}
+        {#each $templateCache as { id, name, modified_at }, i}
             <div class="table-row flex-spaced p-horiz-8">
                 <div class="nav-left">
                     <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
@@ -70,7 +59,7 @@
                     <div class="m-left-8">{trim(name)}</div>
                 </div>
                 <div class="nav-right">
-                    <div>{date_modified}</div>
+                    <div>{modified_at}</div>
                 </div>
             </div>
         {/each}
