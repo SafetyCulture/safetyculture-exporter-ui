@@ -2,6 +2,7 @@
     import './common.css';
     import {shadowConfig, templateCache} from "../lib/store.js";
     import {GetTemplates} from "../../wailsjs/go/main/App.js"
+    import {push} from "svelte-spa-router";
 
     let searchFilter = ""
 
@@ -10,6 +11,10 @@
             return org.substring(0, 80).concat(" ...")
         }
         return org
+    }
+
+    function gotoConfig() {
+        push("/config")
     }
 
     if (Array.isArray($templateCache) && $templateCache.length === 0) {
@@ -25,7 +30,7 @@
             <div class="h1">Export Configuration</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12">Done</button>
+            <button class="button button-white border-round-12" on:click={gotoConfig}>Done</button>
         </div>
     </section>
 
