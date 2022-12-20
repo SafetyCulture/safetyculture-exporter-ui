@@ -117,17 +117,33 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 	runtime.LogInfo(a.ctx, "saving the key")
 
 	if strings.Compare(apiKey, a.cm.Configuration.AccessToken) != 0 {
+		// save configuration
 		a.cm.Configuration.AccessToken = apiKey
 		if err := a.cm.SaveConfiguration(); err != nil {
 			runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
+		}
+
+		// reload configuration
+		a.exporter, err = exporterAPI.NewSafetyCultureExporterInferredApiClient(a.cm.Configuration)
+		if err != nil {
+			runtime.LogError(a.ctx, err.Error())
+			panic("failed to load configuration")
 		}
 	}
 	return true
 }
 
-// GetSettings gets the configuration
+// GetSettings gets the configuration from the YAML file
 func (a *App) GetSettings() *exporterAPI.ExporterConfiguration {
 	return a.cm.Configuration
+}
+
+// SaveSettings saves the configuration to the YAML file
+func (a *App) SaveSettings(cfg *exporterAPI.ExporterConfiguration) {
+	a.cm.Configuration = cfg
+	if err := a.cm.SaveConfiguration(); err != nil {
+		runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
+	}
 }
 
 func CreateSettingsDirectory() (string, error) {

@@ -3,7 +3,7 @@
 
 	import {push} from 'svelte-spa-router'
 	import {ValidateApiKey} from "../../wailsjs/go/main/App.js"
-	import {shadowConfig} from '../lib/store.js';
+	import {shadowConfig, templateCache} from '../lib/store.js';
 
 
 	let isValid = false;
@@ -18,6 +18,7 @@
 				buttonLabel = "Try again"
 				displayBadApiKeyErr = true
 			} else {
+				templateCache.set([]);
 				push("/config")
 			}
 		})
