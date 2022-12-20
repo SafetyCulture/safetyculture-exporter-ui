@@ -13,3 +13,8 @@ export const templateCache = writable(storedTemplateCache)
 templateCache.subscribe(value => {
     localStorage.setItem("templates", JSON.stringify(value))
 })
+
+export function emptyStores() {
+    templateCache.set([])
+    shadowConfig.set({});
+}
