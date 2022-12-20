@@ -54,12 +54,12 @@
     }
 
     function gotoConfig() {
-        let numbers = new Array();
+        let selectedTables = new Array();
 
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         for (const checkbox of checkboxes) {
             if (checkbox.checked) {
-                numbers.push(checkbox.__value)
+                selectedTables.push(checkbox.__value)
             }
         }
 
@@ -68,7 +68,7 @@
                 ...store,
                 Export: {
                     ...store.Export,
-                    Tables: numbers
+                    Tables: selectedTables
                 }
             }
         })
