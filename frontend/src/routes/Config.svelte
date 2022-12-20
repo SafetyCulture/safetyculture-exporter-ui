@@ -1,6 +1,10 @@
 <script>
 	import './common.css';
 	import Select from 'svelte-select';
+	import {SaveSettings} from "../../wailsjs/go/main/App.js"
+
+	import {shadowConfig} from '../lib/store.js';
+	import {Quit} from "../../wailsjs/runtime/runtime.js";
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},
@@ -36,6 +40,22 @@
 	function handleDataExport(event) {
 		dataExportFormat = event.detail.value;
 	}
+
+	function saveConfiguration() {
+		if($shadowConfig !== {}) {
+			SaveSettings($shadowConfig)
+		}
+	}
+
+	function handleSaveAndExport() {
+		saveConfiguration()
+		// TODO trigger export
+	}
+
+	function handleSaveAndClose() {
+		saveConfiguration()
+		Quit()
+	}
 </script>
 
 <div class="config-page p-48">
@@ -47,8 +67,8 @@
 			<div class="h1">Export Configuration</div>
 		</div>
 		<div class="nav-right">
-			<button class="button button-white border-round-12">Save and Close</button>
-			<button class="button button-purple m-left-8 border-round-12">Save and Export</button>
+			<button class="button button-white border-round-12" on:click={handleSaveAndClose}>Save and Close</button>
+			<button class="button button-purple m-left-8 border-round-12" on:click={handleSaveAndExport}>Save and Export</button>
 		</div>
 	</section>
 	<div class="config-body m-top-8">
