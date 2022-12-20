@@ -58,7 +58,7 @@
         </div>
         <div class="table-body text-gray-2 m-top-8">
         {#each $templateCache as { id, name, modified_at }, i}
-            {#if (searchFilter.length > 2 && name.includes(searchFilter)) || searchFilter.length <= 2}
+            {#if (searchFilter.length > 2 && name.toLowerCase().includes(searchFilter.toLowerCase())) || searchFilter.length <= 2}
                 <div class="table-row flex-spaced p-horiz-8">
                     <div class="nav-left">
                         <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>

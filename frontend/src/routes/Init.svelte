@@ -4,6 +4,8 @@
     import {shadowConfig, templateCache} from '../lib/store.js';
 
     templateCache.set([])
+    shadowConfig.set({});
+
     GetSettings().then(result => {
         shadowConfig.set(result);
 
