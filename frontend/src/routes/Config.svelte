@@ -5,6 +5,7 @@
 
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
+	import {push} from "svelte-spa-router";
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},
@@ -56,15 +57,19 @@
 		saveConfiguration()
 		Quit()
 	}
+
+	function handleBackButton() {
+		push("/welcome")
+	}
 </script>
 
 <div class="config-page p-48">
 	<section class="top-nav">
 		<div class="nav-left">
-			<div class="arrow-left">
+			<div class="block-link p-left-8" on:click={handleBackButton}>
 				<img src="../images/arrow-left.png" alt="back arrow icon" width="15" height="15">
 			</div>
-			<div class="h1">Export Configuration</div>
+			<div class="h1 p-left-8">Export Configuration</div>
 		</div>
 		<div class="nav-right">
 			<button class="button button-white border-round-12" on:click={handleSaveAndClose}>Save and Close</button>

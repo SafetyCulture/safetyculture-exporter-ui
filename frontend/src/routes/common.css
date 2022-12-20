@@ -77,6 +77,10 @@ body::-webkit-scrollbar {
     border-color: #FFFFFF;
 }
 
+.block-link {
+    cursor: pointer;
+}
+
 .checkbox-purple {
     accent-color: #675DF4;
     height: 20px;
