@@ -3,6 +3,8 @@
     import {shadowConfig, templateCache} from "../lib/store.js";
     import {GetTemplates} from "../../wailsjs/go/main/App.js"
 
+    let searchFilter = ""
+
     function trim(org) {
         if (org.length > 80) {
             return org.substring(0, 80).concat(" ...")
@@ -32,7 +34,7 @@
             <div class="h2">Choose a template</div>
         </div>
         <div class="nav-right">
-            <input class="input search" placeholder="Search"/>
+            <input class="input search" placeholder="Search" bind:value={searchFilter}/>
         </div>
     </section>
 
@@ -51,16 +53,18 @@
         </div>
         <div class="table-body text-gray-2 m-top-8">
         {#each $templateCache as { id, name, modified_at }, i}
-            <div class="table-row flex-spaced p-horiz-8">
-                <div class="nav-left">
-                    <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
-                    <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
-                    <div class="m-left-8">{trim(name)}</div>
+            {#if (searchFilter.length > 2 && name.includes(searchFilter)) || searchFilter.length <= 2}
+                <div class="table-row flex-spaced p-horiz-8">
+                    <div class="nav-left">
+                        <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
+                        <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
+                        <div class="m-left-8">{trim(name)}</div>
+                    </div>
+                    <div class="nav-right">
+                        <div>{modified_at}</div>
+                    </div>
                 </div>
-                <div class="nav-right">
-                    <div>{modified_at}</div>
-                </div>
-            </div>
+            {/if}
         {/each}
         </div>
     </section>
