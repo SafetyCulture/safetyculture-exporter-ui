@@ -2,9 +2,9 @@
 	import './common.css';
 	import Select from 'svelte-select';
 	import {SaveSettings} from "../../wailsjs/go/main/App.js"
-
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
+	import {push} from "svelte-spa-router";
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},
@@ -33,9 +33,15 @@
 		{value: "utc", label: "UTC"}
 	];
 
-	let templateCount = "N/A";
-	let templateNames = ["placeholder text"];
 	let dataExportFormat = "csv";
+
+	function generateTemplateName() {
+		if ($shadowConfig["Export"]["TemplateIds"].length === 0) {
+			return "All templates selected"
+		} else {
+			return $shadowConfig["Export"]["TemplateIds"].length + " templates selected"
+		}
+	}
 
 	function handleDataExport(event) {
 		dataExportFormat = event.detail.value;
@@ -56,15 +62,23 @@
 		saveConfiguration()
 		Quit()
 	}
+
+	function handleBackButton() {
+		push("/welcome")
+	}
+
+	function handleSelectTemplates() {
+		push("/config/templates")
+	}
 </script>
 
 <div class="config-page p-48">
 	<section class="top-nav">
 		<div class="nav-left">
-			<div class="arrow-left">
+			<div class="block-link p-left-8" on:click={handleBackButton}>
 				<img src="../images/arrow-left.png" alt="back arrow icon" width="15" height="15">
 			</div>
-			<div class="h1">Export Configuration</div>
+			<div class="h1 p-left-8">Export Configuration</div>
 		</div>
 		<div class="nav-right">
 			<button class="button button-white border-round-12" on:click={handleSaveAndClose}>Save and Close</button>
@@ -78,10 +92,9 @@
 				<div class="text-weak m-top-8">Select which sets of data you want to export from your organization.</div>
 			</div>
 			<div class="label">Select templates</div>
-				<div class="button-long selector border-weak border-round-8">
-					<div class="templates">{templateNames}</div>
+				<div class="button-long selector border-weak border-round-8 block-link" on:click={handleSelectTemplates}>
+					<div class="templates">{generateTemplateName()}</div>
 					<div class="template-button-right">
-						<div class="count">{templateCount}</div>
 						<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
 					</div>
 				</div>
@@ -167,10 +180,6 @@
 		-ms-overflow-style: none; /* for Internet Explorer, Edge */
 		scrollbar-width: none; /* for Firefox */
 		overflow-y: hidden;
-	}
-
-	.nav-left .arrow-left {
-		padding: 8px;
 	}
 
 	.config-body {

@@ -4,6 +4,9 @@ import {writable} from 'svelte/store';
 const storedShadowConfig = JSON.parse(localStorage.getItem("cfg"))
 export const shadowConfig = writable(storedShadowConfig);
 shadowConfig.subscribe(value => {
+    if (value === null) {
+        value = {}
+    }
     localStorage.setItem("cfg", JSON.stringify(value));
 });
 
@@ -11,6 +14,9 @@ shadowConfig.subscribe(value => {
 const storedTemplateCache = JSON.parse(localStorage.getItem("templates"))
 export const templateCache = writable(storedTemplateCache)
 templateCache.subscribe(value => {
+    if (value === null) {
+        value = []
+    }
     localStorage.setItem("templates", JSON.stringify(value))
 })
 
