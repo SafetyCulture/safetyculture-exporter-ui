@@ -1,6 +1,7 @@
 <script>
     import './common.css';
     import {shadowConfig} from "../lib/store.js";
+    import {push} from "svelte-spa-router";
 
     let data = [
         {
@@ -43,6 +44,37 @@
         }
         return org
     }
+
+    let isChecked = false;
+    function toggleBodyCheckboxes() {
+        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
+        for (const checkbox of checkboxes) {
+            checkbox.checked = !isChecked;
+        }
+    }
+
+    function gotoConfig() {
+        let numbers = new Array();
+
+        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
+        for (const checkbox of checkboxes) {
+            if (checkbox.checked) {
+                numbers.push(checkbox.__value)
+            }
+        }
+
+        shadowConfig.update(store => {
+            return {
+                ...store,
+                Export: {
+                    ...store.Export,
+                    Tables: numbers
+                }
+            }
+        })
+
+        push("/config")
+    }
 </script>
 
 <div class="template-filter-page p-48">
@@ -51,14 +83,14 @@
             <div class="h1">Feed Export</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12">Done</button>
+            <button class="button button-white border-round-12" on:click={gotoConfig}>Done</button>
         </div>
     </section>
 
     <section class="m-top-16">
         <div class="table-header text-gray-2">
             <div class="table-row p-horiz-8">
-                <input type="checkbox" class="checkbox-purple"/>
+                <input type="checkbox" class="checkbox-purple" on:click="{toggleBodyCheckboxes}" bind:checked={isChecked}/>
                 <div class="m-left-32">Feed Table</div>
             </div>
         </div>
@@ -87,7 +119,7 @@
 </div>
 
 <style>
-    body {
+    .table-body {
         -ms-overflow-style: none; /* for Internet Explorer, Edge */
         scrollbar-width: none; /* for Firefox */
         overflow-y: hidden;
