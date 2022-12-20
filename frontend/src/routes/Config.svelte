@@ -5,6 +5,7 @@
 
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
+	import {push} from "svelte-spa-router";
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},
@@ -35,6 +36,8 @@
 
 	let templateCount = "N/A";
 	let templateNames = ["placeholder text"];
+	let tableCount = "N/A";
+	let tableNames = ["placeholder text"];
 	let dataExportFormat = "csv";
 
 	function handleDataExport(event) {
@@ -55,6 +58,14 @@
 	function handleSaveAndClose() {
 		saveConfiguration()
 		Quit()
+	}
+
+	function goToTemplates() {
+		push("/config/templates")
+	}
+
+	function gotoTables() {
+		push("/config/tables")
 	}
 </script>
 
@@ -78,10 +89,18 @@
 				<div class="text-weak m-top-8">Select which sets of data you want to export from your organization.</div>
 			</div>
 			<div class="label">Select templates</div>
-				<div class="button-long selector border-weak border-round-8">
+				<div class="button-long selector border-weak border-round-8" on:click={goToTemplates}>
 					<div class="templates">{templateNames}</div>
 					<div class="template-button-right">
 						<div class="count">{templateCount}</div>
+						<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
+					</div>
+				</div>
+			<div class="label">Select tables</div>
+				<div class="button-long selector border-weak border-round-8" on:click={gotoTables}>
+					<div class="tables">{tableNames}</div>
+					<div class="template-button-right">
+						<div class="count">{tableCount}</div>
 						<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
 					</div>
 				</div>
