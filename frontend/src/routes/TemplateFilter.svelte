@@ -17,6 +17,14 @@
         })
     }
 
+    let isChecked = false;
+    function toggleBodyCheckboxes() {
+        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
+        for (const checkbox of checkboxes) {
+            checkbox.checked = !isChecked;
+        }
+    }
+
 </script>
 
 <div class="template-filter-page p-48">
@@ -42,7 +50,7 @@
         <div class="table-header text-gray-2">
             <div class="table-row flex-spaced p-horiz-8">
                 <div class="nav-left">
-                    <input type="checkbox" class="checkbox-purple"/>
+                    <input type="checkbox" class="checkbox-purple" on:click="{toggleBodyCheckboxes}" bind:checked={isChecked}/>
                     <div class="m-left-32">Template</div>
                 </div>
                 <div class="nav-right">

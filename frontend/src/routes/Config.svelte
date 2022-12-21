@@ -34,12 +34,21 @@
 	];
 
 	let dataExportFormat = "csv";
+	let date = new Date();
 
 	function generateTemplateName() {
 		if ($shadowConfig["Export"]["TemplateIds"].length === 0) {
 			return "All templates selected"
 		} else {
 			return $shadowConfig["Export"]["TemplateIds"].length + " templates selected"
+		}
+	}
+
+	function generateTableName() {
+		if ($shadowConfig["Export"]["Tables"].length === 0) {
+			return "All tables selected"
+		} else {
+			return $shadowConfig["Export"]["Tables"].length + " tables selected"
 		}
 	}
 
@@ -70,6 +79,10 @@
 	function handleSelectTemplates() {
 		push("/config/templates")
 	}
+
+	function handleTables() {
+		push("/config/tables")
+	}
 </script>
 
 <div class="config-page p-48">
@@ -98,11 +111,17 @@
 						<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
 					</div>
 				</div>
+			<div class="label">Select tables</div>
+			<div class="button-long selector border-weak border-round-8 block-link" on:click={handleTables}>
+				<div class="templates">{generateTableName()}</div>
+				<div class="template-button-right">
+					<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
+				</div>
+			</div>
 			<div class="label">Date range</div>
 			<div class="sub-label text-weak">From:</div>
 			<div class="button-long selector border-weak border-round-8">
-				<div>Date Picker(Unimplemented)</div>
-				<img src="../images/calendar.png" alt="calendar icon" width="15" height="15">
+				<input class="input-date" type="date" bind:value={date} />
 			</div>
 			<div class="label">Include inspections with the following status:</div>
 			<select class="custom-select m-top-8" bind:value={$shadowConfig["Export"]["Inspection"]["Completed"]}>
