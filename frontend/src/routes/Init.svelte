@@ -14,16 +14,17 @@
             // check if not empty
             if (token.length === 0) {
                 push("/welcome")
+            } else {
+                // check if it can auth
+                ValidateApiKey(token).then(res => {
+                    if (res === false) {
+                        push("/welcome")
+                    } else {
+                        push("/config")
+                    }
+                })
             }
 
-            // check if it can auth
-            ValidateApiKey(token).then(res => {
-                if (res === false) {
-                    push("/welcome")
-                } else {
-                    push("/config")
-                }
-            })
         } else {
             push("/welcome")
         }

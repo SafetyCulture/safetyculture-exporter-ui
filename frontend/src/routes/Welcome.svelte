@@ -12,6 +12,10 @@
 
 	function validate() {
 		isValid = false
+		if ($shadowConfig["AccessToken"].length === 0) {
+			return
+		}
+
 		ValidateApiKey($shadowConfig["AccessToken"]).then((result) => {
 			isValid = result
 			if (isValid === false) {
@@ -27,11 +31,7 @@
 <div class="welcome-page">
 	<section class="welcome-left-side">
 		<section class="welcome-header">
-			<img
-				id="welcome-page-logo"
-				src="../images/logo.png"
-				alt="SafetyCulture logo"
-			/>
+			<img id="welcome-page-logo" src="../images/logo.png" alt="SafetyCulture logo"/>
 			<div class="h1">Welcome to SafetyCulture Exporter</div>
 		</section>
 		<section class="token-validation">
