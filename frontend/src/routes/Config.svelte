@@ -8,8 +8,8 @@
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},
-		{value: "false", label: "Incompleted only"},
-		{value: "both", label: "Both - completed and incompleted"}
+		{value: "false", label: "Incomplete only"},
+		{value: "both", label: "Both - completed and incomplete"}
 	];
 
 	const archivedItems = [
@@ -105,21 +105,17 @@
 				<img src="../images/calendar.png" alt="calendar icon" width="15" height="15">
 			</div>
 			<div class="label">Include inspections with the following status:</div>
-			<div class="border-weak border-round-8 m-top-4">
-				<Select
-					items={statusItems}
-					isClearable={false}
-					>
-				</Select>
-			</div>
+			<select class="custom-select m-top-8" bind:value={$shadowConfig["Export"]["Inspection"]["Completed"]}>
+				{#each statusItems as item}
+				<option value={item.value}>{item.label}</option>
+				{/each}
+			</select>
 			<div class="label">Include archived inspections?</div>
-			<div class="border-weak border-round-8 m-top-4">
-				<Select
-					items={archivedItems}
-					isClearable={false}
-				>
-				</Select>
-			</div>
+			<select class="custom-select m-top-8" bind:value={$shadowConfig["Export"]["Inspection"]["Archived"]}>
+				{#each archivedItems as item}
+					<option value={item.value}>{item.label}</option>
+				{/each}
+			</select>
 		</section>
 		<section class="export-details border-round-8">
 			<div class="h3">Export details</div>
@@ -196,11 +192,31 @@
 		align-items: center;
 	}
 
-	.count {
-		background: #E5FAFF;
-		border-radius: 100px;
-		padding: 2px 10px;
-		color: #0D75B5;
+	select.custom-select {
+		cursor: pointer;
+
+		/* styling */
+		background-color: #FFFFFF;
+		background-image: url("../images/arrow-down-compact.png");
+		background-position: right 16px center;
+		background-repeat: no-repeat;
+		background-size: 8px;
+		border: 1px solid #BFC5D4;
+		border-radius: 8px;
+		display: inline-block;
+		font: inherit;
+		line-height: 1.5em;
+		padding: 0.5em 3.5em 0.5em 1em;
+
+		/* reset */
+		width: 100%;
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		outline: 0;
 	}
 
 	.export-details {
