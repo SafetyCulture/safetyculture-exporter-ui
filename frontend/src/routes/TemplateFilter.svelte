@@ -3,15 +3,9 @@
     import {shadowConfig, templateCache} from "../lib/store.js";
     import {GetTemplates} from "../../wailsjs/go/main/App.js"
     import {push} from "svelte-spa-router";
+    import {trim} from "../lib/utils.js";
 
     let searchFilter = ""
-
-    function trim(org) {
-        if (org.length > 80) {
-            return org.substring(0, 80).concat(" ...")
-        }
-        return org
-    }
 
     function gotoConfig() {
         push("/config")
@@ -22,6 +16,7 @@
             templateCache.set(result)
         })
     }
+
 </script>
 
 <div class="template-filter-page p-48">
