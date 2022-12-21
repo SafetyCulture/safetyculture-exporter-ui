@@ -1,6 +1,7 @@
 <script>
 	import './common.css';
 	import Select from 'svelte-select';
+	import { Datepicker } from 'svelte-calendar';
 	import {SaveSettings} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
@@ -88,13 +89,13 @@
 <div class="config-page p-48">
 	<section class="top-nav">
 		<div class="nav-left">
-			<div class="block-link p-left-8" on:click={handleBackButton}>
+			<div class="block-link p-left-8" on:click={handleBackButton} on:keypress={handleBackButton}>
 				<img src="../images/arrow-left.png" alt="back arrow icon" width="15" height="15">
 			</div>
 			<div class="h1 p-left-8">Export Configuration</div>
 		</div>
 		<div class="nav-right">
-			<button class="button button-white border-round-12" on:click={handleSaveAndClose}>Save and Close</button>
+			<button class="button button-white border-round-12" on:click={handleSaveAndClose} on:keypress={handleSaveAndClose}>Save and Close</button>
 			<button class="button button-purple m-left-8 border-round-12" on:click={handleSaveAndExport}>Save and Export</button>
 		</div>
 	</section>
@@ -105,14 +106,14 @@
 				<div class="text-weak m-top-8">Select which sets of data you want to export from your organization.</div>
 			</div>
 			<div class="label">Select templates</div>
-				<div class="button-long selector border-weak border-round-8 block-link" on:click={handleSelectTemplates}>
+				<div class="button-long selector border-weak border-round-8 block-link" on:click={handleSelectTemplates} on:keypress={handleSelectTemplates}>
 					<div class="templates">{generateTemplateName()}</div>
 					<div class="template-button-right">
 						<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
 					</div>
 				</div>
 			<div class="label">Select tables</div>
-			<div class="button-long selector border-weak border-round-8 block-link" on:click={handleTables}>
+			<div class="button-long selector border-weak border-round-8 block-link" on:click={handleTables} on:keypress={handleTables}>
 				<div class="templates">{generateTableName()}</div>
 				<div class="template-button-right">
 					<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
@@ -121,7 +122,7 @@
 			<div class="label">Date range</div>
 			<div class="sub-label text-weak">From:</div>
 			<div class="button-long selector border-weak border-round-8">
-				<input class="input-date" type="date" bind:value={date} />
+				<Datepicker bind:value={date} />
 			</div>
 			<div class="label">Include inspections with the following status:</div>
 			<select class="custom-select m-top-8" bind:value={$shadowConfig["Export"]["Inspection"]["Completed"]}>

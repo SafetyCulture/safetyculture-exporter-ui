@@ -7,10 +7,6 @@
 
     let searchFilter = ""
 
-    function gotoConfig() {
-        push("/config")
-    }
-
     if (Array.isArray($templateCache) && $templateCache.length === 0) {
         GetTemplates().then((result) => {
             templateCache.set(result)
@@ -25,6 +21,29 @@
         }
     }
 
+    function handleSave() {
+        let selectedTemplates = new Array();
+
+        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
+        for (const checkbox of checkboxes) {
+            if (checkbox.checked) {
+                selectedTemplates.push(checkbox.__value)
+            }
+        }
+
+        shadowConfig.update(store => {
+            return {
+                ...store,
+                Export: {
+                    ...store.Export,
+                    TemplateIds: selectedTemplates
+                }
+            }
+        })
+
+        push("/config")
+    }
+
 </script>
 
 <div class="template-filter-page p-48">
@@ -33,7 +52,7 @@
             <div class="h1">Export Configuration</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12" on:click={gotoConfig}>Done</button>
+            <button class="button button-white border-round-12" on:click={handleSave}>Done</button>
         </div>
     </section>
 

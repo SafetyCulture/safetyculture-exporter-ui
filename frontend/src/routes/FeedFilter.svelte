@@ -53,7 +53,7 @@
         }
     }
 
-    function gotoConfig() {
+    function handleSave() {
         let selectedTables = new Array();
 
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
@@ -83,7 +83,7 @@
             <div class="h1">Feed Export</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12" on:click={gotoConfig}>Done</button>
+            <button class="button button-white border-round-12" on:click={handleSave}>Done</button>
         </div>
     </section>
 
