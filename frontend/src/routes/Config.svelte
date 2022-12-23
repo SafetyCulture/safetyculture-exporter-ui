@@ -1,6 +1,5 @@
 <script>
 	import './common.css';
-	import { onMount } from 'svelte';
 	import Select from 'svelte-select';
 	import { Datepicker } from 'svelte-calendar';
 	import {SaveSettings, SelectDirectory, GetUserHomeDirectory} from "../../wailsjs/go/main/App.js"
@@ -185,7 +184,7 @@
 					<input class="input" type="password">
 					<div class="sub-label text-weak">Name</div>
 					<input class="input" type="text">
-
+					<hr>
 				</div>
 			{/if}
 			<div class="label">Report format</div>
