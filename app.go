@@ -102,7 +102,7 @@ func (a *App) Greet(name string) string {
 }
 
 func (a *App) ExportCSV() {
-
+	// TODO: goroutine?
 }
 
 func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
@@ -179,6 +179,11 @@ func (a *App) GetUserHomeDirectory() string {
 		runtime.LogErrorf(a.ctx, "failed to find user's home directory, %v", err)
 	}
 	return dir
+}
+
+func (a *App) ReadExportStatus() *exporterAPI.ExportStatusResponse {
+	fmt.Println("> ReadExportStatus")
+	return a.exporter.GetExportStatus()
 }
 
 func CreateSettingsDirectory() (string, error) {

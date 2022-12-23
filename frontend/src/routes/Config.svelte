@@ -2,7 +2,7 @@
 	import './common.css';
 	import Select from 'svelte-select';
 	import { Datepicker } from 'svelte-calendar';
-	import {SaveSettings, SelectDirectory, GetUserHomeDirectory} from "../../wailsjs/go/main/App.js"
+	import {SaveSettings, SelectDirectory, GetUserHomeDirectory, ReadExportStatus} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
@@ -75,6 +75,9 @@
 	function handleSaveAndExport() {
 		saveConfiguration()
 		// TODO trigger export
+		ReadExportStatus().then(result => {
+			console.log(result)
+		})
 	}
 
 	function handleSaveAndClose() {

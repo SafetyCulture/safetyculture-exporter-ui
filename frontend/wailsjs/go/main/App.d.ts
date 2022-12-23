@@ -14,6 +14,8 @@ export function GetUserHomeDirectory():Promise<string>;
 
 export function Greet(arg1:string):Promise<string>;
 
+export function ReadExportStatus():Promise<api.ExportStatusResponse>;
+
 export function SaveSettings(arg1:api.ExporterConfiguration):Promise<void>;
 
 export function SelectDirectory(arg1:string):Promise<string>;
