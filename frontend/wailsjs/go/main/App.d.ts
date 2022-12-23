@@ -10,8 +10,12 @@ export function GetSettings():Promise<api.ExporterConfiguration>;
 
 export function GetTemplates():Promise<Array<api.TemplateResponseItem>>;
 
+export function GetUserHomeDirectory():Promise<string>;
+
 export function Greet(arg1:string):Promise<string>;
 
 export function SaveSettings(arg1:api.ExporterConfiguration):Promise<void>;
+
+export function SelectDirectory(arg1:string):Promise<string>;
 
 export function ValidateApiKey(arg1:string):Promise<boolean>;

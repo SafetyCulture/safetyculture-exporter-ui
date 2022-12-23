@@ -69,6 +69,33 @@ func checkForConfigFile(basePath string) bool {
 	return true
 }
 
+// SelectDirectory opens a directory dialog and returns the path of the selected directory
+func (a *App) SelectDirectory(currentDir string) string {
+	var defaultDir string
+	homeDir, err := os.UserHomeDir()
+	if len(currentDir) == 0 {
+		if err != nil {
+			runtime.LogErrorf(a.ctx, "failed to get the working directory, %v", err)
+			panic("failed to get working directory")
+		}
+		defaultDir = homeDir
+	}
+
+	defaultDir = currentDir
+
+	directoryDialog, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
+		DefaultDirectory:     defaultDir,
+		CanCreateDirectories: true,
+	})
+
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "can't open directory dialog, %v", err)
+		return homeDir
+	}
+
+	return directoryDialog
+}
+
 // Greet returns a greeting for the given name
 func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
@@ -144,6 +171,14 @@ func (a *App) SaveSettings(cfg *exporterAPI.ExporterConfiguration) {
 	if err := a.cm.SaveConfiguration(); err != nil {
 		runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
 	}
+}
+
+func (a *App) GetUserHomeDirectory() string {
+	dir, err := os.UserHomeDir()
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "failed to find user's home directory, %v", err)
+	}
+	return dir
 }
 
 func CreateSettingsDirectory() (string, error) {

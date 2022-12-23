@@ -1,8 +1,9 @@
 <script>
 	import './common.css';
+	import { onMount } from 'svelte';
 	import Select from 'svelte-select';
 	import { Datepicker } from 'svelte-calendar';
-	import {SaveSettings} from "../../wailsjs/go/main/App.js"
+	import {SaveSettings, SelectDirectory, GetUserHomeDirectory} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
@@ -34,8 +35,9 @@
 		{value: "utc", label: "UTC"}
 	];
 
-	let dataExportFormat = "csv";
+	let selectedExportFormat;
 	let date = new Date();
+	let exportFolder = setExportFolder();
 
 	function generateTemplateName() {
 		if ($shadowConfig["Export"]["TemplateIds"].length === 0) {
@@ -53,8 +55,16 @@
 		}
 	}
 
+	function setExportFolder() {
+		if ($shadowConfig["Export"]["Path"].length === 0) {
+			GetUserHomeDirectory().then(result => {
+				$shadowConfig["Export"]["Path"] = result
+			})
+		}
+	}
+
 	function handleDataExport(event) {
-		dataExportFormat = event.detail.value;
+		selectedExportFormat = event.detail.value;
 	}
 
 	function saveConfiguration() {
@@ -70,7 +80,10 @@
 
 	function handleSaveAndClose() {
 		saveConfiguration()
-		Quit()
+		const millisecondsToWait = 500;
+		setTimeout(function() {
+			Quit()
+		}, millisecondsToWait);
 	}
 
 	function handleBackButton() {
@@ -84,6 +97,16 @@
 	function handleTables() {
 		push("/config/tables")
 	}
+
+	function openFolderDialog() {
+		SelectDirectory($shadowConfig["Export"]["Path"]).then(result => {
+			if (result !== "") {
+				$shadowConfig["Export"]["Path"] = result
+			}
+		})
+	}
+
+
 </script>
 
 <div class="config-page p-48">
@@ -144,11 +167,12 @@
 				<Select
 					items={dataExportFormatItems}
 					isClearable={false}
-					on:select={handleDataExport}
+					on:change={handleDataExport}
+					bind:value={selectedExportFormat}
 				>
 				</Select>
 			</div>
-			{#if dataExportFormat === "sql"}
+			{#if selectedExportFormat != null && selectedExportFormat.value == 'sql'}
 				<div>
 					<div class="label">Database details:</div>
 					<div class="sub-label text-weak">Host Address</div>
@@ -161,7 +185,7 @@
 					<input class="input" type="password">
 					<div class="sub-label text-weak">Name</div>
 					<input class="input" type="text">
-					<hr>
+
 				</div>
 			{/if}
 			<div class="label">Report format</div>
@@ -174,8 +198,8 @@
 				<div class="label">Folder location</div>
 				<div class="link text-size-small">Want to change location?</div>
 			</div>
-			<div class="button-long selector border-weak border-round-8">
-				<div class="text-weak">folder(unimplemented)</div>
+			<div class="button-long selector border-weak border-round-8" on:click={openFolderDialog}>
+				<div class="text-weak">{$shadowConfig["Export"]["Path"]}</div>
 				<img src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
 			<div class="label">Export timezone</div>
