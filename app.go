@@ -62,6 +62,23 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
+func (a *App) ReloadConfig() {
+	settingsDir, err := GetSettingDirectoryPath()
+	if err != nil {
+		runtime.LogError(a.ctx, "failed to get settings directory")
+		panic("failed to get settings directory")
+	}
+
+	runtime.LogInfof(a.ctx, "loading configuration file: %s/safetyculture-exporter.yaml", settingsDir)
+	cm, err := exporterAPI.NewConfigurationManagerFromFile(settingsDir, "safetyculture-exporter.yaml")
+	if err != nil {
+		runtime.LogError(a.ctx, err.Error())
+		panic("failed to load configuration")
+	}
+	a.cm = cm
+	a.exporter, err = exporterAPI.NewSafetyCultureExporterInferredApiClient(a.cm.Configuration)
+}
+
 func checkForConfigFile(basePath string) bool {
 	if _, err := os.Stat(path.Join(basePath, "safetyculture-exporter.yaml")); os.IsNotExist(err) {
 		return false
@@ -102,7 +119,11 @@ func (a *App) Greet(name string) string {
 }
 
 func (a *App) ExportCSV() {
-	// TODO: goroutine?
+	a.exporter.RunCSV()
+}
+
+func (a *App) ExportSQL() {
+	a.exporter.RunSQL()
 }
 
 func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
