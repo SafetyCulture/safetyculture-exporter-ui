@@ -76,7 +76,7 @@ func (a *App) ReloadConfig() {
 		panic("failed to load configuration")
 	}
 	a.cm = cm
-	a.exporter, err = exporterAPI.NewSafetyCultureExporterInferredApiClient(a.cm.Configuration)
+	a.exporter, err = exporterAPI.RefreshConfiguration(a.cm.Configuration, a.exporter)
 }
 
 func checkForConfigFile(basePath string) bool {
@@ -172,7 +172,7 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 		}
 
 		// reload configuration
-		a.exporter, err = exporterAPI.NewSafetyCultureExporterInferredApiClient(a.cm.Configuration)
+		a.exporter, err = exporterAPI.RefreshConfiguration(a.cm.Configuration, a.exporter)
 		if err != nil {
 			runtime.LogError(a.ctx, err.Error())
 			panic("failed to load configuration")

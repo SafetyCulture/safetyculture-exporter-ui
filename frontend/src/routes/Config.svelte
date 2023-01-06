@@ -120,9 +120,10 @@
 		} else {
 			ExportCSV()
 		}
-		ReadExportStatus().then(result => {
-			console.log(result)
-		})
+		push("/exportStatus")
+		// ReadExportStatus().then(result => {
+		// 	console.log(result)
+		// })
 	}
 
 	function handleSaveAndClose() {
