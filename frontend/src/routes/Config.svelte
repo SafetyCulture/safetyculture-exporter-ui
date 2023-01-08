@@ -2,7 +2,14 @@
 	import './common.css';
 	import Select from 'svelte-select';
 	import { Datepicker } from 'svelte-calendar';
-	import {SaveSettings, SelectDirectory, GetUserHomeDirectory} from "../../wailsjs/go/main/App.js"
+	import {
+		SaveSettings,
+		SelectDirectory,
+		GetUserHomeDirectory,
+		ReadExportStatus,
+		ExportCSV,
+		ReloadConfig, ExportSQL
+	} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
@@ -24,6 +31,13 @@
 		{value: "sql", label: "SQL"}
 	];
 
+	const dbDialect = [
+		{value: "postgres", label: "Postgres"},
+		{value: "sqlserver", label: "SQL Server"},
+		{value: "mysql", label: "MySQL"}
+	];
+
+
 	const reportFormatItems = [
 		{value: "PDF", label: "PDF"},
 		{value: "WORD", label: "Word"},
@@ -35,6 +49,8 @@
 	];
 
 	let selectedExportFormat;
+	let selectedDbDialect;
+	let dbHost='', dbPort, dbUser='', dbPassword='', dbName='';
 	let date = new Date();
 	let exportFolder = setExportFolder();
 
@@ -62,27 +78,59 @@
 		}
 	}
 
-	function handleDataExport(event) {
+	function handleExportFormatUpdate(event) {
 		selectedExportFormat = event.detail.value;
 	}
 
+	function handleDbUpdate(event) {
+		selectedDbDialect = event.detail.value;
+	}
+
 	function saveConfiguration() {
+		if (selectedExportFormat != null && selectedExportFormat.value == 'sql') {
+			switch(selectedDbDialect.value) {
+				case "postgres":
+					$shadowConfig["Db"]["ConnectionString"] = "postgresql://".concat(dbUser, ':', dbPassword, '@', dbHost, ':', dbPort, '/', dbName)
+					$shadowConfig["Db"]["Dialect"] = "postgres"
+					break;
+				case "sqlserver":
+					$shadowConfig["Db"]["ConnectionString"] = "sqlserver://".concat(dbUser, ':', dbPassword, '@', dbHost, ':', dbPort, '?database=', dbName)
+					$shadowConfig["Db"]["Dialect"] = "sqlserver"
+					break;
+				case "mysql":
+					$shadowConfig["Db"]["ConnectionString"] = dbUser.concat(':', dbPassword, '@tcp(', dbHost, ':', dbPort, ')', '/', dbName, '?charset=utf8mb4&parseTime=True&loc=Local')
+					$shadowConfig["Db"]["Dialect"] = "mysql"
+					break;
+			}
+		}
+
 		if($shadowConfig !== {}) {
 			SaveSettings($shadowConfig)
 		}
+
+		setTimeout(function() {
+			ReloadConfig()
+		}, 500);
 	}
 
 	function handleSaveAndExport() {
 		saveConfiguration()
-		// TODO trigger export
+		if (selectedExportFormat != null && selectedExportFormat.value == 'sql') {
+			ExportSQL()
+		} else {
+			ExportCSV()
+		}
+		push("/exportStatus")
+		// ReadExportStatus().then(result => {
+		// 	console.log(result)
+		// })
 	}
 
 	function handleSaveAndClose() {
 		saveConfiguration()
-		const millisecondsToWait = 500;
 		setTimeout(function() {
 			Quit()
-		}, millisecondsToWait);
+		}, 500);
 	}
 
 	function handleBackButton() {
@@ -166,24 +214,34 @@
 				<Select
 					items={dataExportFormatItems}
 					isClearable={false}
-					on:change={handleDataExport}
+					on:change={handleExportFormatUpdate}
 					bind:value={selectedExportFormat}
 				>
 				</Select>
 			</div>
 			{#if selectedExportFormat != null && selectedExportFormat.value == 'sql'}
 				<div>
+					<div class="label">Database Type</div>
+					<Select
+							items={dbDialect}
+							isClearable={false}
+							on:change={handleDbUpdate}
+							bind:value={selectedDbDialect}
+					>
+					</Select>
+				</div>
+				<div>
 					<div class="label">Database details:</div>
 					<div class="sub-label text-weak">Host Address</div>
-					<input class="input" type="text">
+					<input class="input" type="text" bind:value={dbHost}>
 					<div class="sub-label text-weak">Host Port</div>
-					<input class="input" type="text">
+					<input class="input" type="text" bind:value={dbPort}>
 					<div class="sub-label text-weak">Username</div>
-					<input class="input" type="text">
+					<input class="input" type="text" bind:value={dbUser}>
 					<div class="sub-label text-weak">Password</div>
-					<input class="input" type="password">
+					<input class="input" type="password" bind:value={dbPassword}>
 					<div class="sub-label text-weak">Name</div>
-					<input class="input" type="text">
+					<input class="input" type="text" bind:value={dbName}>
 					<hr>
 				</div>
 			{/if}
@@ -240,7 +298,7 @@
 
 		/* styling */
 		background-color: #FFFFFF;
-		background-image: url("../images/arrow-down-compact.png");
+		/*background-image: url("../images/arrow-down-compact.png");*/
 		background-position: right 16px center;
 		background-repeat: no-repeat;
 		background-size: 8px;

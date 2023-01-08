@@ -6,6 +6,8 @@ export function CheckApiKey():Promise<boolean>;
 
 export function ExportCSV():Promise<void>;
 
+export function ExportSQL():Promise<void>;
+
 export function GetSettings():Promise<api.ExporterConfiguration>;
 
 export function GetTemplates():Promise<Array<api.TemplateResponseItem>>;
@@ -13,6 +15,10 @@ export function GetTemplates():Promise<Array<api.TemplateResponseItem>>;
 export function GetUserHomeDirectory():Promise<string>;
 
 export function Greet(arg1:string):Promise<string>;
+
+export function ReadExportStatus():Promise<api.ExportStatusResponse>;
+
+export function ReloadConfig():Promise<void>;
 
 export function SaveSettings(arg1:api.ExporterConfiguration):Promise<void>;
 

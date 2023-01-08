@@ -10,6 +10,10 @@ export function ExportCSV() {
   return window['go']['main']['App']['ExportCSV']();
 }
 
+export function ExportSQL() {
+  return window['go']['main']['App']['ExportSQL']();
+}
+
 export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
@@ -24,6 +28,14 @@ export function GetUserHomeDirectory() {
 
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
+}
+
+export function ReadExportStatus() {
+  return window['go']['main']['App']['ReadExportStatus']();
+}
+
+export function ReloadConfig() {
+  return window['go']['main']['App']['ReloadConfig']();
 }
 
 export function SaveSettings(arg1) {

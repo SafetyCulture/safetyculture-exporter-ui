@@ -62,6 +62,23 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
+func (a *App) ReloadConfig() {
+	settingsDir, err := GetSettingDirectoryPath()
+	if err != nil {
+		runtime.LogError(a.ctx, "failed to get settings directory")
+		panic("failed to get settings directory")
+	}
+
+	runtime.LogInfof(a.ctx, "loading configuration file: %s/safetyculture-exporter.yaml", settingsDir)
+	cm, err := exporterAPI.NewConfigurationManagerFromFile(settingsDir, "safetyculture-exporter.yaml")
+	if err != nil {
+		runtime.LogError(a.ctx, err.Error())
+		panic("failed to load configuration")
+	}
+	a.cm = cm
+	a.exporter, err = exporterAPI.RefreshConfiguration(a.cm.Configuration, a.exporter)
+}
+
 func checkForConfigFile(basePath string) bool {
 	if _, err := os.Stat(path.Join(basePath, "safetyculture-exporter.yaml")); os.IsNotExist(err) {
 		return false
@@ -102,7 +119,11 @@ func (a *App) Greet(name string) string {
 }
 
 func (a *App) ExportCSV() {
+	a.exporter.RunCSV()
+}
 
+func (a *App) ExportSQL() {
+	a.exporter.RunSQL()
 }
 
 func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
@@ -151,7 +172,7 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 		}
 
 		// reload configuration
-		a.exporter, err = exporterAPI.NewSafetyCultureExporterInferredApiClient(a.cm.Configuration)
+		a.exporter, err = exporterAPI.RefreshConfiguration(a.cm.Configuration, a.exporter)
 		if err != nil {
 			runtime.LogError(a.ctx, err.Error())
 			panic("failed to load configuration")
@@ -179,6 +200,11 @@ func (a *App) GetUserHomeDirectory() string {
 		runtime.LogErrorf(a.ctx, "failed to find user's home directory, %v", err)
 	}
 	return dir
+}
+
+func (a *App) ReadExportStatus() *exporterAPI.ExportStatusResponse {
+	fmt.Println("> ReadExportStatus")
+	return a.exporter.GetExportStatus()
 }
 
 func CreateSettingsDirectory() (string, error) {

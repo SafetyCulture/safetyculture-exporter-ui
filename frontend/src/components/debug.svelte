@@ -16,6 +16,10 @@
     function gotoTemplates() {
         push("/config/templates")
     }
+
+    function gotoStatus() {
+        push("/exportStatus")
+    }
 </script>
 
 <div>
@@ -23,4 +27,5 @@
     <button on:click={gotoConfig}>CONFIG</button>
     <button on:click={gotoTemplates}>TEMPLATES</button>
     <button on:click={gotoTables}>TABLES</button>
+    <button on:click={gotoStatus}>STATUS</button>
 </div>

@@ -7,6 +7,7 @@
     import TemplateFilter from "./routes/TemplateFilter.svelte";
     import FeedFilter from "./routes/FeedFilter.svelte";
     import Debug from "./components/debug.svelte";
+    import ExportStatus from "./routes/ExportStatus.svelte";
 </script>
 
 <Debug/>
@@ -17,6 +18,7 @@
 	'/config': Config,
 	'/config/templates': TemplateFilter,
 	'/config/tables': FeedFilter,
+	'/exportStatus': ExportStatus,
 	'*': Page404
 }} />
 
