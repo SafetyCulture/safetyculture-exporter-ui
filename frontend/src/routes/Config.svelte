@@ -27,32 +27,32 @@
 	];
 
 	const dataExportFormatItems = [
-		{value: "csv", label: "CSV"},
-		{value: "sql", label: "SQL"}
+		{value: "CSV", label: "CSV"},
+		{value: "SQL", label: "SQL"},
 	];
+	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
 
 	const dbDialect = [
 		{value: "postgres", label: "Postgres"},
 		{value: "sqlserver", label: "SQL Server"},
 		{value: "mysql", label: "MySQL"}
 	];
+	let selectedDbDialect = $shadowConfig["Db"]["Dialect"];
 
+	let dbHost='', dbPort, dbUser='', dbPassword='', dbName='';
 
 	const reportFormatItems = [
 		{value: "PDF", label: "PDF"},
 		{value: "WORD", label: "Word"},
-		{value: "both", label: "Both - PDF and Word"},
 	];
+	let selectedReportFormat = $shadowConfig["Report"]["Format"];
 
 	const timezoneItems = [
-		{value: "utc", label: "UTC"}
+		{value: "UTC", label: "UTC"}
 	];
+	let selectedTimeZone = $shadowConfig["Export"]["TimeZone"]
 
-	let selectedExportFormat;
-	let selectedDbDialect;
-	let dbHost='', dbPort, dbUser='', dbPassword='', dbName='';
 	let date = new Date();
-	let exportFolder = setExportFolder();
 
 	function generateTemplateName() {
 		if ($shadowConfig["Export"]["TemplateIds"].length === 0) {
@@ -87,7 +87,7 @@
 	}
 
 	function saveConfiguration() {
-		if (selectedExportFormat != null && selectedExportFormat.value == 'sql') {
+		if (selectedExportFormat != null && selectedExportFormat.value === 'SQL') {
 			switch(selectedDbDialect.value) {
 				case "postgres":
 					$shadowConfig["Db"]["ConnectionString"] = "postgresql://".concat(dbUser, ':', dbPassword, '@', dbHost, ':', dbPort, '/', dbName)
@@ -104,6 +104,13 @@
 			}
 		}
 
+		if (selectedTimeZone.value !== '') {
+			$shadowConfig["Export"]["TimeZone"] = selectedTimeZone.value
+		}
+
+		$shadowConfig["Report"]["Format"] = selectedReportFormat.map(x => x.value)
+		$shadowConfig["Session"]["ExportType"] = selectedExportFormat.value
+
 		if($shadowConfig !== {}) {
 			SaveSettings($shadowConfig)
 		}
@@ -115,7 +122,7 @@
 
 	function handleSaveAndExport() {
 		saveConfiguration()
-		if (selectedExportFormat != null && selectedExportFormat.value == 'sql') {
+		if (selectedExportFormat != null && selectedExportFormat.value === 'SQL') {
 			ExportSQL()
 		} else {
 			ExportCSV()
@@ -211,24 +218,12 @@
 			<div class="h3">Export details</div>
 			<div class="label">Data export format</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<Select
-					items={dataExportFormatItems}
-					isClearable={false}
-					on:change={handleExportFormatUpdate}
-					bind:value={selectedExportFormat}
-				>
-				</Select>
+				<Select items={dataExportFormatItems} clearable={false} on:change={handleExportFormatUpdate} bind:value={selectedExportFormat} />
 			</div>
-			{#if selectedExportFormat != null && selectedExportFormat.value == 'sql'}
+			{#if selectedExportFormat != null && selectedExportFormat.value === 'SQL'}
 				<div>
 					<div class="label">Database Type</div>
-					<Select
-							items={dbDialect}
-							isClearable={false}
-							on:change={handleDbUpdate}
-							bind:value={selectedDbDialect}
-					>
-					</Select>
+					<Select items={dbDialect} clearable={false} on:change={handleDbUpdate} bind:value={selectedDbDialect} />
 				</div>
 				<div>
 					<div class="label">Database details:</div>
@@ -246,11 +241,7 @@
 				</div>
 			{/if}
 			<div class="label">Report format</div>
-			<Select
-				items={reportFormatItems}
-				isClearable={false}
-			>
-			</Select>
+			<Select items={reportFormatItems} clearable={false} multiple=true bind:value={selectedReportFormat}/>
 			<div class="folder-title">
 				<div class="label">Folder location</div>
 				<div class="link text-size-small">Want to change location?</div>
@@ -260,13 +251,9 @@
 				<img src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
 			<div class="label">Export timezone</div>
-			<Select
-				items={timezoneItems}
-				isClearable={false}
-			>
-			</Select>
+			<Select items={timezoneItems} clearable={false} bind:value={selectedTimeZone}/>
 			<div class="label">Include:</div>
-			<input type="checkbox" id="media" name="media" value="media">
+			<input type="checkbox" id="media" name="media" bind:checked={$shadowConfig["Export"]["Media"]}>
 			<label class="text-size-medium" for="media">Media</label>
 		</section>
 	</div>
