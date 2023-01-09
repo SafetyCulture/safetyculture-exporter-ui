@@ -8,6 +8,7 @@
     import FeedFilter from "./routes/FeedFilter.svelte";
     import Debug from "./components/debug.svelte";
     import ExportStatus from "./routes/ExportStatus.svelte";
+    import DebugMem from "./routes/DebugMem.svelte";
 </script>
 
 <Debug/>
@@ -19,6 +20,7 @@
 	'/config/templates': TemplateFilter,
 	'/config/tables': FeedFilter,
 	'/exportStatus': ExportStatus,
+	'/debug': DebugMem,
 	'*': Page404
 }} />
 

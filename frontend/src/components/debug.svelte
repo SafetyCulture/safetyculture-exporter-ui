@@ -20,6 +20,10 @@
     function gotoStatus() {
         push("/exportStatus")
     }
+
+    function gotoDebug() {
+        push("/debug")
+    }
 </script>
 
 <div>
@@ -28,4 +32,5 @@
     <button on:click={gotoTemplates}>TEMPLATES</button>
     <button on:click={gotoTables}>TABLES</button>
     <button on:click={gotoStatus}>STATUS</button>
+    <button on:click={gotoDebug}>DEBUG</button>
 </div>

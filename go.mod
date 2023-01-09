@@ -3,7 +3,7 @@ module github.com/SafetyCulture/safetyculture-exporter/ui
 go 1.18
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230108225057-59d674e3908a
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230109044630-039233b5fd5a
 	github.com/wailsapp/wails/v2 v2.2.0
 )
 
@@ -83,5 +83,5 @@ require (
 	gorm.io/gorm v1.24.1-0.20221019064659-5dd2bb482755 // indirect
 )
 
-// replace github.com/wailsapp/wails/v2 v2.2.0 => /Users/gaurav.verma/go/pkg/mod
-// replace github.com/SafetyCulture/safetyculture-exporter => /Users/mick/go/src/github.com/SafetyCulture/safetyculture-exporter
+//replace github.com/wailsapp/wails/v2 v2.2.0 => /Users/gaurav.verma/go/pkg/mod
+//replace github.com/SafetyCulture/safetyculture-exporter => /Users/mick/go/src/github.com/SafetyCulture/safetyculture-exporter
