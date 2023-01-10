@@ -27,17 +27,13 @@
 	];
 
 	const dataExportFormatItems = [
-		{value: "CSV", label: "CSV"},
-		{value: "SQL", label: "SQL"},
-	];
-	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
-
-	const dbDialect = [
+		{value: "csv", label: "CSV"},
+		{value: "mysql", label: "MySQL"},
 		{value: "postgres", label: "Postgres"},
 		{value: "sqlserver", label: "SQL Server"},
-		{value: "mysql", label: "MySQL"}
+		{value: "reports", label: "Reports"},
 	];
-	let selectedDbDialect = $shadowConfig["Db"]["Dialect"];
+	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
 
 	let dbHost='', dbPort, dbUser='', dbPassword='', dbName='';
 
@@ -70,25 +66,13 @@
 		}
 	}
 
-	function setExportFolder() {
-		if ($shadowConfig["Export"]["Path"].length === 0) {
-			GetUserHomeDirectory().then(result => {
-				$shadowConfig["Export"]["Path"] = result
-			})
-		}
-	}
-
 	function handleExportFormatUpdate(event) {
 		selectedExportFormat = event.detail.value;
 	}
 
-	function handleDbUpdate(event) {
-		selectedDbDialect = event.detail.value;
-	}
-
 	function saveConfiguration() {
-		if (selectedExportFormat != null && selectedExportFormat.value === 'SQL') {
-			switch(selectedDbDialect.value) {
+		if (selectedExportFormat !== '') {
+			switch(selectedExportFormat) {
 				case "postgres":
 					$shadowConfig["Db"]["ConnectionString"] = "postgresql://".concat(dbUser, ':', dbPassword, '@', dbHost, ':', dbPort, '/', dbName)
 					$shadowConfig["Db"]["Dialect"] = "postgres"
@@ -122,15 +106,13 @@
 
 	function handleSaveAndExport() {
 		saveConfiguration()
-		if (selectedExportFormat != null && selectedExportFormat.value === 'SQL') {
+		if (selectedExportFormat != null && selectedExportFormat.value === 'sql') {
 			ExportSQL()
 		} else {
 			ExportCSV()
 		}
 		push("/exportStatus")
-		// ReadExportStatus().then(result => {
-		// 	console.log(result)
-		// })
+
 	}
 
 	function handleSaveAndClose() {
@@ -220,11 +202,8 @@
 			<div class="border-weak border-round-8 m-top-4">
 				<Select items={dataExportFormatItems} clearable={false} on:change={handleExportFormatUpdate} bind:value={selectedExportFormat} />
 			</div>
-			{#if selectedExportFormat != null && selectedExportFormat.value === 'SQL'}
-				<div>
-					<div class="label">Database Type</div>
-					<Select items={dbDialect} clearable={false} on:change={handleDbUpdate} bind:value={selectedDbDialect} />
-				</div>
+			{#if selectedExportFormat != null && (selectedExportFormat.value === 'mysql'
+					|| selectedExportFormat.value === 'postgres' || selectedExportFormat.value === 'sqlserver')}
 				<div>
 					<div class="label">Database details:</div>
 					<div class="sub-label text-weak">Host Address</div>
@@ -240,15 +219,19 @@
 					<hr>
 				</div>
 			{/if}
-			<div class="label">Report format</div>
-			<Select items={reportFormatItems} clearable={false} multiple=true bind:value={selectedReportFormat}/>
+
+			{#if selectedExportFormat != null && selectedExportFormat.value === 'reports' }
+				<div class="label">Report format</div>
+				<Select items={reportFormatItems} clearable={false} multiple=true bind:value={selectedReportFormat}/>
+			{/if}
+
 			<div class="folder-title">
 				<div class="label">Folder location</div>
-				<div class="link text-size-small">Want to change location?</div>
 			</div>
-			<div class="button-long selector border-weak border-round-8" on:click={openFolderDialog}>
-				<div class="text-weak">{$shadowConfig["Export"]["Path"]}</div>
-				<img src="../images/folder.png" alt="folder icon" width="15" height="15">
+
+			<div id="folder" class="button-long selector border-weak border-round-8" on:click={openFolderDialog}>
+				<div class="text-weak" >{$shadowConfig["Export"]["Path"]}</div>
+				<img class="cursor-pointer" src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
 			<div class="label">Export timezone</div>
 			<Select items={timezoneItems} clearable={false} bind:value={selectedTimeZone}/>
@@ -320,4 +303,9 @@
 		align-items: baseline;
 		justify-content: space-between;
 	}
+
+	.cursor-pointer {
+		cursor: pointer;
+	}
+
 </style>
