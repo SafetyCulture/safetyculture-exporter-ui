@@ -1,7 +1,10 @@
 <script>
 	import './common.css';
+	import dayjs from 'dayjs';
+	import utc from 'dayjs/plugin/utc';
+	import timezone from 'dayjs/plugin/timezone';
 	import Select from 'svelte-select';
-	import { Datepicker } from 'svelte-calendar';
+	import { DateInput } from 'date-picker-svelte'
 	import {
 		SaveSettings,
 		SelectDirectory,
@@ -48,7 +51,12 @@
 	];
 	let selectedTimeZone = $shadowConfig["Export"]["TimeZone"]
 
-	let date = new Date();
+	// DATE PICKER
+	dayjs.extend(utc);
+	dayjs.extend(timezone);
+	let date = convertStringToDate($shadowConfig["Export"]["ModifiedAfter"], selectedTimeZone);
+	const minDate = dayjs().add(-1, 'year').toDate()
+
 
 	function generateTemplateName() {
 		if ($shadowConfig["Export"]["TemplateIds"].length === 0) {
@@ -90,6 +98,7 @@
 
 		if (selectedTimeZone.value !== '') {
 			$shadowConfig["Export"]["TimeZone"] = selectedTimeZone.value
+			$shadowConfig["Export"]["ModifiedAfter"] = convertDateToString(date, selectedTimeZone.value)
 		}
 
 		$shadowConfig["Report"]["Format"] = selectedReportFormat.map(x => x.value)
@@ -102,6 +111,18 @@
 		setTimeout(function() {
 			ReloadConfig()
 		}, 500);
+	}
+
+	function convertDateToString(dt, tz) {
+		return dayjs(dt).tz(tz).format()
+	}
+
+	function convertStringToDate(input, tz) {
+		if (input === "") {
+			return minDate
+		}
+
+		return dayjs(input).tz(tz).toDate()
 	}
 
 	function handleSaveAndExport() {
@@ -179,10 +200,9 @@
 					<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
 				</div>
 			</div>
-			<div class="label">Date range</div>
-			<div class="sub-label text-weak">From:</div>
-			<div class="button-long selector border-weak border-round-8">
-				<Datepicker bind:value={date} />
+			<div class="label">Date range From</div>
+			<div class="m-top-8">
+				<DateInput min={minDate} max={new Date()} format="dd-MM-yyyy" bind:value={date} />
 			</div>
 			<div class="label">Include inspections with the following status:</div>
 			<select class="custom-select m-top-8" bind:value={$shadowConfig["Export"]["Inspection"]["Completed"]}>
