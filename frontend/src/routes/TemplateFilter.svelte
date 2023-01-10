@@ -32,16 +32,6 @@
         }
 
         $shadowConfig["Export"]["TemplateIds"] = selectedTemplates
-        // shadowConfig.update(store => {
-        //     return {
-        //         ...store,
-        //         Export: {
-        //             ...store.Export,
-        //             TemplateIds: selectedTemplates
-        //         }
-        //     }
-        // })
-
         push("/config")
     }
 

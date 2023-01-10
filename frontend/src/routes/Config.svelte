@@ -33,9 +33,24 @@
 		{value: "sqlserver", label: "SQL Server"},
 		{value: "reports", label: "Reports"},
 	];
-	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
+
+	const POSTGRES_DIALECT = 'postgres';
+	const SQLSERVER_DIALECT = 'sqlserver';
+	const MYSQL_DIALECT = 'mysql';
+
+	const connectionStrings = {
+		postgres: 'postgresql://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}',
+		sqlserver: 'sqlserver://${dbUser}:${dbPassword}@${dbHost}:${dbPort}?database=${dbName}',
+		mysql: '${dbUser}:${dbPassword}@tcp(${dbHost}:${dbPort})/${dbName}?charset=utf8mb4&parseTime=True&loc=Local',
+	};
+	const dialects = {
+		postgres: POSTGRES_DIALECT,
+		sqlserver: SQLSERVER_DIALECT,
+		mysql: MYSQL_DIALECT,
+	};
 
 	let dbHost='', dbPort, dbUser='', dbPassword='', dbName='';
+	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
 
 	const reportFormatItems = [
 		{value: "PDF", label: "PDF"},
@@ -70,22 +85,65 @@
 		selectedExportFormat = event.detail.value;
 	}
 
-	function saveConfiguration() {
+	function setConnString() {
 		if (selectedExportFormat !== '') {
-			switch(selectedExportFormat) {
-				case "postgres":
-					$shadowConfig["Db"]["ConnectionString"] = "postgresql://".concat(dbUser, ':', dbPassword, '@', dbHost, ':', dbPort, '/', dbName)
-					$shadowConfig["Db"]["Dialect"] = "postgres"
-					break;
-				case "sqlserver":
-					$shadowConfig["Db"]["ConnectionString"] = "sqlserver://".concat(dbUser, ':', dbPassword, '@', dbHost, ':', dbPort, '?database=', dbName)
-					$shadowConfig["Db"]["Dialect"] = "sqlserver"
-					break;
-				case "mysql":
-					$shadowConfig["Db"]["ConnectionString"] = dbUser.concat(':', dbPassword, '@tcp(', dbHost, ':', dbPort, ')', '/', dbName, '?charset=utf8mb4&parseTime=True&loc=Local')
-					$shadowConfig["Db"]["Dialect"] = "mysql"
-					break;
-			}
+			const connectionString = connectionStrings[selectedExportFormat.value];
+			const replacedConnectionString = connectionString.replace(/\${dbUser}/g, dbUser)
+					.replace(/\${dbPassword}/g, dbPassword)
+					.replace(/\${dbHost}/g, dbHost)
+					.replace(/\${dbPort}/g, dbPort)
+					.replace(/\${dbName}/g, dbName);
+
+			$shadowConfig['Db']['ConnectionString'] = replacedConnectionString;
+			$shadowConfig['Db']['Dialect'] = dialects[selectedExportFormat.value];
+		}
+	}
+
+	function parseDbConnectionString() {
+		const url = $shadowConfig["Db"]["ConnectionString"];
+
+		function mapFields(dbStringMatch) {
+			dbUser = dbStringMatch[1];
+			dbPassword = dbStringMatch[2];
+			dbHost = dbStringMatch[3];
+			dbPort = dbStringMatch[4];
+			dbName = dbStringMatch[5];
+		}
+
+		let dbStringMatch;
+
+		// Parse SQL Server connection string
+		dbStringMatch = url.match(/^sqlserver:\/\/(.+):(.+)@(.+):(\d+)\?database=(.+)$/);
+		if (dbStringMatch) {
+			mapFields(dbStringMatch);
+			return;
+		}
+
+		// Parse MySQL connection string
+		dbStringMatch = url.match(/^(.+):(.+)@tcp\((.+):(\d+)\)\/(.+)\?/);
+		if (dbStringMatch) {
+			mapFields(dbStringMatch);
+			return;
+		}
+
+		// Parse Postgres connection string
+		dbStringMatch = url.match(/^postgresql:\/\/(.+):(.+)@(.+):(\d+)\/(.+)$/);
+		if (dbStringMatch) {
+			mapFields(dbStringMatch);
+			return;
+		}
+	}
+
+	function saveConfiguration() {
+
+		const validFormats = {
+			mysql: true,
+			postgres: true,
+			sqlserver: true
+		};
+
+		if (selectedExportFormat.value in validFormats) {
+			setConnString();
 		}
 
 		if (selectedTimeZone.value !== '') {
@@ -118,7 +176,7 @@
 	function handleSaveAndClose() {
 		saveConfiguration()
 		setTimeout(function() {
-			Quit()
+			// Quit()
 		}, 500);
 	}
 
@@ -143,7 +201,7 @@
 		})
 	}
 
-
+	parseDbConnectionString();
 </script>
 
 <div class="config-page p-48">
