@@ -138,6 +138,7 @@
 		SelectDirectory($shadowConfig["Export"]["Path"]).then(result => {
 			if (result !== "") {
 				$shadowConfig["Export"]["Path"] = result
+				$shadowConfig["Export"]["MediaPath"] = result + '/media/'
 			}
 		})
 	}
