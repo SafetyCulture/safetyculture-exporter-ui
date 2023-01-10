@@ -54,12 +54,19 @@ func (a *App) startup(ctx context.Context) {
 		a.cm = cm
 	}
 
-	a.exporter, err = exporterAPI.NewSafetyCultureExporterInferredApiClient(a.cm.Configuration)
+	a.exporter, err = exporterAPI.NewSafetyCultureExporter(a.cm.Configuration, FakeGetVersion())
 	if err != nil {
 		runtime.LogError(ctx, err.Error())
 		panic("failed to load configuration")
 	}
 	a.ctx = ctx
+}
+
+func FakeGetVersion() *exporterAPI.AppVersion {
+	return &exporterAPI.AppVersion{
+		IntegrationID:      "safetyculture-exporter-ui",
+		IntegrationVersion: "0.0.0-dev",
+	}
 }
 
 func (a *App) ReloadConfig() {
@@ -76,7 +83,6 @@ func (a *App) ReloadConfig() {
 		panic("failed to load configuration")
 	}
 	a.cm = cm
-	a.exporter, err = exporterAPI.RefreshConfiguration(a.cm.Configuration, a.exporter)
 }
 
 func checkForConfigFile(basePath string) bool {
@@ -169,13 +175,6 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 		a.cm.Configuration.AccessToken = apiKey
 		if err := a.cm.SaveConfiguration(); err != nil {
 			runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
-		}
-
-		// reload configuration
-		a.exporter, err = exporterAPI.RefreshConfiguration(a.cm.Configuration, a.exporter)
-		if err != nil {
-			runtime.LogError(a.ctx, err.Error())
-			panic("failed to load configuration")
 		}
 	}
 	return true
