@@ -1,4 +1,4 @@
-module github.com/SafetyCulture/safetyculture-exporter/ui
+module github.com/SafetyCulture/safetyculture-exporter-ui
 
 go 1.18
 
