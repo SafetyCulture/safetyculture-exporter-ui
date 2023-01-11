@@ -35,7 +35,7 @@ jobs:
             node-version: ${{ matrix.node-version }}
 
         - name: Install wails
-          run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+          run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.3.1
 
         - name: Build package linux
           if: matrix.os == 'ubuntu-latest'
