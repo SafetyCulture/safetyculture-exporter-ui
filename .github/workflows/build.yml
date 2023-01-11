@@ -17,8 +17,6 @@ jobs:
           os: [ubuntu-latest, macos-latest]
       runs-on: ${{ matrix.os }}
       steps:
-        - name: MICK
-          run: echo ${{ toJSON(github) }}
         - name: Install Go
           uses: actions/setup-go@v2
           with:
