@@ -34,6 +34,10 @@ export function ReadExportStatus() {
   return window['go']['main']['App']['ReadExportStatus']();
 }
 
+export function ReadVersion() {
+  return window['go']['main']['App']['ReadVersion']();
+}
+
 export function ReloadConfig() {
   return window['go']['main']['App']['ReloadConfig']();
 }

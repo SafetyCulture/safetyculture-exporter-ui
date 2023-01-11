@@ -35,7 +35,7 @@ jobs:
             node-version: ${{ matrix.node-version }}
 
         - name: Install wails
-          run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+          run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.3.1
 
         - name: Build package linux
           if: matrix.os == 'ubuntu-latest'
@@ -44,12 +44,12 @@ jobs:
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
-            ./scripts/build-linux.sh
+            VERSION=${{ github.ref_name }} ./scripts/build-linux.sh
 
         - name: Build package macos
           if: matrix.os == 'macos-latest'
           run: |
-            ./scripts/build-macos.sh
+            VERSION=${{ github.ref_name }} ./scripts/build-macos.sh
 
         - name: Build package windows
           if: matrix.os == 'ubuntu-latest'
@@ -58,7 +58,7 @@ jobs:
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
-            ./scripts/build-windows.sh
+            VERSION=${{ github.ref_name }} ./scripts/build-windows.sh
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'

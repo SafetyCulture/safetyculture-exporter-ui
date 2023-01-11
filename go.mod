@@ -1,10 +1,10 @@
-module github.com/SafetyCulture/safetyculture-exporter/ui
+module github.com/SafetyCulture/safetyculture-exporter-ui
 
 go 1.18
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230110031004-b048a5126941
-	github.com/wailsapp/wails/v2 v2.2.0
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230110235939-906f9c6f706d
+	github.com/wailsapp/wails/v2 v2.3.1
 )
 
 require (

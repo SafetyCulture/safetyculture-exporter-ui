@@ -18,6 +18,8 @@ export function Greet(arg1:string):Promise<string>;
 
 export function ReadExportStatus():Promise<api.ExportStatusResponse>;
 
+export function ReadVersion():Promise<string>;
+
 export function ReloadConfig():Promise<void>;
 
 export function SaveSettings(arg1:api.ExporterConfiguration):Promise<void>;

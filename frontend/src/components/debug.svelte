@@ -1,4 +1,8 @@
 <script>
+    import {
+        ReadVersion
+    } from "../../wailsjs/go/main/App.js"
+
     import {push} from "svelte-spa-router";
 
     function gotoWelcome() {
@@ -24,9 +28,16 @@
     function gotoDebug() {
         push("/debug")
     }
+
+    let version = ""
+    ReadVersion().then(v => {
+        version = v
+    })
+
 </script>
 
 <div>
+    <span>{version}</span>&nbsp;
     <button on:click={gotoWelcome}>WELCOME</button>
     <button on:click={gotoConfig}>CONFIG</button>
     <button on:click={gotoTemplates}>TEMPLATES</button>
