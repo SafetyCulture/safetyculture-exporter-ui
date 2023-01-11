@@ -46,6 +46,7 @@ jobs:
             echo ${{ env.GITHUB_HEAD_REF }}
             echo MICK DEBUG 1 ${{ github.ref_name }}
             echo MICK DEBUG 2 ${{ github.ref }}
+            echo MICK DEBUG 3 ${{ .Version }}
             ./scripts/build-linux.sh
 
         - name: Build package macos
