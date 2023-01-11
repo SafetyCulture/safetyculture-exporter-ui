@@ -211,6 +211,10 @@ func (a *App) ReadExportStatus() *exporterAPI.ExportStatusResponse {
 	return a.exporter.GetExportStatus()
 }
 
+func (a *App) ReadVersion() string {
+	return version.GetVersion()
+}
+
 func CreateSettingsDirectory() (string, error) {
 	settingDir, err := GetSettingDirectoryPath()
 	if err != nil {

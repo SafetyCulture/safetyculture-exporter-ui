@@ -17,9 +17,6 @@ jobs:
           os: [ubuntu-latest, macos-latest]
       runs-on: ${{ matrix.os }}
       steps:
-        - name: MICK
-          run: |
-            echo ${{ github.ref_name }}
         - name: Install Go
           uses: actions/setup-go@v2
           with:
@@ -52,7 +49,7 @@ jobs:
         - name: Build package macos
           if: matrix.os == 'macos-latest'
           run: |
-            ./scripts/build-macos.sh
+            VERSION=${{ github.ref_name }} ./scripts/build-macos.sh
 
         - name: Build package windows
           if: matrix.os == 'ubuntu-latest'
@@ -61,7 +58,7 @@ jobs:
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
-            ./scripts/build-windows.sh
+            VERSION=${{ github.ref_name }} ./scripts/build-windows.sh
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
