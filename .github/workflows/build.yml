@@ -44,15 +44,11 @@ jobs:
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
-            echo "MICK DEBUG 1 ${{ github.ref_name }}"
-            echo "MICK DEBUG 2 ${{ github.ref }}"
-            echo "MICK DEBUG 3 ${{ env.Version }}"
             ./scripts/build-linux.sh
 
         - name: Build package macos
           if: matrix.os == 'macos-latest'
           run: |
-            echo ${{ env.VERSION }}
             ./scripts/build-macos.sh
 
         - name: Build package windows
@@ -62,7 +58,6 @@ jobs:
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
-            echo ${{ env.VERSION }}
             ./scripts/build-windows.sh
 
         - name: Upload artifacts macOS
