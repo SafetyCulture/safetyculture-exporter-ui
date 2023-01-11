@@ -12,6 +12,7 @@ import (
 
 	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
 	"github.com/SafetyCulture/safetyculture-exporter/pkg/httpapi"
+	"github.com/SafetyCulture/safetyculture-exporter/ui/internal/version"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -54,19 +55,17 @@ func (a *App) startup(ctx context.Context) {
 		a.cm = cm
 	}
 
-	a.exporter, err = exporterAPI.NewSafetyCultureExporter(a.cm.Configuration, FakeGetVersion())
+	ver := exporterAPI.AppVersion{
+		IntegrationID:      version.GetIntegrationID(),
+		IntegrationVersion: version.GetVersion(),
+	}
+
+	a.exporter, err = exporterAPI.NewSafetyCultureExporter(a.cm.Configuration, &ver)
 	if err != nil {
 		runtime.LogError(ctx, err.Error())
 		panic("failed to load configuration")
 	}
 	a.ctx = ctx
-}
-
-func FakeGetVersion() *exporterAPI.AppVersion {
-	return &exporterAPI.AppVersion{
-		IntegrationID:      "safetyculture-exporter-ui",
-		IntegrationVersion: "0.0.0-dev",
-	}
 }
 
 func (a *App) ReloadConfig() {
@@ -155,7 +154,13 @@ func (a *App) CheckApiKey() bool {
 func (a *App) ValidateApiKey(apiKey string) bool {
 	var apiOpts []httpapi.Opt
 
-	c := httpapi.NewClient(a.cm.Configuration.API.URL, fmt.Sprintf("Bearer %s", apiKey), apiOpts...)
+	cfg := httpapi.ClientCfg{
+		Addr:                a.cm.Configuration.API.URL,
+		AuthorizationHeader: fmt.Sprintf("Bearer %s", apiKey),
+		IntegrationID:       version.GetIntegrationID(),
+		IntegrationVersion:  version.GetVersion(),
+	}
+	c := httpapi.NewClient(&cfg, apiOpts...)
 	res, err := c.WhoAmI(a.ctx)
 
 	if err != nil {

@@ -44,11 +44,13 @@ jobs:
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
+            echo ${{ env.VERSION }}
             ./scripts/build-linux.sh
 
         - name: Build package macos
           if: matrix.os == 'macos-latest'
           run: |
+            echo ${{ env.VERSION }}
             ./scripts/build-macos.sh
 
         - name: Build package windows
@@ -58,6 +60,7 @@ jobs:
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
+            echo ${{ env.VERSION }}
             ./scripts/build-windows.sh
 
         - name: Upload artifacts macOS
