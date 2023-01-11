@@ -19,12 +19,7 @@ jobs:
       steps:
         - name: MICK
           run: |
-            echo ${{ github.github.actor }}
             echo ${{ github.ref_name }}
-            echo ${{ github.ref }}
-            echo ${{ env.Version }}
-            echo ${{ env.TAG_NAME }}
-            echo ${{ github.repository }}
         - name: Install Go
           uses: actions/setup-go@v2
           with:
