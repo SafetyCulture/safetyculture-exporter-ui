@@ -36,8 +36,8 @@
 
 </script>
 
-<div>
-    <span>{version}</span>&nbsp;
+<div style="padding: 5px; background-color: #b25656">
+    <span style="padding: 5px; color: whitesmoke">{version}</span>&nbsp;
     <button on:click={gotoWelcome}>WELCOME</button>
     <button on:click={gotoConfig}>CONFIG</button>
     <button on:click={gotoTemplates}>TEMPLATES</button>
