@@ -22,7 +22,7 @@
     }
 
     function handleSave() {
-        let selectedTemplates = new Array();
+        let selectedTemplates = [];
 
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         for (const checkbox of checkboxes) {
@@ -72,7 +72,7 @@
         <div class="table-body text-gray-2 m-top-8">
         {#each $templateCache as { id, name, modified_at }, i}
             {#if (searchFilter.length > 2 && name.toLowerCase().includes(searchFilter.toLowerCase())) || searchFilter.length <= 2}
-                <div class="table-row flex-spaced p-horiz-8">
+                <div class="table-row flex-spaced p-horiz-8 m-right-8">
                     <div class="nav-left">
                         <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
                         <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
@@ -95,6 +95,11 @@
 
     .table-header > .table-row {
         height: 36px;
+    }
+
+    .table-body {
+        overflow-y: scroll;
+        height:450px;
     }
 
     .table-body > .table-row {
