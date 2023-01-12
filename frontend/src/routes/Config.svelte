@@ -58,13 +58,40 @@
 	const reportFormatItems = [
 		{value: "PDF", label: "PDF"},
 		{value: "WORD", label: "Word"},
+		{value: "BOTH", label: "Both PDF and Word"},
 	];
-	let selectedReportFormat = $shadowConfig["Report"]["Format"];
+	let selectedReportFormat = readReportFormat()
 
 	const timezoneItems = [
 		{value: "UTC", label: "UTC"}
 	];
 	let selectedTimeZone = $shadowConfig["Export"]["TimeZone"]
+
+	function readReportFormat() {
+		if ($shadowConfig["Report"]["Format"] === ["PDF"]) {
+			return "PDF"
+		}
+		if ($shadowConfig["Report"]["Format"] === ["WORD"]) {
+			return "WORD"
+		}
+		if ($shadowConfig["Report"]["Format"].includes("PDF") && $shadowConfig["Report"]["Format"].includes("WORD")) {
+			return "BOTH"
+		}
+		return "PDF"
+	}
+
+	function prepareReportFormatForSave() {
+		switch (selectedReportFormat.value) {
+			case "PDF":
+				return ["PDF"]
+			case "WORD":
+				return ["WORD"]
+			case "BOTH":
+				return ["PDF", "WORD"]
+			default:
+				return ["PDF"]
+		}
+	}
 
 	// DATE PICKER
 	dayjs.extend(utc);
@@ -159,7 +186,7 @@
 			$shadowConfig["Export"]["ModifiedAfter"] = convertDateToString(date, selectedTimeZone.value)
 		}
 
-		$shadowConfig["Report"]["Format"] = selectedReportFormat.map(x => x.value)
+		$shadowConfig["Report"]["Format"] = prepareReportFormatForSave()
 		$shadowConfig["Session"]["ExportType"] = selectedExportFormat.value
 
 		if($shadowConfig !== {}) {
@@ -279,10 +306,9 @@
 			<div class="h3">Export details</div>
 			<div class="label">Data export format</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<Select items={dataExportFormatItems} clearable={false} on:change={handleExportFormatUpdate} bind:value={selectedExportFormat} />
+				<Select items={dataExportFormatItems} clearable={false} showChevron={true} on:change={handleExportFormatUpdate} bind:value={selectedExportFormat} />
 			</div>
-			{#if selectedExportFormat != null && (selectedExportFormat.value === 'mysql'
-					|| selectedExportFormat.value === 'postgres' || selectedExportFormat.value === 'sqlserver')}
+			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat.value)}
 				<div>
 					<div class="label">Database details:</div>
 					<div class="sub-label text-weak">Host Address</div>
@@ -301,7 +327,7 @@
 
 			{#if selectedExportFormat != null && selectedExportFormat.value === 'reports' }
 				<div class="label">Report format</div>
-				<Select items={reportFormatItems} clearable={false} multiple=true bind:value={selectedReportFormat}/>
+				<Select items={reportFormatItems} clearable={false} showChevron={true} bind:value={selectedReportFormat}/>
 			{/if}
 
 			<div class="folder-title">
