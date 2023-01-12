@@ -228,7 +228,6 @@
 			ExportCSV()
 		}
 		push("/exportStatus")
-
 	}
 
 	function handleSaveAndClose() {
