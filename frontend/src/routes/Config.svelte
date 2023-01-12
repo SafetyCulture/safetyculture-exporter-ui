@@ -22,12 +22,14 @@
 		{value: "false", label: "Incomplete only"},
 		{value: "both", label: "Both - completed and incomplete"}
 	];
+	let selectedStatus = $shadowConfig["Export"]["Inspection"]["Completed"]
 
 	const archivedItems = [
 		{value: "true", label: "Archived Only"},
 		{value: "false", label: "Unarchived Only"},
 		{value: "both", label: "Both - archived and unarchived"}
 	];
+	let selectedArchived = $shadowConfig["Export"]["Inspection"]["Archived"]
 
 	const dataExportFormatItems = [
 		{value: "csv", label: "CSV"},
@@ -186,6 +188,8 @@
 			$shadowConfig["Export"]["ModifiedAfter"] = convertDateToString(date, selectedTimeZone.value)
 		}
 
+		$shadowConfig["Export"]["Inspection"]["Completed"] = selectedStatus.value
+		$shadowConfig["Export"]["Inspection"]["Archived"] = selectedArchived.value
 		$shadowConfig["Report"]["Format"] = prepareReportFormatForSave()
 		$shadowConfig["Session"]["ExportType"] = selectedExportFormat.value
 
@@ -290,23 +294,20 @@
 				<DateInput min={minDate} max={new Date()} format="dd-MM-yyyy" bind:value={date} />
 			</div>
 			<div class="label">Include inspections with the following status:</div>
-			<select class="custom-select m-top-8" bind:value={$shadowConfig["Export"]["Inspection"]["Completed"]}>
-				{#each statusItems as item}
-				<option value={item.value}>{item.label}</option>
-				{/each}
-			</select>
+			<div class="border-weak border-round-8 m-top-4">
+				<Select items={statusItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedStatus} />
+			</div>
+
 			<div class="label">Include archived inspections?</div>
-			<select class="custom-select m-top-8" bind:value={$shadowConfig["Export"]["Inspection"]["Archived"]}>
-				{#each archivedItems as item}
-					<option value={item.value}>{item.label}</option>
-				{/each}
-			</select>
+			<div class="border-weak border-round-8 m-top-4">
+				<Select items={archivedItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedArchived}/>
+			</div>
 		</section>
 		<section class="export-details border-round-8">
 			<div class="h3">Export details</div>
 			<div class="label">Data export format</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<Select items={dataExportFormatItems} clearable={false} showChevron={true} on:change={handleExportFormatUpdate} bind:value={selectedExportFormat} />
+				<Select items={dataExportFormatItems} clearable={false} showChevron={true} searchable={false} on:change={handleExportFormatUpdate} --border="0px" bind:value={selectedExportFormat} />
 			</div>
 			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat.value)}
 				<div>
@@ -327,19 +328,23 @@
 
 			{#if selectedExportFormat != null && selectedExportFormat.value === 'reports' }
 				<div class="label">Report format</div>
-				<Select items={reportFormatItems} clearable={false} showChevron={true} bind:value={selectedReportFormat}/>
+				<div class="border-weak border-round-8 m-top-4">
+					<Select items={reportFormatItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedReportFormat}/>
+				</div>
 			{/if}
 
 			<div class="folder-title">
 				<div class="label">Folder location</div>
 			</div>
 
-			<div id="folder" class="button-long selector border-weak border-round-8" on:click={openFolderDialog}>
+			<div id="folder" class="button-long selector border-weak border-round-8" on:click={openFolderDialog} on:keypress={openFolderDialog}>
 				<div class="text-weak" >{$shadowConfig["Export"]["Path"]}</div>
 				<img class="cursor-pointer" src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
 			<div class="label">Export timezone</div>
-			<Select items={timezoneItems} clearable={false} bind:value={selectedTimeZone}/>
+			<div class="border-weak border-round-8 m-top-4">
+				<Select items={timezoneItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedTimeZone}/>
+			</div>
 			<div class="label">Include:</div>
 			<input type="checkbox" id="media" name="media" bind:checked={$shadowConfig["Export"]["Media"]}>
 			<label class="text-size-medium" for="media">Media</label>
@@ -348,12 +353,6 @@
 </div>
 
 <style>
-	body {
-		-ms-overflow-style: none; /* for Internet Explorer, Edge */
-		scrollbar-width: none; /* for Firefox */
-		overflow-y: hidden;
-	}
-
 	.config-body {
 		display: flex;
 		justify-content: space-between;
@@ -366,33 +365,6 @@
 	.template-button-right {
 		display: flex;
 		align-items: center;
-	}
-
-	select.custom-select {
-		cursor: pointer;
-
-		/* styling */
-		background-color: #FFFFFF;
-		/*background-image: url("../images/arrow-down-compact.png");*/
-		background-position: right 16px center;
-		background-repeat: no-repeat;
-		background-size: 8px;
-		border: 1px solid #BFC5D4;
-		border-radius: 8px;
-		display: inline-block;
-		font: inherit;
-		line-height: 1.5em;
-		padding: 0.5em 3.5em 0.5em 1em;
-
-		/* reset */
-		width: 100%;
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
-		box-sizing: border-box;
-		-webkit-appearance: none;
-		-moz-appearance: none;
-		appearance: none;
-		outline: 0;
 	}
 
 	.export-details {
