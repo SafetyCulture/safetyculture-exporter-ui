@@ -1,15 +1,22 @@
 <script>
     import './common.css';
+    import dayjs from 'dayjs';
     import {shadowConfig, templateCache} from "../lib/store.js";
     import {GetTemplates} from "../../wailsjs/go/main/App.js"
     import {push} from "svelte-spa-router";
     import {trim} from "../lib/utils.js";
 
     let searchFilter = ""
-
     if (Array.isArray($templateCache) && $templateCache.length === 0) {
         GetTemplates().then((result) => {
-            templateCache.set(result)
+            let niceFormat = result.map(elem => {
+                return {
+                    id: elem.id,
+                    name: elem.name,
+                    modified_at: dayjs(elem.modified_at).format('DD-MMM-YYYY')
+                }
+            })
+            templateCache.set(niceFormat)
         })
     }
 
