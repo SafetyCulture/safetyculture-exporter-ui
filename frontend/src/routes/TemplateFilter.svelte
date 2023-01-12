@@ -21,8 +21,8 @@
         }
     }
 
-    function handleSave() {
-        let selectedTemplates = new Array();
+    function handleDone() {
+        let selectedTemplates = [];
 
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         for (const checkbox of checkboxes) {
@@ -31,7 +31,12 @@
             }
         }
 
-        $shadowConfig["Export"]["TemplateIds"] = selectedTemplates
+        if ($templateCache.length === selectedTemplates.length) {
+            $shadowConfig["Export"]["TemplateIds"] = []
+        } else {
+            $shadowConfig["Export"]["TemplateIds"] = selectedTemplates
+        }
+
         push("/config")
     }
 
@@ -43,7 +48,7 @@
             <div class="h1">Export Configuration</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12" on:click={handleSave}>Done</button>
+            <button class="button button-white border-round-12" on:click={handleDone}>Done</button>
         </div>
     </section>
 
