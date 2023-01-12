@@ -53,8 +53,8 @@
         }
     }
 
-    function handleSave() {
-        let selectedTables = new Array();
+    function handleDone() {
+        let selectedTables = [];
 
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         for (const checkbox of checkboxes) {
@@ -63,15 +63,21 @@
             }
         }
 
-        shadowConfig.update(store => {
-            return {
-                ...store,
-                Export: {
-                    ...store.Export,
-                    Tables: selectedTables
-                }
+        let maxData = 0
+        data.forEach(function (e) {
+            if (e.left !== null) {
+                maxData++
             }
-        })
+            if (e.right !== null) {
+                maxData++
+            }
+        });
+
+        if (selectedTables.length === maxData) {
+            $shadowConfig["Export"]["Tables"] = []
+        } else {
+            $shadowConfig["Export"]["Tables"] = selectedTables
+        }
 
         push("/config")
     }
@@ -83,7 +89,7 @@
             <div class="h1">Feed Export</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12" on:click={handleSave}>Done</button>
+            <button class="button button-white border-round-12" on:click={handleDone}>Done</button>
         </div>
     </section>
 
