@@ -7,6 +7,8 @@
     import {trim} from "../lib/utils.js";
 
     let searchFilter = ""
+    let isChecked = false;
+
     if (Array.isArray($templateCache) && $templateCache.length === 0) {
         GetTemplates().then((result) => {
             let niceFormat = result.map(elem => {
@@ -17,14 +19,15 @@
                 }
             })
             templateCache.set(niceFormat)
+            checkAllSelected()
         })
     }
 
-
-    let isChecked = false;
-    if($shadowConfig["Export"]["TemplateIds"].length === 0) {
-        $shadowConfig["Export"]["TemplateIds"] = $templateCache.map(e => e.id)
-        isChecked = true;
+    function checkAllSelected() {
+        if($shadowConfig["Export"]["TemplateIds"].length === 0) {
+            $shadowConfig["Export"]["TemplateIds"] = $templateCache.map(e => e.id)
+            isChecked = true;
+        }
     }
 
     function toggleBodyCheckboxes() {
@@ -54,6 +57,8 @@
         push("/config")
     }
 
+    // will select all templates
+    checkAllSelected()
 </script>
 
 <div class="template-filter-page p-48">

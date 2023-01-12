@@ -112,10 +112,11 @@
 	}
 
 	function generateTableName() {
-		if ($shadowConfig["Export"]["Tables"].length === 0) {
-			return "All tables selected"
-		} else {
-			return $shadowConfig["Export"]["Tables"].length + " tables selected"
+		let num = $shadowConfig["Export"]["Tables"].length
+		switch (num) {
+			case 0: return "All tables selected"
+			case 1: return "1 table selected"
+			default: return num + " tables selected"
 		}
 	}
 
