@@ -294,15 +294,20 @@
 				<DateInput min={minDate} max={new Date()} format="dd-MM-yyyy" bind:value={date} />
 			</div>
 			<div class="label">Include inspections with the following status:</div>
-			<Select items={statusItems} clearable={false} showChevron={true} searchable={false} bind:value={selectedStatus}/>
+			<div class="border-weak border-round-8 m-top-4">
+				<Select items={statusItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedStatus} />
+			</div>
+
 			<div class="label">Include archived inspections?</div>
-			<Select items={archivedItems} clearable={false} showChevron={true} searchable={false} bind:value={selectedArchived}/>
+			<div class="border-weak border-round-8 m-top-4">
+				<Select items={archivedItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedArchived}/>
+			</div>
 		</section>
 		<section class="export-details border-round-8">
 			<div class="h3">Export details</div>
 			<div class="label">Data export format</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<Select items={dataExportFormatItems} clearable={false} showChevron={true} searchable={false} on:change={handleExportFormatUpdate} bind:value={selectedExportFormat} />
+				<Select items={dataExportFormatItems} clearable={false} showChevron={true} searchable={false} on:change={handleExportFormatUpdate} --border="0px" bind:value={selectedExportFormat} />
 			</div>
 			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat.value)}
 				<div>
@@ -323,7 +328,9 @@
 
 			{#if selectedExportFormat != null && selectedExportFormat.value === 'reports' }
 				<div class="label">Report format</div>
-				<Select items={reportFormatItems} clearable={false} showChevron={true} searchable={false} bind:value={selectedReportFormat}/>
+				<div class="border-weak border-round-8 m-top-4">
+					<Select items={reportFormatItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedReportFormat}/>
+				</div>
 			{/if}
 
 			<div class="folder-title">
@@ -335,7 +342,9 @@
 				<img class="cursor-pointer" src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
 			<div class="label">Export timezone</div>
-			<Select items={timezoneItems} clearable={false} showChevron={true} searchable={false} bind:value={selectedTimeZone}/>
+			<div class="border-weak border-round-8 m-top-4">
+				<Select items={timezoneItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedTimeZone}/>
+			</div>
 			<div class="label">Include:</div>
 			<input type="checkbox" id="media" name="media" bind:checked={$shadowConfig["Export"]["Media"]}>
 			<label class="text-size-medium" for="media">Media</label>
