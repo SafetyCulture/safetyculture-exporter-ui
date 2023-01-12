@@ -20,25 +20,37 @@
         })
     }
 
+
     let isChecked = false;
+    if($shadowConfig["Export"]["TemplateIds"].length === 0) {
+        $shadowConfig["Export"]["TemplateIds"] = $templateCache.map(e => e.id)
+        isChecked = true;
+    }
+
     function toggleBodyCheckboxes() {
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
+        console.log(checkboxes)
         for (const checkbox of checkboxes) {
             checkbox.checked = !isChecked;
         }
     }
 
-    function handleSave() {
+    function handleDone() {
+        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         let selectedTemplates = [];
 
-        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         for (const checkbox of checkboxes) {
             if (checkbox.checked) {
                 selectedTemplates.push(checkbox.__value)
             }
         }
 
-        $shadowConfig["Export"]["TemplateIds"] = selectedTemplates
+        if ($templateCache.length === selectedTemplates.length) {
+            $shadowConfig["Export"]["TemplateIds"] = []
+        } else {
+            $shadowConfig["Export"]["TemplateIds"] = selectedTemplates
+        }
+
         push("/config")
     }
 
@@ -50,7 +62,7 @@
             <div class="h1">Export Configuration</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12" on:click={handleSave}>Done</button>
+            <button class="button button-white border-round-12" on:click={handleDone}>Done</button>
         </div>
     </section>
 
