@@ -20,18 +20,25 @@
         })
     }
 
+
     let isChecked = false;
+    if($shadowConfig["Export"]["TemplateIds"].length === 0) {
+        $shadowConfig["Export"]["TemplateIds"] = $templateCache.map(e => e.id)
+        isChecked = true;
+    }
+
     function toggleBodyCheckboxes() {
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
+        console.log(checkboxes)
         for (const checkbox of checkboxes) {
             checkbox.checked = !isChecked;
         }
     }
 
     function handleDone() {
+        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         let selectedTemplates = [];
 
-        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         for (const checkbox of checkboxes) {
             if (checkbox.checked) {
                 selectedTemplates.push(checkbox.__value)

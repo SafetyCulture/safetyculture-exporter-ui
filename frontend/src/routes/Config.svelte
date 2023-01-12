@@ -103,10 +103,11 @@
 
 
 	function generateTemplateName() {
-		if ($shadowConfig["Export"]["TemplateIds"].length === 0) {
-			return "All templates selected"
-		} else {
-			return $shadowConfig["Export"]["TemplateIds"].length + " templates selected"
+		let num = $shadowConfig["Export"]["TemplateIds"].length
+		switch (num) {
+			case 0: return "All templates selected"
+			case 1: return "1 template selected"
+			default: return num + " templates selected"
 		}
 	}
 
