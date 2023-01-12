@@ -46,6 +46,20 @@
     }
 
     let isChecked = false;
+    if($shadowConfig["Export"]["Tables"].length === 0) {
+        let all = []
+        data.forEach(function (e) {
+            if (e.left !== null) {
+                all.push(e.left.id)
+            }
+            if (e.right !== null) {
+                all.push(e.right.id)
+            }
+        });
+        $shadowConfig["Export"]["Tables"] = all
+        isChecked = true;
+    }
+
     function toggleBodyCheckboxes() {
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         for (const checkbox of checkboxes) {
