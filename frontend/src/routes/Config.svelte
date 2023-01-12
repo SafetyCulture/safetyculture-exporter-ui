@@ -98,9 +98,8 @@
 	// DATE PICKER
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
-	let date = convertStringToDate($shadowConfig["Export"]["ModifiedAfter"], selectedTimeZone);
 	const minDate = dayjs().add(-1, 'year').toDate()
-
+	let date = convertStringToDate($shadowConfig["Export"]["ModifiedAfter"], selectedTimeZone);
 
 	function generateTemplateName() {
 		let num = $shadowConfig["Export"]["TemplateIds"].length
@@ -213,6 +212,11 @@
 			return minDate
 		}
 
+		let obj = dayjs(input).tz(tz).toDate()
+		if (obj.getFullYear() < minDate.getFullYear()) {
+			return minDate
+		}
+
 		return dayjs(input).tz(tz).toDate()
 	}
 
@@ -291,7 +295,7 @@
 					<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
 				</div>
 			</div>
-			<div class="label">Date range From</div>
+			<div class="label">Date range from</div>
 			<div class="m-top-8">
 				<DateInput min={minDate} max={new Date()} format="dd-MM-yyyy" bind:value={date} />
 			</div>
