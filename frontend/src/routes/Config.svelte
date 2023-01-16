@@ -16,6 +16,7 @@
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
+	import FormTextInput from "../components/FormTextInput.svelte";
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},
@@ -54,11 +55,11 @@
 		mysql: MYSQL_DIALECT,
 	};
 
-	let dbHost = '', dbHostPlaceholder = 'e.g. localhost', dbHostShowError = false
-	let dbPort='', dbPortPlaceholder = 'e.g. ' + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false
-	let dbUser='', dbUserPlaceholder = 'e.g. john', dbUserShowError = false
-	let dbPassword='', dbPasswordPlaceholder = 'e.q. mySup3rS3cr3t', dbPasswordShowError = false
-	let dbName='', dbNamePlaceholder = 'e.g. safetyculture', dbNameShowError = false
+	let dbHost = '', dbHostShowError = false
+	let dbPort='', dbPortPlaceholder = "e.g. " + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false
+	let dbUser='', dbUserShowError = false
+	let dbPassword='', dbPasswordShowError = false
+	let dbName='', dbNameShowError = false
 	let formError = false
 
 	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
@@ -257,47 +258,37 @@
 			case 'sqlserver':
 				if (dbHost.trim() === '') {
 					dbHostShowError = true
-					dbHostPlaceholder = 'invalid host address'
 					hasError = true
 				} else {
 					dbHostShowError = false
-					dbHostPlaceholder = 'e.g. localhost'
 				}
 
 				if (dbPort.trim() === '' || isValidPortNumber(dbPort) === false) {
 					dbPortShowError = true
-					dbPortPlaceholder = 'invalid port'
 					hasError = true
 				} else {
 					dbPortShowError = false
-					dbPortPlaceholder = 'e.g. ' + getDefaultSQLPort($shadowConfig['Db']['Dialect'])
 				}
 
 				if (dbUser.trim() === '') {
 					dbUserShowError = true
-					dbUserPlaceholder = 'invalid username'
 					hasError = true
 				} else {
 					dbUserShowError = false
-					dbUserPlaceholder = 'e.g. john'
 				}
 
 				if (dbPassword.trim() === '') {
 					dbPasswordShowError = true
-					dbPasswordPlaceholder = 'invalid password'
 					hasError = true
 				} else {
 					dbPasswordShowError = false
-					dbPasswordPlaceholder = 'e.q. mySup3rS3cr3t'
 				}
 
 				if (dbName.trim() === '') {
 					dbNameShowError = true
-					dbNamePlaceholder = 'invalid database name'
 					hasError = true
 				} else {
 					dbNameShowError = false
-					dbNamePlaceholder = 'e.q. safetyculture'
 				}
 				break
 			case 'reports':
@@ -411,16 +402,11 @@
 			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat.value)}
 				<div>
 					<div class="label">Database details:</div>
-					<div class="sub-label text-weak">Host Address</div>
-					<input class="input" class:input-error={dbHostShowError} type="text" placeholder={dbHostPlaceholder} bind:value={dbHost}>
-					<div class="sub-label text-weak">Host Port</div>
-					<input class="input" class:input-error={dbPortShowError} type="text" placeholder={dbPortPlaceholder} bind:value={dbPort}>
-					<div class="sub-label text-weak">Username</div>
-					<input class="input" class:input-error={dbUserShowError} type="text" placeholder={dbUserPlaceholder} bind:value={dbUser}>
-					<div class="sub-label text-weak">Password</div>
-					<input class="input" class:input-error={dbPasswordShowError} type="password" placeholder={dbPasswordPlaceholder} bind:value={dbPassword}>
-					<div class="sub-label text-weak">Database name</div>
-					<input class="input" class:input-error={dbNameShowError} type="text" placeholder={dbNamePlaceholder} bind:value={dbName}>
+					<FormTextInput label="Host Address" placeholder="e.g. localhost" error={dbHostShowError} bind:value={dbHost}/>
+					<FormTextInput label="Host Port" placeholder={dbPortPlaceholder} error={dbPortShowError} bind:value={dbPort}/>
+					<FormTextInput label="Username" placeholder="e.g. john" error={dbUserShowError} bind:value={dbUser}/>
+					<FormTextInput label="Password" placeholder="e.q. mySup3rS3cr3t" error={dbPasswordShowError} bind:value={dbPassword}/>
+					<FormTextInput label="Database Name" placeholder="e.g. safetyculture" error={dbNameShowError} bind:value={dbName}/>
 					<hr>
 				</div>
 			{/if}
