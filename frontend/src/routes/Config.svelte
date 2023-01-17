@@ -6,17 +6,20 @@
 	import Select from 'svelte-select';
 	import { DateInput } from 'date-picker-svelte'
 	import {
-		SaveSettings,
-		SelectDirectory,
-		GetUserHomeDirectory,
-		ReadExportStatus,
-		ExportCSV,
-		ReloadConfig, ExportSQL
+		SaveSettings, SelectDirectory,
+		GetUserHomeDirectory, ReadExportStatus,
+		ExportCSV,ExportSQL,
+		ReloadConfig, ReadBuild
 	} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
 	import FormTextInput from "../components/FormTextInput.svelte";
+
+	let build = ""
+	ReadBuild().then(it => {
+		build = it
+	})
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},
@@ -427,14 +430,15 @@
 				</div>
 			{/if}
 
-			<div class="folder-title">
-				<div class="label">Folder location</div>
-			</div>
-
+			<div class="label">Folder location</div>
 			<div id="folder" class="button-long selector border-weak border-round-8" on:click={openFolderDialog} on:keypress={openFolderDialog}>
 				<div class="text-weak" >{$shadowConfig["Export"]["Path"]}</div>
 				<img class="cursor-pointer" src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
+			{#if build === 'windows'}
+				<div class="sub-label m-top-4">To change folder location, move the executable there</div>
+			{/if}
+
 			<div class="label">Export timezone</div>
 			<div class="border-weak border-round-8 m-top-4">
 				<Select items={timezoneItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedTimeZone}/>
