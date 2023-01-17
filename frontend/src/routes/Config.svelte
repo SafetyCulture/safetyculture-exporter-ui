@@ -15,6 +15,7 @@
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
 	import FormTextInput from "../components/FormTextInput.svelte";
+	import Button from "../components/Button.svelte";
 
 	let build = ""
 	ReadBuild().then(it => {
@@ -367,8 +368,8 @@
 			<div class="h1 p-left-8">Export Configuration</div>
 		</div>
 		<div class="nav-right">
-			<button class="button button-white border-round-12" on:click={handleSaveAndClose} on:keypress={handleSaveAndClose}>Save and Close</button>
-			<button class="button button-purple m-left-8 border-round-12" class:button-error={formError} on:click={handleSaveAndExport}>Save and Export</button>
+			<Button label="Save and Close" type="active2" onClick={handleSaveAndClose}/>
+			<Button label="Save and Export" type="active" clazz="m-left-8" error={formError} onClick={handleSaveAndExport}/>
 		</div>
 	</section>
 	<div class="config-body m-top-8">
@@ -453,11 +454,6 @@
 </div>
 
 <style>
-
-	.button-error {
-		background-color: #9b3d41;
-	}
-
 	.config-body {
 		display: flex;
 		justify-content: space-between;
@@ -478,12 +474,6 @@
 		background-color: #E9EEF6;
 		padding: 16px;
 		overflow-y: auto;
-	}
-
-	.folder-title {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
 	}
 
 	.cursor-pointer {

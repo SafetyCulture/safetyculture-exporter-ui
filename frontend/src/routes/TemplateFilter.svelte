@@ -32,7 +32,6 @@
 
     function toggleBodyCheckboxes() {
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
-        console.log(checkboxes)
         for (const checkbox of checkboxes) {
             checkbox.checked = !isChecked;
         }
