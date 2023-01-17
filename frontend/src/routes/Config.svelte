@@ -306,13 +306,22 @@
 		if (formError === true) {
 			return
 		}
-		// saveConfiguration()
-		// if (selectedExportFormat != null && selectedExportFormat.value === 'sql') {
-		// 	ExportSQL()
-		// } else {
-		// 	ExportCSV()
-		// }
-		// push("/exportStatus")
+		saveConfiguration()
+		switch (selectedExportFormat.value) {
+			case 'csv':
+				ExportCSV()
+				push("/exportStatus")
+				break
+			case 'mysql':
+			case 'postgres':
+			case 'sqlserver':
+				ExportSQL()
+				push("/exportStatus")
+				break
+			case 'reports':
+				console.debug('NOT SUPPORTED')
+				break
+		}
 	}
 
 	function handleSaveAndClose() {
