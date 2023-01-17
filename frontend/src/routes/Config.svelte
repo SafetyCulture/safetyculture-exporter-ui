@@ -16,6 +16,7 @@
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
+	import FormTextInput from "../components/FormTextInput.svelte";
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},
@@ -54,7 +55,13 @@
 		mysql: MYSQL_DIALECT,
 	};
 
-	let dbHost='', dbPort, dbUser='', dbPassword='', dbName='';
+	let dbHost = '', dbHostShowError = false
+	let dbPort='', dbPortPlaceholder = "e.g. " + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false
+	let dbUser='', dbUserShowError = false
+	let dbPassword='', dbPasswordShowError = false
+	let dbName='', dbNameShowError = false
+	let formError = false
+
 	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
 
 	const reportFormatItems = [
@@ -121,6 +128,9 @@
 
 	function handleExportFormatUpdate(event) {
 		selectedExportFormat = event.detail.value;
+		if (['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)) {
+			dbPortPlaceholder = "e.g. " + getDefaultSQLPort(selectedExportFormat)
+		}
 	}
 
 	function setConnString() {
@@ -220,14 +230,98 @@
 		return dayjs(input).tz(tz).toDate()
 	}
 
-	function handleSaveAndExport() {
-		saveConfiguration()
-		if (selectedExportFormat != null && selectedExportFormat.value === 'sql') {
-			ExportSQL()
-		} else {
-			ExportCSV()
+	function getDefaultSQLPort(flavour) {
+		switch (flavour) {
+			case 'mysql':
+				return '3306'
+			case 'postgres':
+				return '5432'
+			case 'sqlserver':
+				return '1433'
+			default:
+				return '1234'
 		}
-		push("/exportStatus")
+	}
+
+	function isValidPortNumber(input) {
+		return Number.isFinite(+input) && input >= 1 && input <= 65535
+	}
+
+	function validateExport() {
+		let hasError = false
+
+		switch (selectedExportFormat.value) {
+			case 'csv':
+				break
+			case 'mysql':
+			case 'postgres':
+			case 'sqlserver':
+				if (dbHost.trim() === '') {
+					dbHostShowError = true
+					hasError = true
+				} else {
+					dbHostShowError = false
+				}
+
+				if (dbPort.trim() === '' || isValidPortNumber(dbPort) === false) {
+					dbPortShowError = true
+					hasError = true
+				} else {
+					dbPortShowError = false
+				}
+
+				if (dbUser.trim() === '') {
+					dbUserShowError = true
+					hasError = true
+				} else {
+					dbUserShowError = false
+				}
+
+				if (dbPassword.trim() === '') {
+					dbPasswordShowError = true
+					hasError = true
+				} else {
+					dbPasswordShowError = false
+				}
+
+				if (dbName.trim() === '') {
+					dbNameShowError = true
+					hasError = true
+				} else {
+					dbNameShowError = false
+				}
+				break
+			case 'reports':
+				break
+			default:
+				hasError = true
+				break
+		}
+
+		return hasError
+	}
+
+	function handleSaveAndExport() {
+		formError = validateExport()
+		if (formError === true) {
+			return
+		}
+		saveConfiguration()
+		switch (selectedExportFormat.value) {
+			case 'csv':
+				ExportCSV()
+				push("/exportStatus")
+				break
+			case 'mysql':
+			case 'postgres':
+			case 'sqlserver':
+				ExportSQL()
+				push("/exportStatus")
+				break
+			case 'reports':
+				console.debug('NOT SUPPORTED')
+				break
+		}
 	}
 
 	function handleSaveAndClose() {
@@ -271,7 +365,7 @@
 		</div>
 		<div class="nav-right">
 			<button class="button button-white border-round-12" on:click={handleSaveAndClose} on:keypress={handleSaveAndClose}>Save and Close</button>
-			<button class="button button-purple m-left-8 border-round-12" on:click={handleSaveAndExport}>Save and Export</button>
+			<button class="button button-purple m-left-8 border-round-12" class:button-error={formError} on:click={handleSaveAndExport}>Save and Export</button>
 		</div>
 	</section>
 	<div class="config-body m-top-8">
@@ -317,16 +411,11 @@
 			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat.value)}
 				<div>
 					<div class="label">Database details:</div>
-					<div class="sub-label text-weak">Host Address</div>
-					<input class="input" type="text" bind:value={dbHost}>
-					<div class="sub-label text-weak">Host Port</div>
-					<input class="input" type="text" bind:value={dbPort}>
-					<div class="sub-label text-weak">Username</div>
-					<input class="input" type="text" bind:value={dbUser}>
-					<div class="sub-label text-weak">Password</div>
-					<input class="input" type="password" bind:value={dbPassword}>
-					<div class="sub-label text-weak">Name</div>
-					<input class="input" type="text" bind:value={dbName}>
+					<FormTextInput label="Host Address" placeholder="e.g. localhost" error={dbHostShowError} bind:value={dbHost}/>
+					<FormTextInput label="Host Port" placeholder={dbPortPlaceholder} error={dbPortShowError} bind:value={dbPort}/>
+					<FormTextInput label="Username" placeholder="e.g. john" error={dbUserShowError} bind:value={dbUser}/>
+					<FormTextInput label="Password" placeholder="e.q. mySup3rS3cr3t" error={dbPasswordShowError} bind:value={dbPassword}/>
+					<FormTextInput label="Database Name" placeholder="e.g. safetyculture" error={dbNameShowError} bind:value={dbName}/>
 					<hr>
 				</div>
 			{/if}
@@ -355,9 +444,16 @@
 			<label class="text-size-medium" for="media">Media</label>
 		</section>
 	</div>
+
+
 </div>
 
 <style>
+
+	.button-error {
+		background-color: #9b3d41;
+	}
+
 	.config-body {
 		display: flex;
 		justify-content: space-between;

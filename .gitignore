@@ -31,3 +31,4 @@ perf.md
 /build/
 /frontend/dist/
 /frontend/node_modules/
+/export
