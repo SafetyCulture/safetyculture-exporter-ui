@@ -215,6 +215,10 @@ func (a *App) ReadVersion() string {
 	return version.GetVersion()
 }
 
+func (a *App) ReadBuild() string {
+	return osRuntime.GOOS
+}
+
 func CreateSettingsDirectory() (string, error) {
 	settingDir, err := GetSettingDirectoryPath()
 	if err != nil {
