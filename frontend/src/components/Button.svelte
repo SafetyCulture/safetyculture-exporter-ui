@@ -3,20 +3,16 @@
     export let onClick
     export let clazz = '';
     export let error = false
-    export let type = 'purple'
-
-    let computedClass = ''
-    switch (type) {
-        case 'active':
-            computedClass = 'button-purple'
-            break
-        case 'active2':
-            computedClass = 'button-white'
-            break
-    }
+    export let type = 'active'
 </script>
 
-<button class="button {computedClass} {clazz}" class:button-error={error} on:click={onClick}>{label}</button>
+
+<button class="button {clazz}"
+        class:button-error={error}
+        class:button-purple={type === 'active'}
+        class:button-white={type === 'active2'}
+        on:click={onClick}
+>{label}</button>
 
 <style>
     .button {
