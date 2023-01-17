@@ -48,15 +48,8 @@
 
 			{#if displayBadApiKeyErr}
 				<div class="error-block">
-					<div class="error-block-title">
-						Oops! We couldn't verify your token.
-					</div>
-					<div class="error-block-body">
-						Here's our diagnosis:
-						<ul>
-							<li>Your token might be expired. It expires after 30 days of not being used.</li>
-						</ul>
-					</div>
+					<div class="error-block-title">Unable to verify token</div>
+					<div class="error-block-body">It looks like your token may be expired after 30 days of inactivity. Please generate a new token and try again.</div>
 				</div>
 			{/if}
 

@@ -73,7 +73,7 @@
 
     <section class="top-nav m-top-16">
         <div class="nav-left">
-            <div class="h2">Choose a template</div>
+            <div class="h2">Select templates</div>
         </div>
         <div class="nav-right">
             <input class="input search" placeholder="Search" bind:value={searchFilter}/>

@@ -368,8 +368,8 @@
 			<div class="h1 p-left-8">Export Configuration</div>
 		</div>
 		<div class="nav-right">
-			<Button label="Save and Close" type="active2" onClick={handleSaveAndClose}/>
-			<Button label="Save and Export" type="active" clazz="m-left-8" error={formError} onClick={handleSaveAndExport}/>
+			<Button label="Save and close" type="active2" onClick={handleSaveAndClose}/>
+			<Button label="Save and export" type="active" clazz="m-left-8" error={formError} onClick={handleSaveAndExport}/>
 		</div>
 	</section>
 	<div class="config-body m-top-8">
@@ -396,12 +396,12 @@
 			<div class="m-top-8">
 				<DateInput min={minDate} max={new Date()} format="dd-MM-yyyy" bind:value={date} />
 			</div>
-			<div class="label">Include inspections with the following status:</div>
+			<div class="label">Include completed or incomplete inspections</div>
 			<div class="border-weak border-round-8 m-top-4">
 				<Select items={statusItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedStatus} />
 			</div>
 
-			<div class="label">Include archived inspections?</div>
+			<div class="label">Include active or archived inspections</div>
 			<div class="border-weak border-round-8 m-top-4">
 				<Select items={archivedItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedArchived}/>
 			</div>
@@ -415,11 +415,11 @@
 			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat.value)}
 				<div>
 					<div class="label">Database details:</div>
-					<FormTextInput label="Host Address" placeholder="e.g. localhost" error={dbHostShowError} bind:value={dbHost}/>
-					<FormTextInput label="Host Port" placeholder={dbPortPlaceholder} error={dbPortShowError} bind:value={dbPort}/>
+					<FormTextInput label="Host address" placeholder="e.g. localhost" error={dbHostShowError} bind:value={dbHost}/>
+					<FormTextInput label="Host port" placeholder={dbPortPlaceholder} error={dbPortShowError} bind:value={dbPort}/>
 					<FormTextInput label="Username" placeholder="e.g. john" error={dbUserShowError} bind:value={dbUser}/>
 					<FormTextInput label="Password" placeholder="e.q. mySup3rS3cr3t" error={dbPasswordShowError} bind:value={dbPassword}/>
-					<FormTextInput label="Database Name" placeholder="e.g. safetyculture" error={dbNameShowError} bind:value={dbName}/>
+					<FormTextInput label="Database name" placeholder="e.g. safetyculture" error={dbNameShowError} bind:value={dbName}/>
 					<hr>
 				</div>
 			{/if}
