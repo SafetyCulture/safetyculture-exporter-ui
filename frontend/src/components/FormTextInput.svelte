@@ -15,7 +15,20 @@
 
 <style>
     .input-error {
-        border-color: #a02228!important;
+        border-color: #9b3d41!important;
+    }
+
+    .input-error::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: #9b3d41;
+        opacity: 1; /* Firefox */
+    }
+
+    .input-error:-ms-input-placeholder { /* Internet Explorer 10-11 */
+        color: #9b3d41;
+    }
+
+    .input-error::-ms-input-placeholder { /* Microsoft Edge */
+        color: #9b3d41;
     }
 
     .form-label {

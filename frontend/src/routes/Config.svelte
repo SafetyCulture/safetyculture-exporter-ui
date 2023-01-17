@@ -129,7 +129,7 @@
 	function handleExportFormatUpdate(event) {
 		selectedExportFormat = event.detail.value;
 		if (['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)) {
-			dbPortPlaceholder = getDefaultSQLPort(selectedExportFormat)
+			dbPortPlaceholder = "e.g. " + getDefaultSQLPort(selectedExportFormat)
 		}
 	}
 
@@ -450,12 +450,8 @@
 
 <style>
 
-	.input-error {
-		border-color: #a02228;
-	}
-
 	.button-error {
-		background-color: #a02228;
+		background-color: #9b3d41;
 	}
 
 	.config-body {
