@@ -5,6 +5,7 @@
     import {GetTemplates} from "../../wailsjs/go/main/App.js"
     import {push} from "svelte-spa-router";
     import {trim} from "../lib/utils.js";
+    import Button from "../components/Button.svelte";
 
     let searchFilter = ""
     let isChecked = false;
@@ -66,7 +67,7 @@
             <div class="h1">Export Configuration</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12" on:click={handleDone}>Done</button>
+            <Button label="Done" type="active2" onClick={handleDone}/>
         </div>
     </section>
 
