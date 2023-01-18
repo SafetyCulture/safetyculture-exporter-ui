@@ -348,6 +348,9 @@
 	}
 
 	function openFolderDialog() {
+		if (build === 'windows') {
+			return
+		}
 		SelectDirectory($shadowConfig["Export"]["Path"]).then(result => {
 			if (result !== "") {
 				$shadowConfig["Export"]["Path"] = result
@@ -434,10 +437,10 @@
 			<div class="label">Folder location</div>
 			<div id="folder" class="button-long selector border-weak border-round-8" on:click={openFolderDialog} on:keypress={openFolderDialog}>
 				<div class="text-weak" >{$shadowConfig["Export"]["Path"]}</div>
-				<img class="cursor-pointer" src="../images/folder.png" alt="folder icon" width="15" height="15">
+				<img class="{build === 'windows' ? '' : 'cursor-pointer'}" src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
 			{#if build === 'windows'}
-				<div class="sub-label m-top-4">To change folder location, move the executable there</div>
+				<div class="sub-label m-top-4">To change folder location on Windows, move the executable to the new export folder</div>
 			{/if}
 
 			<div class="label">Export timezone</div>
