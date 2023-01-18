@@ -5,10 +5,14 @@
     import {shadowConfig} from "../lib/store.js";
     import {onMount} from "svelte";
     import {EventsOn} from "../../wailsjs/runtime/runtime.js";
+    import {allTables} from "../lib/utils.js";
 
     let feedsToExport = []
     if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
         feedsToExport = $shadowConfig["Export"]["Tables"]
+    }
+    if (feedsToExport === []) {
+        feedsToExport = allTables
     }
 
     let exportCompleted = false

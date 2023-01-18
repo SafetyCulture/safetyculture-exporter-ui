@@ -4,6 +4,7 @@
     import {push} from "svelte-spa-router";
     import Button from "../components/Button.svelte";
 
+
     let data = [
         {
             "left": { "id": "inspections", "name": "Inspections" },
