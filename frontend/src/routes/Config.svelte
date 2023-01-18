@@ -440,7 +440,7 @@
 				<img class="{build === 'windows' ? '' : 'cursor-pointer'}" src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
 			{#if build === 'windows'}
-				<div class="sub-label m-top-4">To change folder location, move the executable there</div>
+				<div class="sub-label m-top-4">To change folder location on Windows, move the executable to the new export folder</div>
 			{/if}
 
 			<div class="label">Export timezone</div>
