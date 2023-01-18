@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
-	"github.com/SafetyCulture/safetyculture-exporter/pkg/httpapi"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,6 +11,11 @@ import (
 	osRuntime "runtime"
 	"strconv"
 	"strings"
+
+	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/version"
+	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
+	"github.com/SafetyCulture/safetyculture-exporter/pkg/httpapi"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"time"
 )
 
@@ -56,7 +58,12 @@ func (a *App) startup(ctx context.Context) {
 		a.cm = cm
 	}
 
-	a.exporter, err = exporterAPI.NewSafetyCultureExporterInferredApiClient(a.cm.Configuration)
+	ver := exporterAPI.AppVersion{
+		IntegrationID:      version.GetIntegrationID(),
+		IntegrationVersion: version.GetVersion(),
+	}
+
+	a.exporter, err = exporterAPI.NewSafetyCultureExporter(a.cm.Configuration, &ver)
 	if err != nil {
 		runtime.LogError(ctx, err.Error())
 		panic("failed to load configuration")
@@ -78,7 +85,6 @@ func (a *App) ReloadConfig() {
 		panic("failed to load configuration")
 	}
 	a.cm = cm
-	a.exporter, err = exporterAPI.RefreshConfiguration(a.cm.Configuration, a.exporter)
 }
 
 func checkForConfigFile(basePath string) bool {
@@ -151,7 +157,13 @@ func (a *App) CheckApiKey() bool {
 func (a *App) ValidateApiKey(apiKey string) bool {
 	var apiOpts []httpapi.Opt
 
-	c := httpapi.NewClient(a.cm.Configuration.API.URL, fmt.Sprintf("Bearer %s", apiKey), apiOpts...)
+	cfg := httpapi.ClientCfg{
+		Addr:                a.cm.Configuration.API.URL,
+		AuthorizationHeader: fmt.Sprintf("Bearer %s", apiKey),
+		IntegrationID:       version.GetIntegrationID(),
+		IntegrationVersion:  version.GetVersion(),
+	}
+	c := httpapi.NewClient(&cfg, apiOpts...)
 	res, err := c.WhoAmI(a.ctx)
 
 	if err != nil {
@@ -174,7 +186,7 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 		}
 
 		// reload configuration
-		a.exporter, err = exporterAPI.RefreshConfiguration(a.cm.Configuration, a.exporter)
+		a.ReloadConfig()
 		if err != nil {
 			runtime.LogError(a.ctx, err.Error())
 			panic("failed to load configuration")
@@ -242,6 +254,14 @@ func parseString(str string) int {
 		// If no match is found, return zero
 		return -1
 	}
+}
+
+func (a *App) ReadVersion() string {
+	return version.GetVersion()
+}
+
+func (a *App) ReadBuild() string {
+	return osRuntime.GOOS
 }
 
 func CreateSettingsDirectory() (string, error) {

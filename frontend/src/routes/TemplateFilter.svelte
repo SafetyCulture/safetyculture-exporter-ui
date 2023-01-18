@@ -1,19 +1,36 @@
 <script>
     import './common.css';
+    import dayjs from 'dayjs';
     import {shadowConfig, templateCache} from "../lib/store.js";
     import {GetTemplates} from "../../wailsjs/go/main/App.js"
     import {push} from "svelte-spa-router";
     import {trim} from "../lib/utils.js";
+    import Button from "../components/Button.svelte";
 
     let searchFilter = ""
+    let isChecked = false;
 
     if (Array.isArray($templateCache) && $templateCache.length === 0) {
         GetTemplates().then((result) => {
-            templateCache.set(result)
+            let niceFormat = result.map(elem => {
+                return {
+                    id: elem.id,
+                    name: elem.name,
+                    modified_at: dayjs(elem.modified_at).format('DD-MMM-YYYY')
+                }
+            })
+            templateCache.set(niceFormat)
+            checkAllSelected()
         })
     }
 
-    let isChecked = false;
+    function checkAllSelected() {
+        if($shadowConfig["Export"]["TemplateIds"].length === 0) {
+            $shadowConfig["Export"]["TemplateIds"] = $templateCache.map(e => e.id)
+            isChecked = true;
+        }
+    }
+
     function toggleBodyCheckboxes() {
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         for (const checkbox of checkboxes) {
@@ -21,20 +38,27 @@
         }
     }
 
-    function handleSave() {
-        let selectedTemplates = new Array();
-
+    function handleDone() {
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
+        let selectedTemplates = [];
+
         for (const checkbox of checkboxes) {
             if (checkbox.checked) {
                 selectedTemplates.push(checkbox.__value)
             }
         }
 
-        $shadowConfig["Export"]["TemplateIds"] = selectedTemplates
+        if ($templateCache.length === selectedTemplates.length) {
+            $shadowConfig["Export"]["TemplateIds"] = []
+        } else {
+            $shadowConfig["Export"]["TemplateIds"] = selectedTemplates
+        }
+
         push("/config")
     }
 
+    // will select all templates
+    checkAllSelected()
 </script>
 
 <div class="template-filter-page p-48">
@@ -43,13 +67,13 @@
             <div class="h1">Export Configuration</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12" on:click={handleSave}>Done</button>
+            <Button label="Done" type="active2" onClick={handleDone}/>
         </div>
     </section>
 
     <section class="top-nav m-top-16">
         <div class="nav-left">
-            <div class="h2">Choose a template</div>
+            <div class="h2">Select templates</div>
         </div>
         <div class="nav-right">
             <input class="input search" placeholder="Search" bind:value={searchFilter}/>
@@ -72,7 +96,7 @@
         <div class="table-body text-gray-2 m-top-8">
         {#each $templateCache as { id, name, modified_at }, i}
             {#if (searchFilter.length > 2 && name.toLowerCase().includes(searchFilter.toLowerCase())) || searchFilter.length <= 2}
-                <div class="table-row flex-spaced p-horiz-8">
+                <div class="table-row flex-spaced p-horiz-8 m-right-8">
                     <div class="nav-left">
                         <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
                         <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
@@ -95,6 +119,11 @@
 
     .table-header > .table-row {
         height: 36px;
+    }
+
+    .table-body {
+        overflow-y: scroll;
+        height:450px;
     }
 
     .table-body > .table-row {

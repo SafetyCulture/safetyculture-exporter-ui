@@ -16,7 +16,11 @@ export function GetUserHomeDirectory():Promise<string>;
 
 export function Greet(arg1:string):Promise<string>;
 
+export function ReadBuild():Promise<string>;
+
 export function ReadExportStatus():Promise<void>;
+
+export function ReadVersion():Promise<string>;
 
 export function ReloadConfig():Promise<void>;
 

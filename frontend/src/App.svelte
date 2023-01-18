@@ -1,4 +1,8 @@
 <script>
+    import {
+        ReadVersion
+    } from "../wailsjs/go/main/App.js"
+
     import Router from 'svelte-spa-router';
     import Init from "./routes/Init.svelte"
     import Welcome from "./routes/Welcome.svelte"
@@ -9,9 +13,16 @@
     import Debug from "./components/debug.svelte";
     import ExportStatus from "./routes/ExportStatus.svelte";
     import DebugMem from "./routes/DebugMem.svelte";
+
+    let version = ""
+    ReadVersion().then(v => {
+        version = v
+    })
 </script>
 
-<Debug/>
+{#if version === 'v0.0.0-dev'}
+    <Debug/>
+{/if}
 
 <Router routes={{
 	'/': Init,

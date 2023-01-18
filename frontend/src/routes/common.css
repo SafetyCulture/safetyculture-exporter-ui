@@ -5,6 +5,10 @@ body {
     overflow-x: hidden;
     letter-spacing: .005rem;
     color: #1D2330;
+
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: hidden;
 }
 
 body::-webkit-scrollbar {
@@ -40,42 +44,11 @@ body::-webkit-scrollbar {
     font-size: 0.9rem;
 }
 
-.button {
-    padding: 14px 16px;
-    border-width: 1px;
-    font-weight: 400;
-    font-size: 1rem;
-}
-
-.button {
-    padding: 14px 16px;
-    border-width: 1px;
-    border-radius: 12px;
-    font-weight: 500;
-    font-size: 1rem;
-    line-height: 1.5rem;
-}
-
 .button-long {
     display: flex;
     justify-content: space-between;
 }
 
-.button:hover {
-    cursor: pointer;
-}
-
-.button-white {
-    background: #FFFFFF;
-    color: #675DF4;
-    border-color: #BFC5D4;
-}
-
-.button-purple {
-    background: #675DF4;
-    color: #FFFFFF;
-    border-color: #FFFFFF;
-}
 
 .block-link {
     cursor: pointer;

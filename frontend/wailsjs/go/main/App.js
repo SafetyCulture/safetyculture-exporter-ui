@@ -30,8 +30,16 @@ export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
 
+export function ReadBuild() {
+  return window['go']['main']['App']['ReadBuild']();
+}
+
 export function ReadExportStatus() {
   return window['go']['main']['App']['ReadExportStatus']();
+}
+
+export function ReadVersion() {
+  return window['go']['main']['App']['ReadVersion']();
 }
 
 export function ReloadConfig() {

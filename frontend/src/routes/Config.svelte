@@ -6,29 +6,35 @@
 	import Select from 'svelte-select';
 	import { DateInput } from 'date-picker-svelte'
 	import {
-		SaveSettings,
-		SelectDirectory,
-		GetUserHomeDirectory,
-		ReadExportStatus,
-		ExportCSV,
-		ReloadConfig, ExportSQL
+		SaveSettings, SelectDirectory,
+		GetUserHomeDirectory, ReadExportStatus,
+		ExportCSV,ExportSQL,
+		ReloadConfig, ReadBuild
 	} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
-	import {resetFeedsToExport} from "../lib/utils.js";
+	import FormTextInput from "../components/FormTextInput.svelte";
+	import Button from "../components/Button.svelte";
+
+	let build = ""
+	ReadBuild().then(it => {
+		build = it
+	})
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},
 		{value: "false", label: "Incomplete only"},
 		{value: "both", label: "Both - completed and incomplete"}
 	];
+	let selectedStatus = $shadowConfig["Export"]["Inspection"]["Completed"]
 
 	const archivedItems = [
 		{value: "true", label: "Archived Only"},
 		{value: "false", label: "Unarchived Only"},
 		{value: "both", label: "Both - archived and unarchived"}
 	];
+	let selectedArchived = $shadowConfig["Export"]["Inspection"]["Archived"]
 
 	const dataExportFormatItems = [
 		{value: "csv", label: "CSV"},
@@ -53,45 +59,82 @@
 		mysql: MYSQL_DIALECT,
 	};
 
-	let dbHost='', dbPort, dbUser='', dbPassword='', dbName='';
+	let dbHost = '', dbHostShowError = false
+	let dbPort='', dbPortPlaceholder = "e.g. " + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false
+	let dbUser='', dbUserShowError = false
+	let dbPassword='', dbPasswordShowError = false
+	let dbName='', dbNameShowError = false
+	let formError = false
+
 	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
 
 	const reportFormatItems = [
 		{value: "PDF", label: "PDF"},
 		{value: "WORD", label: "Word"},
+		{value: "BOTH", label: "Both PDF and Word"},
 	];
-	let selectedReportFormat = $shadowConfig["Report"]["Format"];
+	let selectedReportFormat = readReportFormat()
 
 	const timezoneItems = [
 		{value: "UTC", label: "UTC"}
 	];
 	let selectedTimeZone = $shadowConfig["Export"]["TimeZone"]
 
+	function readReportFormat() {
+		if ($shadowConfig["Report"]["Format"] === ["PDF"]) {
+			return "PDF"
+		}
+		if ($shadowConfig["Report"]["Format"] === ["WORD"]) {
+			return "WORD"
+		}
+		if ($shadowConfig["Report"]["Format"].includes("PDF") && $shadowConfig["Report"]["Format"].includes("WORD")) {
+			return "BOTH"
+		}
+		return "PDF"
+	}
+
+	function prepareReportFormatForSave() {
+		switch (selectedReportFormat.value) {
+			case "PDF":
+				return ["PDF"]
+			case "WORD":
+				return ["WORD"]
+			case "BOTH":
+				return ["PDF", "WORD"]
+			default:
+				return ["PDF"]
+		}
+	}
+
 	// DATE PICKER
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
-	let date = convertStringToDate($shadowConfig["Export"]["ModifiedAfter"], selectedTimeZone);
 	const minDate = dayjs().add(-1, 'year').toDate()
-
+	let date = convertStringToDate($shadowConfig["Export"]["ModifiedAfter"], selectedTimeZone);
 
 	function generateTemplateName() {
-		if ($shadowConfig["Export"]["TemplateIds"].length === 0) {
-			return "All templates selected"
-		} else {
-			return $shadowConfig["Export"]["TemplateIds"].length + " templates selected"
+		let num = $shadowConfig["Export"]["TemplateIds"].length
+		switch (num) {
+			case 0: return "All templates selected"
+			case 1: return "1 template selected"
+			default: return num + " templates selected"
 		}
 	}
 
 	function generateTableName() {
-		if ($shadowConfig["Export"]["Tables"].length === 0) {
-			return "All tables selected"
-		} else {
-			return $shadowConfig["Export"]["Tables"].length + " tables selected"
+		let num = $shadowConfig["Export"]["Tables"].length
+		switch (num) {
+			case 0: return "All tables selected"
+			case 1: return "1 table selected"
+			default: return num + " tables selected"
 		}
 	}
 
 	function handleExportFormatUpdate(event) {
 		selectedExportFormat = event.detail.value;
+		if (['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)) {
+			dbPortPlaceholder = "e.g. " + getDefaultSQLPort(selectedExportFormat)
+		}
 	}
 
 	function setConnString() {
@@ -160,7 +203,9 @@
 			$shadowConfig["Export"]["ModifiedAfter"] = convertDateToString(date, selectedTimeZone.value)
 		}
 
-		$shadowConfig["Report"]["Format"] = selectedReportFormat.map(x => x.value)
+		$shadowConfig["Export"]["Inspection"]["Completed"] = selectedStatus.value
+		$shadowConfig["Export"]["Inspection"]["Archived"] = selectedArchived.value
+		$shadowConfig["Report"]["Format"] = prepareReportFormatForSave()
 		$shadowConfig["Session"]["ExportType"] = selectedExportFormat.value
 
 		if($shadowConfig !== {}) {
@@ -181,18 +226,106 @@
 			return minDate
 		}
 
+		let obj = dayjs(input).tz(tz).toDate()
+		if (obj.getFullYear() < minDate.getFullYear()) {
+			return minDate
+		}
+
 		return dayjs(input).tz(tz).toDate()
 	}
 
-	function handleSaveAndExport() {
-		saveConfiguration()
-		if (selectedExportFormat != null && selectedExportFormat.value === 'sql') {
-			ExportSQL()
-		} else {
-			ExportCSV()
+	function getDefaultSQLPort(flavour) {
+		switch (flavour) {
+			case 'mysql':
+				return '3306'
+			case 'postgres':
+				return '5432'
+			case 'sqlserver':
+				return '1433'
+			default:
+				return '1234'
 		}
-		push("/exportStatus")
+	}
 
+	function isValidPortNumber(input) {
+		return Number.isFinite(+input) && input >= 1 && input <= 65535
+	}
+
+	function validateExport() {
+		let hasError = false
+
+		switch (selectedExportFormat.value) {
+			case 'csv':
+				break
+			case 'mysql':
+			case 'postgres':
+			case 'sqlserver':
+				if (dbHost.trim() === '') {
+					dbHostShowError = true
+					hasError = true
+				} else {
+					dbHostShowError = false
+				}
+
+				if (dbPort.trim() === '' || isValidPortNumber(dbPort) === false) {
+					dbPortShowError = true
+					hasError = true
+				} else {
+					dbPortShowError = false
+				}
+
+				if (dbUser.trim() === '') {
+					dbUserShowError = true
+					hasError = true
+				} else {
+					dbUserShowError = false
+				}
+
+				if (dbPassword.trim() === '') {
+					dbPasswordShowError = true
+					hasError = true
+				} else {
+					dbPasswordShowError = false
+				}
+
+				if (dbName.trim() === '') {
+					dbNameShowError = true
+					hasError = true
+				} else {
+					dbNameShowError = false
+				}
+				break
+			case 'reports':
+				break
+			default:
+				hasError = true
+				break
+		}
+
+		return hasError
+	}
+
+	function handleSaveAndExport() {
+		formError = validateExport()
+		if (formError === true) {
+			return
+		}
+		saveConfiguration()
+		switch (selectedExportFormat.value) {
+			case 'csv':
+				ExportCSV()
+				push("/exportStatus")
+				break
+			case 'mysql':
+			case 'postgres':
+			case 'sqlserver':
+				ExportSQL()
+				push("/exportStatus")
+				break
+			case 'reports':
+				console.debug('NOT SUPPORTED')
+				break
+		}
 	}
 
 	function handleSaveAndClose() {
@@ -235,8 +368,8 @@
 			<div class="h1 p-left-8">Export Configuration</div>
 		</div>
 		<div class="nav-right">
-			<button class="button button-white border-round-12" on:click={handleSaveAndClose} on:keypress={handleSaveAndClose}>Save and Close</button>
-			<button class="button button-purple m-left-8 border-round-12" on:click={handleSaveAndExport}>Save and Export</button>
+			<Button label="Save and close" type="active2" onClick={handleSaveAndClose}/>
+			<Button label="Save and export" type="active" clazz="m-left-8" error={formError} onClick={handleSaveAndExport}/>
 		</div>
 	</section>
 	<div class="config-body m-top-8">
@@ -259,76 +392,68 @@
 					<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
 				</div>
 			</div>
-			<div class="label">Date range From</div>
+			<div class="label">Date range from</div>
 			<div class="m-top-8">
 				<DateInput min={minDate} max={new Date()} format="dd-MM-yyyy" bind:value={date} />
 			</div>
-			<div class="label">Include inspections with the following status:</div>
-			<select class="custom-select m-top-8" bind:value={$shadowConfig["Export"]["Inspection"]["Completed"]}>
-				{#each statusItems as item}
-				<option value={item.value}>{item.label}</option>
-				{/each}
-			</select>
-			<div class="label">Include archived inspections?</div>
-			<select class="custom-select m-top-8" bind:value={$shadowConfig["Export"]["Inspection"]["Archived"]}>
-				{#each archivedItems as item}
-					<option value={item.value}>{item.label}</option>
-				{/each}
-			</select>
+			<div class="label">Include completed or incomplete inspections</div>
+			<div class="border-weak border-round-8 m-top-4">
+				<Select items={statusItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedStatus} />
+			</div>
+
+			<div class="label">Include active or archived inspections</div>
+			<div class="border-weak border-round-8 m-top-4">
+				<Select items={archivedItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedArchived}/>
+			</div>
 		</section>
 		<section class="export-details border-round-8">
 			<div class="h3">Export details</div>
 			<div class="label">Data export format</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<Select items={dataExportFormatItems} clearable={false} on:change={handleExportFormatUpdate} bind:value={selectedExportFormat} />
+				<Select items={dataExportFormatItems} clearable={false} showChevron={true} searchable={false} on:change={handleExportFormatUpdate} --border="0px" bind:value={selectedExportFormat} />
 			</div>
-			{#if selectedExportFormat != null && (selectedExportFormat.value === 'mysql'
-					|| selectedExportFormat.value === 'postgres' || selectedExportFormat.value === 'sqlserver')}
+			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat.value)}
 				<div>
 					<div class="label">Database details:</div>
-					<div class="sub-label text-weak">Host Address</div>
-					<input class="input" type="text" bind:value={dbHost}>
-					<div class="sub-label text-weak">Host Port</div>
-					<input class="input" type="text" bind:value={dbPort}>
-					<div class="sub-label text-weak">Username</div>
-					<input class="input" type="text" bind:value={dbUser}>
-					<div class="sub-label text-weak">Password</div>
-					<input class="input" type="password" bind:value={dbPassword}>
-					<div class="sub-label text-weak">Name</div>
-					<input class="input" type="text" bind:value={dbName}>
+					<FormTextInput label="Host address" placeholder="e.g. localhost" error={dbHostShowError} bind:value={dbHost}/>
+					<FormTextInput label="Host port" placeholder={dbPortPlaceholder} error={dbPortShowError} bind:value={dbPort}/>
+					<FormTextInput label="Username" placeholder="e.g. john" error={dbUserShowError} bind:value={dbUser}/>
+					<FormTextInput label="Password" placeholder="e.q. mySup3rS3cr3t" error={dbPasswordShowError} bind:value={dbPassword}/>
+					<FormTextInput label="Database name" placeholder="e.g. safetyculture" error={dbNameShowError} bind:value={dbName}/>
 					<hr>
 				</div>
 			{/if}
 
 			{#if selectedExportFormat != null && selectedExportFormat.value === 'reports' }
 				<div class="label">Report format</div>
-				<Select items={reportFormatItems} clearable={false} multiple=true bind:value={selectedReportFormat}/>
+				<div class="border-weak border-round-8 m-top-4">
+					<Select items={reportFormatItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedReportFormat}/>
+				</div>
 			{/if}
 
-			<div class="folder-title">
-				<div class="label">Folder location</div>
-			</div>
-
-			<div id="folder" class="button-long selector border-weak border-round-8" on:click={openFolderDialog}>
+			<div class="label">Folder location</div>
+			<div id="folder" class="button-long selector border-weak border-round-8" on:click={openFolderDialog} on:keypress={openFolderDialog}>
 				<div class="text-weak" >{$shadowConfig["Export"]["Path"]}</div>
 				<img class="cursor-pointer" src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
+			{#if build === 'windows'}
+				<div class="sub-label m-top-4">To change folder location, move the executable there</div>
+			{/if}
+
 			<div class="label">Export timezone</div>
-			<Select items={timezoneItems} clearable={false} bind:value={selectedTimeZone}/>
+			<div class="border-weak border-round-8 m-top-4">
+				<Select items={timezoneItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedTimeZone}/>
+			</div>
 			<div class="label">Include:</div>
 			<input type="checkbox" id="media" name="media" bind:checked={$shadowConfig["Export"]["Media"]}>
 			<label class="text-size-medium" for="media">Media</label>
 		</section>
 	</div>
+
+
 </div>
 
 <style>
-	body {
-		-ms-overflow-style: none; /* for Internet Explorer, Edge */
-		scrollbar-width: none; /* for Firefox */
-		overflow-y: hidden;
-	}
-
 	.config-body {
 		display: flex;
 		justify-content: space-between;
@@ -343,45 +468,12 @@
 		align-items: center;
 	}
 
-	select.custom-select {
-		cursor: pointer;
-
-		/* styling */
-		background-color: #FFFFFF;
-		/*background-image: url("../images/arrow-down-compact.png");*/
-		background-position: right 16px center;
-		background-repeat: no-repeat;
-		background-size: 8px;
-		border: 1px solid #BFC5D4;
-		border-radius: 8px;
-		display: inline-block;
-		font: inherit;
-		line-height: 1.5em;
-		padding: 0.5em 3.5em 0.5em 1em;
-
-		/* reset */
-		width: 100%;
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
-		box-sizing: border-box;
-		-webkit-appearance: none;
-		-moz-appearance: none;
-		appearance: none;
-		outline: 0;
-	}
-
 	.export-details {
 		width: 380px;
 		height: 600px;
 		background-color: #E9EEF6;
 		padding: 16px;
 		overflow-y: auto;
-	}
-
-	.folder-title {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
 	}
 
 	.cursor-pointer {
