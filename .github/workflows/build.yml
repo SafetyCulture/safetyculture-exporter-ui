@@ -106,3 +106,5 @@ jobs:
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           artifacts: "exporter*.zip,exporter*.tar.gz"
+          allowUpdates: true
+          updateOnlyUnreleased: true
