@@ -219,27 +219,25 @@ func (a *App) GetUserHomeDirectory() string {
 func (a *App) ReadExportStatus() {
 	var completed bool
 
+	// INFINITE LOOP
 	for completed == false {
 		exportStatus := a.exporter.GetExportStatus()
+		if exportStatus.ExportStarted == false {
+			break
+		}
+		fmt.Printf("%v\n", exportStatus.ExportStarted)
+		fmt.Printf("%v\n", exportStatus.ExportCompleted)
+		fmt.Printf("%v\n", exportStatus.Feeds)
 
-		remaining := 15
 		for _, item := range exportStatus.Feeds {
-			if item.DebugString == "remaining 0" {
-				remaining--
-			}
-
+			fmt.Sprintf("Emitting %s\n", "update-"+item.FeedName)
 			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, parseString(item.DebugString))
 		}
 
-		if remaining <= 0 {
-			runtime.LogInfo(a.ctx, "All exports completed.")
-			completed = true
-			break
-		}
-
-		runtime.LogInfof(a.ctx, "Waiting for %d exports to complete...\n", remaining)
+		completed = exportStatus.ExportCompleted
 		time.Sleep(2 * time.Second)
 	}
+	fmt.Println("FINISHED EXPORT")
 }
 
 func parseString(str string) int {

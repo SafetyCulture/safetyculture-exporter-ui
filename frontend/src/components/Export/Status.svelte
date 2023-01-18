@@ -9,7 +9,7 @@
     const statusComplete = "Complete"
     const statusInProgress = "In Progress"
 
-    export let name;
+    export let name = '';
     export let status = writable(statusQueued);
     export let remaining = writable(-1)
     export let completed = writable(false);
@@ -20,6 +20,10 @@
     function formatName(str) {
         return str.toLowerCase().replace(/_/g, ' ').replace(/(^|\s)\S/g, (L) => L.toUpperCase());
     }
+
+    console.debug("TEST STATUS")
+    console.debug(name)
+    console.debug($status)
 
     onMount(() => {
         EventsOn("update-"+name, (newValue) => {
