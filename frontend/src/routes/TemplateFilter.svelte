@@ -5,6 +5,7 @@
     import {GetTemplates} from "../../wailsjs/go/main/App.js"
     import {push} from "svelte-spa-router";
     import {trim} from "../lib/utils.js";
+    import Button from "../components/Button.svelte";
 
     let searchFilter = ""
     let isChecked = false;
@@ -32,7 +33,6 @@
 
     function toggleBodyCheckboxes() {
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
-        console.log(checkboxes)
         for (const checkbox of checkboxes) {
             checkbox.checked = !isChecked;
         }
@@ -67,13 +67,13 @@
             <div class="h1">Export Configuration</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12" on:click={handleDone}>Done</button>
+            <Button label="Done" type="active2" onClick={handleDone}/>
         </div>
     </section>
 
     <section class="top-nav m-top-16">
         <div class="nav-left">
-            <div class="h2">Choose a template</div>
+            <div class="h2">Select templates</div>
         </div>
         <div class="nav-right">
             <input class="input search" placeholder="Search" bind:value={searchFilter}/>

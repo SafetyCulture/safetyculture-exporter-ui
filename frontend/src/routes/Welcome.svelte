@@ -4,15 +4,21 @@
 	import {push} from 'svelte-spa-router'
 	import {ValidateApiKey} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig, templateCache} from '../lib/store.js';
+	import ValidatableInput from "../components/ValidatableInput.svelte";
+	import Button from "../components/Button.svelte";
 
 
 	let isValid = false;
 	let buttonLabel = "Verify"
 	let displayBadApiKeyErr = false
+	let displayValidationError = false
+	let tries = 1
 
 	function validate() {
+		tries++
 		isValid = false
 		if ($shadowConfig["AccessToken"].length === 0) {
+			displayValidationError = true
 			return
 		}
 
@@ -21,7 +27,9 @@
 			if (isValid === false) {
 				buttonLabel = "Try again"
 				displayBadApiKeyErr = true
+				displayValidationError = true
 			} else {
+				displayValidationError = false
 				templateCache.set([]);
 				push("/config")
 			}
@@ -36,28 +44,16 @@
 		</section>
 		<section class="token-validation">
 			<div class="token-validation-text">Generate an API token from your SafetyCulture <span class="link">user profile</span>.</div>
-			<input
-				class="input"
-				type="text"
-				placeholder="Enter API Token here"
-				bind:value={$shadowConfig["AccessToken"]}
-			/>
+			<ValidatableInput placeholder="Enter API Token here" error={displayValidationError} bind:value={$shadowConfig["AccessToken"]}/>
 
 			{#if displayBadApiKeyErr}
 				<div class="error-block">
-					<div class="error-block-title">
-						Oops! We couldn't verify your token.
-					</div>
-					<div class="error-block-body">
-						Here's our diagnosis:
-						<ul>
-							<li>Your token might be expired. It expires after 30 days of not being used.</li>
-						</ul>
-					</div>
+					<div class="error-block-title">Unable to verify token</div>
+					<div class="error-block-body">It looks like your token may be expired after 30 days of inactivity. Please generate a new token and try again.</div>
 				</div>
 			{/if}
 
-			<button class="button button-purple m-top-8 border-round-12" on:click={validate}>{buttonLabel}</button>
+			<Button label={buttonLabel} type="active" error={displayValidationError} clazz="m-top-8" onClick={validate}/>
 		</section>
 
 		<section class="storage-info">
@@ -80,12 +76,6 @@
 </div>
 
 <style>
-	body {
-		-ms-overflow-style: none; /* for Internet Explorer, Edge */
-		scrollbar-width: none; /* for Firefox */
-		overflow-y: hidden;
-	}
-
 	.welcome-page {
 		display: flex;
 	}

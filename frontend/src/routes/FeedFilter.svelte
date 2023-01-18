@@ -2,6 +2,7 @@
     import './common.css';
     import {shadowConfig} from "../lib/store.js";
     import {push} from "svelte-spa-router";
+    import Button from "../components/Button.svelte";
 
     let data = [
         {
@@ -103,7 +104,7 @@
             <div class="h1">Feed Export</div>
         </div>
         <div class="nav-right">
-            <button class="button button-white border-round-12" on:click={handleDone}>Done</button>
+            <Button label="Done" type="active2" onClick={handleDone}/>
         </div>
     </section>
 
