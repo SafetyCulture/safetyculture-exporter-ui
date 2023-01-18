@@ -2,12 +2,25 @@
     import './common.css';
     import {ReadExportStatus} from "../../wailsjs/go/main/App.js"
     import Status from "./../components/Export/Status.svelte";
-    import {exportCompleted, feedsToExport} from "../lib/utils.js";
     import {shadowConfig} from "../lib/store.js";
+    import {onMount} from "svelte";
+    import {EventsOn} from "../../wailsjs/runtime/runtime.js";
 
+    let feedsToExport = []
     if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
-        $feedsToExport = $shadowConfig["Export"]["Tables"]
+        feedsToExport = $shadowConfig["Export"]["Tables"]
     }
+
+    let exportCompleted = false
+
+    onMount(() => {
+        EventsOn("finished-export", (newValue) => {
+            console.debug('RECEIVED EVENT > ' + 'finished-export' + " with value: " + newValue)
+            if (newValue === true) {
+                exportCompleted = true
+            }
+        })
+    })
 
     ReadExportStatus();
 </script>
@@ -17,7 +30,7 @@
 
     <div class="progress-title m-top-32">
         <div class="inline">
-            {#if $exportCompleted}
+            {#if exportCompleted}
                 <img id="status-completed" src='/images/completed.png' alt="export completed icon">
             {:else}
                 <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon">
@@ -36,7 +49,7 @@
                 </tr>
             </thead>
             <tbody>
-            {#each $feedsToExport as feed}
+            {#each feedsToExport as feed}
                 <tr><Status name={feed}></Status></tr>
             {/each}
             </tbody>

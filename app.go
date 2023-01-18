@@ -237,6 +237,7 @@ func (a *App) ReadExportStatus() {
 		completed = exportStatus.ExportCompleted
 		time.Sleep(2 * time.Second)
 	}
+	runtime.EventsEmit(a.ctx, "finished-export", true)
 	fmt.Println("FINISHED EXPORT")
 }
 
