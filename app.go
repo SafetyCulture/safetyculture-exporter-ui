@@ -11,12 +11,12 @@ import (
 	osRuntime "runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/version"
 	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
 	"github.com/SafetyCulture/safetyculture-exporter/pkg/httpapi"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"time"
 )
 
 // App struct
