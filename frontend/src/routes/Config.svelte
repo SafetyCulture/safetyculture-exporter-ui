@@ -16,6 +16,7 @@
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
+	import {resetFeedsToExport} from "../lib/utils.js";
 
 	const statusItems = [
 		{value: "true", label: "Completed only"},

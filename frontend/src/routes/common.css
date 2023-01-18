@@ -219,3 +219,36 @@ body::-webkit-scrollbar {
     display: flex;
     align-items: center;
 }
+
+.status-table {
+    border-collapse: collapse;
+    background-color: white;
+    overflow: hidden;
+    width: 70%;
+    margin-left: 150px;
+}
+
+.status-table-th {
+    padding: 10px 10px 10px 10px;
+    letter-spacing: 0.1rem;
+    font-weight: 900;
+    height: 30px;
+}
+
+.status-table-td {
+    padding: 10px 10px 10px 10px;
+    letter-spacing: 0.1rem;
+    font-weight: 500;
+}
+
+.status-col-1 {
+    width: 40%;
+    text-align: left;
+}
+.status-col-2 {
+    width: 20%;
+    text-align: left;
+}
+.status-col-3 {
+    text-align: center;
+}

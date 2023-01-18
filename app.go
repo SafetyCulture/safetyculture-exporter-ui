@@ -4,15 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
-	"path"
-	"path/filepath"
-	osRuntime "runtime"
-	"strings"
-
 	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
 	"github.com/SafetyCulture/safetyculture-exporter/pkg/httpapi"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"os"
+	"path"
+	"path/filepath"
+	"regexp"
+	osRuntime "runtime"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // App struct
@@ -202,9 +204,44 @@ func (a *App) GetUserHomeDirectory() string {
 	return dir
 }
 
-func (a *App) ReadExportStatus() *exporterAPI.ExportStatusResponse {
-	fmt.Println("> ReadExportStatus")
-	return a.exporter.GetExportStatus()
+func (a *App) ReadExportStatus() {
+	var completed bool
+
+	for completed == false {
+		exportStatus := a.exporter.GetExportStatus()
+
+		remaining := 15
+		for _, item := range exportStatus.Feeds {
+			if item.DebugString == "remaining 0" {
+				remaining--
+			}
+
+			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, parseString(item.DebugString))
+		}
+
+		if remaining <= 0 {
+			runtime.LogInfo(a.ctx, "All exports completed.")
+			completed = true
+			break
+		}
+
+		runtime.LogInfof(a.ctx, "Waiting for %d exports to complete...\n", remaining)
+		time.Sleep(2 * time.Second)
+	}
+}
+
+func parseString(str string) int {
+	// Use regular expression to match the pattern of "remaining" followed by a space and one or more digits
+	re := regexp.MustCompile(`remaining (\d+)`)
+	match := re.FindStringSubmatch(str)
+	if match != nil {
+		// If a match is found, return the first capture group (i.e. the number) as an integer
+		number, _ := strconv.Atoi(match[1])
+		return number
+	} else {
+		// If no match is found, return zero
+		return -1
+	}
 }
 
 func CreateSettingsDirectory() (string, error) {
