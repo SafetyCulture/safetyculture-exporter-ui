@@ -4,6 +4,7 @@
     import Pill from "./Pill.svelte";
 
     const statusQueued = "Queued"
+    const statusFailed = "Failed"
     const statusComplete = "Complete"
     const statusInProgress = "In Progress"
 
@@ -18,11 +19,14 @@
 
     onMount(() => {
         EventsOn("update-"+name, (newValue) => {
-            console.debug('RECEIVED EVENT > ' + name + " with value: " + newValue)
-            remaining = newValue.remaining
-            status = statusInProgress
-            if (remaining === 0) {
-                status = statusComplete
+            if (statusFailed === newValue.status) {
+                status = statusFailed
+            } else {
+                remaining = newValue.remaining
+                status = statusInProgress
+                if (remaining === 0) {
+                    status = statusComplete
+                }
             }
         })
     })
