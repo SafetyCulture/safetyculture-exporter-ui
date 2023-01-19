@@ -102,11 +102,8 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: "marvinpinto/action-automatic-releases@latest"
+        uses: ncipollo/release-action@v1
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: false
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          artifacts: "exporter*.zip,exporter*.tar.gz"
           allowUpdates: true
-          files: |
-            exporter*.zip
-            exporter*.tar.gz
