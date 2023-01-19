@@ -15,6 +15,8 @@
         feedsToExport = allTables
     }
 
+    console.log(feedsToExport)
+
     let exportCompleted = false
 
     onMount(() => {

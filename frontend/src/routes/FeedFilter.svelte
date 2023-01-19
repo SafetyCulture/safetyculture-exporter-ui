@@ -8,7 +8,7 @@
     let data = [
         {
             "left": { "id": "inspections", "name": "Inspections" },
-            "right": { "id": "schedules", "name": "Schedules"},
+            "right": { "id": "inspection_items", "name": "Inspection Items"},
         },
         {
             "left":  { "id": "templates", "name": "Templates" },
@@ -36,7 +36,7 @@
         },
         {
             "left":  { "id": "users", "name": "Users"},
-            "right": null
+            "right": { "id": "schedules", "name": "Schedules"},
         }
     ]
 

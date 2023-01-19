@@ -127,6 +127,7 @@ func (a *App) Greet(name string) string {
 }
 
 func (a *App) ExportCSV() {
+	fmt.Println(a.cm.Configuration)
 	a.exporter.RunCSV()
 }
 
