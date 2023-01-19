@@ -42,10 +42,6 @@ export function ReadVersion() {
   return window['go']['main']['App']['ReadVersion']();
 }
 
-export function ReloadConfig() {
-  return window['go']['main']['App']['ReloadConfig']();
-}
-
 export function SaveSettings(arg1) {
   return window['go']['main']['App']['SaveSettings'](arg1);
 }

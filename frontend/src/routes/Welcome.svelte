@@ -82,7 +82,7 @@
 
 	.welcome-left-side {
 		width: 50%;
-		padding: 1.5rem;
+		padding: 20px;
 	}
 
 	.welcome-right-side {
@@ -142,11 +142,6 @@
 
 	div.error-block .error-block-title {
 		color: #A02228;
-	}
-
-	div.error-block .error-block-body ul {
-		margin-top: 2px;
-		margin-bottom: 2px;
 	}
 
 	section.storage-info {

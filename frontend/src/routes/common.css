@@ -105,6 +105,10 @@ body::-webkit-scrollbar {
     margin-top: 16px;
 }
 
+.m-top-32 {
+    margin-top: 32px;
+}
+
 .m-left-8 {
     margin-left: 8px;
 }
@@ -193,20 +197,6 @@ body::-webkit-scrollbar {
     align-items: center;
 }
 
-.status-table {
-    border-collapse: collapse;
-    background-color: white;
-    overflow: hidden;
-    width: 70%;
-    margin-left: 150px;
-}
-
-.status-table-th {
-    padding: 10px 10px 10px 10px;
-    letter-spacing: 0.1rem;
-    font-weight: 900;
-    height: 30px;
-}
 
 .status-table-td {
     padding: 10px 10px 10px 10px;
@@ -214,14 +204,16 @@ body::-webkit-scrollbar {
     font-weight: 500;
 }
 
+
 .status-col-1 {
     width: 40%;
     text-align: left;
 }
+
 .status-col-2 {
     width: 20%;
     text-align: left;
 }
 .status-col-3 {
-    text-align: center;
+    text-align: left;
 }

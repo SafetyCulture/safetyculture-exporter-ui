@@ -7,9 +7,8 @@
 	import { DateInput } from 'date-picker-svelte'
 	import {
 		SaveSettings, SelectDirectory,
-		GetUserHomeDirectory, ReadExportStatus,
 		ExportCSV,ExportSQL,
-		ReloadConfig, ReadBuild
+		ReadBuild
 	} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
@@ -187,7 +186,6 @@
 	}
 
 	function saveConfiguration() {
-
 		const validFormats = {
 			mysql: true,
 			postgres: true,
@@ -209,12 +207,9 @@
 		$shadowConfig["Session"]["ExportType"] = selectedExportFormat.value
 
 		if($shadowConfig !== {}) {
-			SaveSettings($shadowConfig)
+			return SaveSettings($shadowConfig)
 		}
-
-		setTimeout(function() {
-			ReloadConfig()
-		}, 500);
+		return Promise.reject("empty configuration")
 	}
 
 	function convertDateToString(dt, tz) {
@@ -310,29 +305,33 @@
 		if (formError === true) {
 			return
 		}
-		saveConfiguration()
-		switch (selectedExportFormat.value) {
-			case 'csv':
-				ExportCSV()
-				push("/exportStatus")
-				break
-			case 'mysql':
-			case 'postgres':
-			case 'sqlserver':
-				ExportSQL()
-				push("/exportStatus")
-				break
-			case 'reports':
-				console.debug('NOT SUPPORTED')
-				break
-		}
+
+		saveConfiguration().then(it => {
+			switch (selectedExportFormat.value) {
+				case 'csv':
+					ExportCSV()
+					push("/exportStatus")
+					break
+				case 'mysql':
+				case 'postgres':
+				case 'sqlserver':
+					ExportSQL()
+					push("/exportStatus")
+					break
+				case 'reports':
+					console.debug('NOT SUPPORTED')
+					break
+			}
+		}).catch(e => {
+			console.debug('saveConfiguration err')
+			console.debug(e)
+		})
 	}
 
 	function handleSaveAndClose() {
-		saveConfiguration()
-		setTimeout(function() {
-			// Quit()
-		}, 500);
+		saveConfiguration().then(it => {
+			Quit()
+		})
 	}
 
 	function handleBackButton() {

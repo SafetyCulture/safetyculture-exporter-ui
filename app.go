@@ -7,16 +7,14 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	osRuntime "runtime"
-	"strconv"
 	"strings"
+	"time"
 
 	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/version"
 	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
 	"github.com/SafetyCulture/safetyculture-exporter/pkg/httpapi"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"time"
 )
 
 // App struct
@@ -69,22 +67,6 @@ func (a *App) startup(ctx context.Context) {
 		panic("failed to load configuration")
 	}
 	a.ctx = ctx
-}
-
-func (a *App) ReloadConfig() {
-	settingsDir, err := GetSettingDirectoryPath()
-	if err != nil {
-		runtime.LogError(a.ctx, "failed to get settings directory")
-		panic("failed to get settings directory")
-	}
-
-	runtime.LogInfof(a.ctx, "loading configuration file: %s/safetyculture-exporter.yaml", settingsDir)
-	cm, err := exporterAPI.NewConfigurationManagerFromFile(settingsDir, "safetyculture-exporter.yaml")
-	if err != nil {
-		runtime.LogError(a.ctx, err.Error())
-		panic("failed to load configuration")
-	}
-	a.cm = cm
 }
 
 func checkForConfigFile(basePath string) bool {
@@ -186,11 +168,7 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 		}
 
 		// reload configuration
-		a.ReloadConfig()
-		if err != nil {
-			runtime.LogError(a.ctx, err.Error())
-			panic("failed to load configuration")
-		}
+		a.exporter.SetConfiguration(a.cm.Configuration)
 	}
 	return true
 }
@@ -206,6 +184,8 @@ func (a *App) SaveSettings(cfg *exporterAPI.ExporterConfiguration) {
 	if err := a.cm.SaveConfiguration(); err != nil {
 		runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
 	}
+	a.exporter.SetConfiguration(cfg)
+	a.exporter.CleanExportStatus()
 }
 
 func (a *App) GetUserHomeDirectory() string {
@@ -218,41 +198,18 @@ func (a *App) GetUserHomeDirectory() string {
 
 func (a *App) ReadExportStatus() {
 	var completed bool
-
-	for completed == false {
-		exportStatus := a.exporter.GetExportStatus()
-
-		remaining := 15
-		for _, item := range exportStatus.Feeds {
-			if item.DebugString == "remaining 0" {
-				remaining--
+	exportStatus := a.exporter.GetExportStatus()
+	if exportStatus.ExportStarted {
+		for completed == false {
+			exportStatus = a.exporter.GetExportStatus()
+			for _, item := range exportStatus.Feeds {
+				//fmt.Printf("emitting: update-%s %v\n", item.FeedName, item)
+				runtime.EventsEmit(a.ctx, "update-"+item.FeedName, item)
 			}
-
-			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, parseString(item.DebugString))
+			time.Sleep(2 * time.Second)
+			completed = exportStatus.ExportCompleted || !exportStatus.ExportStarted
 		}
-
-		if remaining <= 0 {
-			runtime.LogInfo(a.ctx, "All exports completed.")
-			completed = true
-			break
-		}
-
-		runtime.LogInfof(a.ctx, "Waiting for %d exports to complete...\n", remaining)
-		time.Sleep(2 * time.Second)
-	}
-}
-
-func parseString(str string) int {
-	// Use regular expression to match the pattern of "remaining" followed by a space and one or more digits
-	re := regexp.MustCompile(`remaining (\d+)`)
-	match := re.FindStringSubmatch(str)
-	if match != nil {
-		// If a match is found, return the first capture group (i.e. the number) as an integer
-		number, _ := strconv.Atoi(match[1])
-		return number
-	} else {
-		// If no match is found, return zero
-		return -1
+		runtime.EventsEmit(a.ctx, "finished-export", true)
 	}
 }
 

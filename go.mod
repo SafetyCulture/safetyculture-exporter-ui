@@ -3,7 +3,7 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 go 1.18
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230110235939-906f9c6f706d
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230119045526-e4744e149c2c
 	github.com/wailsapp/wails/v2 v2.3.1
 )
 
@@ -37,7 +37,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v1.14.15 // indirect
-	github.com/microsoft/go-mssqldb v0.17.0 // indirect
+	github.com/microsoft/go-mssqldb v0.19.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
@@ -74,8 +74,8 @@ require (
 	gorm.io/driver/mysql v1.4.5 // indirect
 	gorm.io/driver/postgres v1.4.6 // indirect
 	gorm.io/driver/sqlite v1.4.4 // indirect
-	gorm.io/driver/sqlserver v1.4.1 // indirect
-	gorm.io/gorm v1.24.2 // indirect
+	gorm.io/driver/sqlserver v1.4.2 // indirect
+	gorm.io/gorm v1.24.3 // indirect
 )
 
 //replace github.com/wailsapp/wails/v2 v2.2.0 => /Users/gaurav.verma/go/pkg/mod
