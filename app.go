@@ -71,22 +71,6 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-func (a *App) ReloadConfig() {
-	settingsDir, err := GetSettingDirectoryPath()
-	if err != nil {
-		runtime.LogError(a.ctx, "failed to get settings directory")
-		panic("failed to get settings directory")
-	}
-
-	runtime.LogInfof(a.ctx, "loading configuration file: %s/safetyculture-exporter.yaml", settingsDir)
-	cm, err := exporterAPI.NewConfigurationManagerFromFile(settingsDir, "safetyculture-exporter.yaml")
-	if err != nil {
-		runtime.LogError(a.ctx, err.Error())
-		panic("failed to load configuration")
-	}
-	a.cm = cm
-}
-
 func checkForConfigFile(basePath string) bool {
 	if _, err := os.Stat(path.Join(basePath, "safetyculture-exporter.yaml")); os.IsNotExist(err) {
 		return false
@@ -127,7 +111,6 @@ func (a *App) Greet(name string) string {
 }
 
 func (a *App) ExportCSV() {
-	fmt.Println(a.cm.Configuration)
 	a.exporter.RunCSV()
 }
 
@@ -187,11 +170,7 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 		}
 
 		// reload configuration
-		a.ReloadConfig()
-		if err != nil {
-			runtime.LogError(a.ctx, err.Error())
-			panic("failed to load configuration")
-		}
+		a.exporter.SetConfiguration(a.cm.Configuration)
 	}
 	return true
 }
@@ -207,6 +186,10 @@ func (a *App) SaveSettings(cfg *exporterAPI.ExporterConfiguration) {
 	if err := a.cm.SaveConfiguration(); err != nil {
 		runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
 	}
+	a.exporter.SetConfiguration(cfg)
+	a.exporter.CleanExportStatus()
+	fmt.Println("exporter config:")
+	fmt.Println(cfg.Export.Tables)
 }
 
 func (a *App) GetUserHomeDirectory() string {
@@ -220,7 +203,6 @@ func (a *App) GetUserHomeDirectory() string {
 func (a *App) ReadExportStatus() {
 	var completed bool
 
-	// INFINITE LOOP
 	for completed == false {
 		exportStatus := a.exporter.GetExportStatus()
 		if exportStatus.ExportStarted == false {
@@ -232,7 +214,7 @@ func (a *App) ReadExportStatus() {
 
 		for _, item := range exportStatus.Feeds {
 			fmt.Sprintf("Emitting %s\n", "update-"+item.FeedName)
-			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, parseString(item.DebugString))
+			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, parseString(item.StatusMessage))
 		}
 
 		completed = exportStatus.ExportCompleted

@@ -22,8 +22,6 @@ export function ReadExportStatus():Promise<void>;
 
 export function ReadVersion():Promise<string>;
 
-export function ReloadConfig():Promise<void>;
-
 export function SaveSettings(arg1:api.ExporterConfiguration):Promise<void>;
 
 export function SelectDirectory(arg1:string):Promise<string>;

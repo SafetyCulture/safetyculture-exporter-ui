@@ -15,13 +15,10 @@
         feedsToExport = allTables
     }
 
-    console.log(feedsToExport)
-
     let exportCompleted = false
 
     onMount(() => {
         EventsOn("finished-export", (newValue) => {
-            console.debug('RECEIVED EVENT > ' + 'finished-export' + " with value: " + newValue)
             if (newValue === true) {
                 exportCompleted = true
             }
