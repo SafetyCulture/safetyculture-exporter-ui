@@ -11,7 +11,7 @@
     if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
         feedsToExport = $shadowConfig["Export"]["Tables"]
     }
-    if (feedsToExport === []) {
+    if (feedsToExport.length === 0) {
         feedsToExport = allTables
     }
 
