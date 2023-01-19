@@ -7,9 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	osRuntime "runtime"
-	"strconv"
 	"strings"
 	"time"
 
@@ -208,13 +206,14 @@ func (a *App) ReadExportStatus() {
 		if exportStatus.ExportStarted == false {
 			break
 		}
+
 		fmt.Printf("%v\n", exportStatus.ExportStarted)
 		fmt.Printf("%v\n", exportStatus.ExportCompleted)
 		fmt.Printf("%v\n", exportStatus.Feeds)
 
 		for _, item := range exportStatus.Feeds {
 			fmt.Sprintf("Emitting %s\n", "update-"+item.FeedName)
-			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, parseString(item.StatusMessage))
+			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, item)
 		}
 
 		completed = exportStatus.ExportCompleted
@@ -222,20 +221,6 @@ func (a *App) ReadExportStatus() {
 	}
 	runtime.EventsEmit(a.ctx, "finished-export", true)
 	fmt.Println("FINISHED EXPORT")
-}
-
-func parseString(str string) int {
-	// Use regular expression to match the pattern of "remaining" followed by a space and one or more digits
-	re := regexp.MustCompile(`remaining (\d+)`)
-	match := re.FindStringSubmatch(str)
-	if match != nil {
-		// If a match is found, return the first capture group (i.e. the number) as an integer
-		number, _ := strconv.Atoi(match[1])
-		return number
-	} else {
-		// If no match is found, return zero
-		return -1
-	}
 }
 
 func (a *App) ReadVersion() string {

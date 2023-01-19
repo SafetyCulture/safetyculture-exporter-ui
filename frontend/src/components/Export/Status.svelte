@@ -19,9 +19,9 @@
     onMount(() => {
         EventsOn("update-"+name, (newValue) => {
             console.debug('RECEIVED EVENT > ' + name + " with value: " + newValue)
-            remaining = newValue
+            remaining = newValue.remaining
             status = statusInProgress
-            if (newValue === 0) {
+            if (remaining === 0) {
                 status = statusComplete
             }
         })
