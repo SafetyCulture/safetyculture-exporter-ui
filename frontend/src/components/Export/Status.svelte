@@ -12,6 +12,7 @@
     export let status = statusQueued
 
     let remaining = 0
+    let pillType = "neutral"
 
     function formatExportItemName(str) {
         return str.toLowerCase().replace(/_/g, ' ').replace(/(^|\s)\S/g, (L) => L.toUpperCase());
@@ -28,13 +29,25 @@
                     status = statusComplete
                 }
             }
+
+            switch (status) {
+                case 'Complete':
+                    pillType = 'success'
+                    break
+                case 'In Progress':
+                    pillType = 'info'
+                    break
+                case 'Queued':
+                    pillType = 'neutral'
+                    break
+            }
         })
     })
 </script>
 
 <td class="status-col-1">{formatExportItemName(name)}</td>
 <td class="status-col-2">
-    <Pill name={status} />
+    <Pill name={status} type={pillType}/>
 </td>
 <td class="status-col-3">{(remaining === -1 || remaining === 0) ? "-" : remaining}</td>
 

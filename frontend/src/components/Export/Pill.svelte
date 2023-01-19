@@ -1,13 +1,14 @@
 <script>
     export let name = '';
     export let clazz = '';
-    export let type = 'success'
+    export let type = 'neutral'
 </script>
 
 <div class="pill {clazz}"
      class:success={type === 'success'}
      class:info={type === 'info'}
      class:neutral={type === 'neutral'}
+     class:error={type === 'error'}
 >{name}</div>
 
 <style>
@@ -32,5 +33,10 @@
     .neutral {
         background-color: #EEF1F7;
         color: #3F495A;
+    }
+
+    .error {
+        background-color: #c2586c;
+        color: #b50d0d;
     }
 </style>

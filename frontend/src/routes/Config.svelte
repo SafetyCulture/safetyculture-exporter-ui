@@ -322,6 +322,9 @@
 					console.debug('NOT SUPPORTED')
 					break
 			}
+		}).catch(e => {
+			console.debug('saveConfiguration err')
+			console.debug(e)
 		})
 	}
 

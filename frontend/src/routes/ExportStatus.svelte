@@ -90,12 +90,13 @@
         background-color: white;
         height: calc( 100% - 100px );
         padding: 20px 16px;
+        overflow-y: scroll;
+
     }
 
     .status-table {
         width: 100%;
         border-collapse: collapse;
-        overflow: hidden;
     }
 
     .status-table th {
