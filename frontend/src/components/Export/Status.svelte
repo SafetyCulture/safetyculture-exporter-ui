@@ -20,13 +20,18 @@
 
     onMount(() => {
         EventsOn("update-"+name, (newValue) => {
-            if (statusFailed === newValue.status) {
-                status = statusFailed
-            } else {
-                remaining = newValue.remaining
+            if (newValue['started'] === true && newValue['finished'] === false) {
                 status = statusInProgress
-                if (remaining === 0) {
+                remaining = newValue['remaining']
+            }
+
+            if (newValue['started'] === true && newValue['finished'] === true) {
+                if (newValue['has_error'] === false) {
                     status = statusComplete
+                    remaining = 0
+                } else {
+                    status = statusFailed
+                    remaining = 0
                 }
             }
 
@@ -39,6 +44,9 @@
                     break
                 case 'Queued':
                     pillType = 'neutral'
+                    break
+                case 'Failed':
+                    pillType = 'error'
                     break
             }
         })
