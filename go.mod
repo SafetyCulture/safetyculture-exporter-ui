@@ -79,4 +79,4 @@ require (
 )
 
 //replace github.com/wailsapp/wails/v2 v2.2.0 => /Users/gaurav.verma/go/pkg/mod
-//replace github.com/SafetyCulture/safetyculture-exporter => /Users/mick/go/src/github.com/SafetyCulture/safetyculture-exporter
+replace github.com/SafetyCulture/safetyculture-exporter => /Users/mick/go/src/github.com/SafetyCulture/safetyculture-exporter
