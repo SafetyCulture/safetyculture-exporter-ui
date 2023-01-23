@@ -197,20 +197,23 @@ func (a *App) GetUserHomeDirectory() string {
 }
 
 func (a *App) ReadExportStatus() {
-	exportStatus := a.exporter.GetExportStatus()
-	for exportStatus.ExportStarted && !exportStatus.ExportCompleted {
+
+	for {
 		fmt.Println()
+		exportStatus := a.exporter.GetExportStatus()
+
 		for _, item := range exportStatus.Feeds {
 			fmt.Printf("emitting: update-%s %#v\n", item.FeedName, item)
 			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, item)
 		}
-		time.Sleep(500 * time.Millisecond)
-		exportStatus = a.exporter.GetExportStatus()
-	}
 
-	if exportStatus.ExportStarted && exportStatus.ExportCompleted {
-		fmt.Printf("emitting: finished-export")
-		runtime.EventsEmit(a.ctx, "finished-export", true)
+		if exportStatus.ExportStarted && exportStatus.ExportCompleted {
+			fmt.Printf("emitting: finished-export")
+			runtime.EventsEmit(a.ctx, "finished-export", true)
+			break
+		}
+
+		time.Sleep(500 * time.Millisecond)
 	}
 }
 
