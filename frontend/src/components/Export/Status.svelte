@@ -6,7 +6,8 @@
     const statusQueued = "Queued"
     const statusFailed = "Failed"
     const statusComplete = "Complete"
-    const statusInProgress = "In Progress"
+    const statusDownloading = "Downloading"
+    const statusExporting = "Exporting"
 
     export let name = '';
     export let status = statusQueued
@@ -21,7 +22,14 @@
     onMount(() => {
         EventsOn("update-"+name, (newValue) => {
             if (newValue['started'] === true && newValue['finished'] === false) {
-                status = statusInProgress
+                switch (newValue['stage']) {
+                    case 'API_DOWNLOAD':
+                        status = statusDownloading
+                        break
+                    case 'CSV_EXPORT':
+                        status = statusExporting
+                        break
+                }
                 remaining = newValue['remaining']
             }
 
@@ -39,7 +47,8 @@
                 case 'Complete':
                     pillType = 'success'
                     break
-                case 'In Progress':
+                case 'Downloading':
+                case 'Exporting':
                     pillType = 'info'
                     break
                 case 'Queued':
