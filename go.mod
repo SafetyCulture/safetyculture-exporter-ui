@@ -3,7 +3,7 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 go 1.18
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230124021557-48b777f8d83d
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230124052143-7f88c528124d
 	github.com/wailsapp/wails/v2 v2.3.1
 )
 

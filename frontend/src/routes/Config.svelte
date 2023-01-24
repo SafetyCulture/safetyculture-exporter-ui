@@ -221,11 +221,6 @@
 			return minDate
 		}
 
-		let obj = dayjs(input).tz(tz).toDate()
-		if (obj.getFullYear() < minDate.getFullYear()) {
-			return minDate
-		}
-
 		return dayjs(input).tz(tz).toDate()
 	}
 
@@ -396,7 +391,7 @@
 			</div>
 			<div class="label">Date range from</div>
 			<div class="m-top-8">
-				<DateInput min={minDate} max={new Date()} format="dd-MM-yyyy" bind:value={date} />
+				<DateInput max={new Date()} format="dd-MM-yyyy" bind:value={date} />
 			</div>
 			<div class="label">Include completed or incomplete inspections</div>
 			<div class="border-weak border-round-8 m-top-4">
