@@ -13,6 +13,7 @@
 	let displayBadApiKeyErr = false
 	let displayValidationError = false
 	let tries = 1
+	let accessToken = $shadowConfig["AccessToken"]
 
 	function validate() {
 		tries++
@@ -31,6 +32,11 @@
 			} else {
 				displayValidationError = false
 				templateCache.set([]);
+
+				if ($shadowConfig["AccessToken"] !== accessToken) {
+					$shadowConfig["Export"]["TemplateIds"] = []
+				}
+				$shadowConfig["AccessToken"] = accessToken
 				push("/config")
 			}
 		})
@@ -44,7 +50,7 @@
 		</section>
 		<section class="token-validation">
 			<div class="token-validation-text">Generate an API token from your SafetyCulture <span class="link">user profile</span>.</div>
-			<ValidatableInput placeholder="Enter API Token here" error={displayValidationError} bind:value={$shadowConfig["AccessToken"]}/>
+			<ValidatableInput placeholder="Enter API Token here" error={displayValidationError} bind:value={accessToken}/>
 
 			{#if displayBadApiKeyErr}
 				<div class="error-block">
