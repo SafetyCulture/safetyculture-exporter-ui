@@ -8,7 +8,6 @@ import (
 	"path"
 	"path/filepath"
 	osRuntime "runtime"
-	"strings"
 	"time"
 
 	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/version"
@@ -117,12 +116,7 @@ func (a *App) ExportSQL() {
 }
 
 func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
-	res, err := a.exporter.GetTemplateList()
-	if err != nil {
-		runtime.LogErrorf(a.ctx, "cannot obtain the template list: %s", err.Error())
-		return []exporterAPI.TemplateResponseItem{}
-	}
-	return res
+	return a.exporter.GetTemplateList()
 }
 
 // CheckApiKey validates the api key from the config file if it exists
@@ -160,15 +154,23 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 
 	runtime.LogInfo(a.ctx, "saving the key")
 
-	if strings.Compare(apiKey, a.cm.Configuration.AccessToken) != 0 {
+	if apiKey != a.cm.Configuration.AccessToken {
 		// save configuration
 		a.cm.Configuration.AccessToken = apiKey
 		if err := a.cm.SaveConfiguration(); err != nil {
 			runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
 		}
 
-		// reload configuration
-		a.exporter.SetConfiguration(a.cm.Configuration)
+		ver := exporterAPI.AppVersion{
+			IntegrationID:      version.GetIntegrationID(),
+			IntegrationVersion: version.GetVersion(),
+		}
+
+		a.exporter, err = exporterAPI.NewSafetyCultureExporter(a.cm.Configuration, &ver)
+		if err != nil {
+			runtime.LogError(a.ctx, err.Error())
+			panic("failed to re-load configuration")
+		}
 	}
 	return true
 }

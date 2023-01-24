@@ -7,7 +7,7 @@
 	import { DateInput } from 'date-picker-svelte'
 	import {
 		SaveSettings, SelectDirectory,
-		ExportCSV,ExportSQL,
+		ExportCSV, ExportSQL,
 		ReadBuild
 	} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig} from '../lib/store.js';

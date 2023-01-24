@@ -6,22 +6,29 @@
     import {push} from "svelte-spa-router";
     import {trim} from "../lib/utils.js";
     import Button from "../components/Button.svelte";
+    import Overlay from "../components/Overlay.svelte";
 
     let searchFilter = ""
-    let isChecked = false;
+    let isChecked = false
+    let templatesLoaded = false
 
-    if (Array.isArray($templateCache) && $templateCache.length === 0) {
-        GetTemplates().then((result) => {
-            let niceFormat = result.map(elem => {
-                return {
-                    id: elem.id,
-                    name: elem.name,
-                    modified_at: dayjs(elem.modified_at).format('DD-MMM-YYYY')
-                }
+    if (Array.isArray($templateCache)) {
+        if ($templateCache.length === 0) {
+            GetTemplates().then((result) => {
+                let niceFormat = result.map(elem => {
+                    return {
+                        id: elem.id,
+                        name: elem.name,
+                        modified_at: dayjs(elem.modified_at).format('DD-MMM-YYYY')
+                    }
+                })
+                templatesLoaded = true
+                templateCache.set(niceFormat)
+                checkAllSelected()
             })
-            templateCache.set(niceFormat)
-            checkAllSelected()
-        })
+        } else {
+            templatesLoaded = true
+        }
     }
 
     function checkAllSelected() {
@@ -61,10 +68,19 @@
     checkAllSelected()
 </script>
 
+{#if templatesLoaded === false}
+<Overlay>This might take a while ...</Overlay>
+{/if}
+
 <div class="template-filter-page p-48">
     <section class="top-nav">
         <div class="nav-left">
-            <div class="h1">Export Configuration</div>
+            {#if templatesLoaded}
+                <img id="status-completed" src='/images/completed.png' alt="export completed icon">
+            {:else}
+                <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon">
+            {/if}
+            <div class="h1 p-left-8">Export Configuration</div>
         </div>
         <div class="nav-right">
             <Button label="Done" type="active2" onClick={handleDone}/>
