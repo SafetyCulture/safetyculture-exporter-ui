@@ -27,7 +27,9 @@
     .overlay {
         position: absolute;
         font-size: 1.5rem;
-        background-color: #d08f17;
+        background-color: rgb(236, 237, 254);
+        border: 1px solid rgb(71, 64, 212);
+        color: rgb(71, 64, 212);
         padding: 10px 20px;
     }
 </style>

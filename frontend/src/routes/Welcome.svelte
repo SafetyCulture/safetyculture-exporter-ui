@@ -18,12 +18,12 @@
 	function validate() {
 		tries++
 		isValid = false
-		if ($shadowConfig["AccessToken"].length === 0) {
+		if (accessToken.length === 0) {
 			displayValidationError = true
 			return
 		}
 
-		ValidateApiKey($shadowConfig["AccessToken"]).then((result) => {
+		ValidateApiKey(accessToken).then((result) => {
 			isValid = result
 			if (isValid === false) {
 				buttonLabel = "Try again"
@@ -31,11 +31,11 @@
 				displayValidationError = true
 			} else {
 				displayValidationError = false
-				templateCache.set([]);
 
 				if ($shadowConfig["AccessToken"] !== accessToken) {
 					$shadowConfig["Export"]["TemplateIds"] = []
 				}
+				templateCache.set([]);
 				$shadowConfig["AccessToken"] = accessToken
 				push("/config")
 			}
