@@ -18,10 +18,12 @@
                 let niceFormat = result.map(elem => {
                     return {
                         id: elem.id,
-                        name: elem.name,
+                        name: elem.name.length > 90
+                            ? `${elem.name.substring(0, 90)}…`
+                            : elem.name,
                         modified_at: dayjs(elem.modified_at).format('DD-MMM-YYYY')
                     }
-                })
+                }).slice(0, 3000)
                 templatesLoaded = true
                 templateCache.set(niceFormat)
                 checkAllSelected()
