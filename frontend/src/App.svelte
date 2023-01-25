@@ -1,8 +1,4 @@
 <script>
-    import {
-        ReadVersion
-    } from "../wailsjs/go/main/App.js"
-
     import Router from 'svelte-spa-router';
     import Init from "./routes/Init.svelte"
     import Welcome from "./routes/Welcome.svelte"
@@ -10,20 +6,12 @@
     import Page404 from "./routes/Page404.svelte";
     import TemplateFilter from "./routes/TemplateFilter.svelte";
     import FeedFilter from "./routes/FeedFilter.svelte";
-    import Debug from "./components/debug.svelte";
+    import StatusBar from "./components/StatusBar.svelte";
     import ExportStatus from "./routes/ExportStatus.svelte";
     import DebugMem from "./routes/DebugMem.svelte";
-
-    let version = ""
-    ReadVersion().then(v => {
-        version = v
-    })
 </script>
 
-{#if version === 'v0.0.0-dev'}
-    <Debug/>
-{/if}
-
+<div class="container">
 <Router routes={{
 	'/': Init,
 	'/welcome': Welcome,
@@ -34,3 +22,15 @@
 	'/debug': DebugMem,
 	'*': Page404
 }} />
+
+<StatusBar/>
+</div>
+
+<style>
+    .container {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+</style>

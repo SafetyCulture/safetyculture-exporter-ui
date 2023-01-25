@@ -20,7 +20,15 @@ templateCache.subscribe(value => {
     localStorage.setItem("templates", JSON.stringify(value))
 })
 
+// latest version
+const storedLatestVersion = localStorage.getItem("public-version")
+export const latestVersion = writable(storedLatestVersion)
+latestVersion.subscribe(value => {
+    localStorage.setItem("public-version", value)
+})
+
 export function emptyStores() {
     templateCache.set([])
     shadowConfig.set({});
+    latestVersion.set("")
 }

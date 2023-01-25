@@ -102,6 +102,29 @@ func (a *App) SelectDirectory(currentDir string) string {
 	return directoryDialog
 }
 
+func (a *App) SelectSettingsDirectory() {
+	settingsDir, err := GetSettingDirectoryPath()
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "can't open directory dialog, %v", err)
+		return
+	}
+
+	_, err = runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		DefaultDirectory: settingsDir,
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "*.log",
+				Pattern:     "*.log",
+			},
+		},
+	})
+
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "can't open directory dialog, %v", err)
+		return
+	}
+}
+
 // Greet returns a greeting for the given name
 func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
@@ -221,6 +244,10 @@ func (a *App) ReadExportStatus() {
 
 func (a *App) ReadVersion() string {
 	return version.GetVersion()
+}
+
+func (a *App) GetLatestVersion() string {
+	return version.GetLatestVersion()
 }
 
 func (a *App) ReadBuild() string {

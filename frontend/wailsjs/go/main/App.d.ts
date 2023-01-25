@@ -8,6 +8,8 @@ export function ExportCSV():Promise<void>;
 
 export function ExportSQL():Promise<void>;
 
+export function GetLatestVersion():Promise<string>;
+
 export function GetSettings():Promise<api.ExporterConfiguration>;
 
 export function GetTemplates():Promise<Array<api.TemplateResponseItem>>;
@@ -25,5 +27,7 @@ export function ReadVersion():Promise<string>;
 export function SaveSettings(arg1:api.ExporterConfiguration):Promise<void>;
 
 export function SelectDirectory(arg1:string):Promise<string>;
+
+export function SelectSettingsDirectory():Promise<void>;
 
 export function ValidateApiKey(arg1:string):Promise<boolean>;
