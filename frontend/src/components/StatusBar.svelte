@@ -6,6 +6,7 @@
     import {latestVersion} from '../lib/store.js';
 
     import {push} from "svelte-spa-router";
+    import {BrowserOpenURL} from "../../wailsjs/runtime/runtime.js";
 
     function gotoWelcome() {
         push("/welcome")
@@ -32,7 +33,7 @@
         version = it
     })
 
-    if ($latestVersion === '') {
+    if ($latestVersion === null || $latestVersion !== {}) {
         GetLatestVersion().then(result => {
             latestVersion.set(result);
         })
@@ -42,13 +43,16 @@
         SelectSettingsDirectory()
     }
 
+    function openURL(url) {
+        BrowserOpenURL(url)
+    }
 </script>
 
 <div class="bar">
     <div>
         <span>Current version: {version}</span>
-        {#if $latestVersion !== "" && $latestVersion !== version}
-            <span class="latest m-left-16 block-link">Latest version available: {$latestVersion}</span>
+        {#if $latestVersion !== {} && $latestVersion["Version"] !== version}
+            <span class="latest m-left-16 block-link" on:click={openURL($latestVersion['DownloadURL'])} on:keydown={openURL($latestVersion['DownloadURL'])}>Latest version available: {$latestVersion['Version']}</span>
         {/if}
     </div>
     {#if version === 'v0.0.0-dev'}

@@ -13,8 +13,11 @@ import (
 	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/version"
 	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
 	"github.com/SafetyCulture/safetyculture-exporter/pkg/httpapi"
+	"github.com/SafetyCulture/safetyculture-exporter/pkg/update"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
+
+const gitRepoExporterUI string = "safetyculture-exporter-ui"
 
 // App struct
 type App struct {
@@ -246,8 +249,9 @@ func (a *App) ReadVersion() string {
 	return version.GetVersion()
 }
 
-func (a *App) GetLatestVersion() string {
-	return version.GetLatestVersion()
+// GetLatestVersion will connect to GitHub and get the latest tag if newer + download URLs
+func (a *App) GetLatestVersion(currentVersion string) *update.ReleaseInfo {
+	return update.Check(currentVersion, gitRepoExporterUI)
 }
 
 func (a *App) ReadBuild() string {
