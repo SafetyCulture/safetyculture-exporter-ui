@@ -6,9 +6,7 @@
 	import Select from 'svelte-select';
 	import { DateInput } from 'date-picker-svelte'
 	import {
-		SaveSettings, SelectDirectory,
-		ExportCSV, ExportSQL,
-		ReadBuild
+		SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ReadBuild
 	} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig} from '../lib/store.js';
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
@@ -342,7 +340,7 @@
 	}
 
 	function openFolderDialog() {
-		if (build === 'windows') {
+		if (build === 'windows' || build === '') {
 			return
 		}
 		SelectDirectory($shadowConfig["Export"]["Path"]).then(result => {
@@ -356,7 +354,7 @@
 	parseDbConnectionString();
 </script>
 
-<div class="config-page p-48">
+<div class="config-page">
 	<section class="top-nav">
 		<div class="nav-left">
 			<div class="block-link p-left-8" on:click={handleBackButton} on:keypress={handleBackButton}>
@@ -446,11 +444,14 @@
 			<label class="text-size-medium" for="media">Media</label>
 		</section>
 	</div>
-
-
 </div>
 
 <style>
+	.config-page {
+		padding-top: var(--main-gutter-top);
+		padding-left: var(--main-gutter-left);
+		padding-right: var(--main-gutter-right);
+	}
 	.config-body {
 		display: flex;
 		justify-content: space-between;

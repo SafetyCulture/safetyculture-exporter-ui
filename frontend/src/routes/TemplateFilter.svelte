@@ -74,8 +74,8 @@
 <Overlay>This might take a while ...</Overlay>
 {/if}
 
-<div class="template-filter-page p-48">
-    <section class="top-nav">
+<div class="template-filter-page">
+    <div class="top-nav">
         <div class="nav-left">
             {#if templatesLoaded}
                 <img id="status-completed" src='/images/completed.png' alt="export completed icon">
@@ -87,19 +87,19 @@
         <div class="nav-right">
             <Button label="Done" type="active2" onClick={handleDone}/>
         </div>
-    </section>
+    </div>
 
-    <section class="top-nav m-top-16">
+    <div class="top-nav m-top-16">
         <div class="nav-left">
             <div class="h2">Select templates</div>
         </div>
         <div class="nav-right">
             <input class="input search" placeholder="Search" bind:value={searchFilter}/>
         </div>
-    </section>
+    </div>
 
-    <section class="m-top-16">
-        <div class="table-header text-gray-2">
+    <div class="templates-body m-top-16">
+        <div class="table-header text-gray-2" >
             <div class="table-row flex-spaced p-horiz-8">
                 <div class="nav-left">
                     <input type="checkbox" class="checkbox-purple" on:click="{toggleBodyCheckboxes}" bind:checked={isChecked}/>
@@ -127,10 +127,20 @@
             {/if}
         {/each}
         </div>
-    </section>
+    </div>
 </div>
 
 <style>
+    .template-filter-page {
+        padding-top: var(--main-gutter-top);
+        padding-left: var(--main-gutter-left);
+        padding-right: var(--main-gutter-right);
+    }
+
+    .templates-body {
+        overflow: hidden;
+    }
+
     .table-header {
         background-color: #DBDFEB;
     }
@@ -140,8 +150,8 @@
     }
 
     .table-body {
+        max-height: calc(100vh - 300px);
         overflow-y: scroll;
-        height:450px;
     }
 
     .table-body > .table-row {
@@ -151,9 +161,5 @@
     .table-row {
         display: flex;
         align-items: center;
-    }
-
-    input.search {
-
     }
 </style>

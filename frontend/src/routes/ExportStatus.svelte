@@ -62,7 +62,9 @@
 
 <style>
     .status-page {
-        padding: 20px;
+        padding-top: var(--main-gutter-top);
+        padding-left: var(--main-gutter-left);
+        padding-right: var(--main-gutter-right);
         background-color: #E9EEF6;
         height: 100%;
     }
@@ -88,7 +90,7 @@
 
     .progress-body {
         background-color: white;
-        height: calc( 100% - 100px );
+        height: calc( 100vh - 200px );
         padding: 20px 16px;
         overflow-y: scroll;
 

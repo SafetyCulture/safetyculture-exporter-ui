@@ -1,3 +1,9 @@
+:root {
+    --main-gutter-top: 32px;
+    --main-gutter-left: 32px;
+    --main-gutter-right: 32px;
+}
+
 body {
     font-style: normal;
     font-size: 1rem;
@@ -140,6 +146,10 @@ body::-webkit-scrollbar {
 
 .p-left-8 {
     padding-left: 8px;
+}
+
+.p-left-16 {
+    padding-left: 16px;
 }
 
 .p-right-8 {

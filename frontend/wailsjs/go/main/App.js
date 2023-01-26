@@ -14,6 +14,10 @@ export function ExportSQL() {
   return window['go']['main']['App']['ExportSQL']();
 }
 
+export function GetLatestVersion(arg1) {
+  return window['go']['main']['App']['GetLatestVersion'](arg1);
+}
+
 export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
@@ -48,6 +52,10 @@ export function SaveSettings(arg1) {
 
 export function SelectDirectory(arg1) {
   return window['go']['main']['App']['SelectDirectory'](arg1);
+}
+
+export function SelectSettingsDirectory() {
+  return window['go']['main']['App']['SelectSettingsDirectory']();
 }
 
 export function ValidateApiKey(arg1) {

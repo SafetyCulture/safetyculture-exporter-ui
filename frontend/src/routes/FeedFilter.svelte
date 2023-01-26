@@ -99,7 +99,7 @@
     }
 </script>
 
-<div class="template-filter-page p-48">
+<div class="table-filter-page">
     <section class="top-nav">
         <div class="nav-left">
             <div class="h1">Feed Export</div>
@@ -141,6 +141,12 @@
 </div>
 
 <style>
+    .table-filter-page {
+        padding-top: var(--main-gutter-top);
+        padding-left: var(--main-gutter-left);
+        padding-right: var(--main-gutter-right);
+    }
+
     .table-body {
         -ms-overflow-style: none; /* for Internet Explorer, Edge */
         scrollbar-width: none; /* for Firefox */
