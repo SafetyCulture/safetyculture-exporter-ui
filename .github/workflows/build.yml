@@ -52,7 +52,7 @@ jobs:
             VERSION=${{ github.ref_name }} ./scripts/build-macos.sh
 
         - name: Build package windows
-          if: matrix.os == 'ubuntu-latest'
+          if: matrix.os == 'windows-latest'
           run: |
             export PATH=$PATH:$(go env GOPATH)/bin
             echo "building on ${{ matrix.os }}"
