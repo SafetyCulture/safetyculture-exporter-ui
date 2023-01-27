@@ -55,11 +55,10 @@ jobs:
           if: matrix.os == 'ubuntu-latest'
           run: |
             export PATH=$PATH:$(go env GOPATH)/bin
-            export CGO_ENABLED=1
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
-            VERSION=${{ github.ref_name }} ./scripts/build-windows.sh
+            CGO_ENABLED=1 VERSION=${{ github.ref_name }} ./scripts/build-windows.sh
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
