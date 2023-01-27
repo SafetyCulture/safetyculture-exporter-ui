@@ -55,7 +55,7 @@ jobs:
           if: matrix.os == 'ubuntu-latest'
           run: |
             export PATH=$PATH:$(go env GOPATH)/bin
-            export CGO_ENABLED = 1
+            export CGO_ENABLED=1
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
