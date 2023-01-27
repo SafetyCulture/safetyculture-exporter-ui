@@ -75,7 +75,7 @@ jobs:
             path: exporter-linux-amd64.tar.gz
 
         - name: Upload artifacts windows
-          if: matrix.os == 'ubuntu-latest'
+          if: matrix.os == 'windows-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-windows
