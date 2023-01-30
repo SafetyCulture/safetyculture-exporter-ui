@@ -58,7 +58,7 @@ jobs:
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
-            CGO_ENABLED=1 VERSION=${{ github.ref_name }} ./scripts/build-windows.sh
+            GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc VERSION=${{ github.ref_name }} ./scripts/build-windows.sh
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
