@@ -66,7 +66,7 @@
         push("/config")
     }
 
-    // will select all templates
+    // will mark as selected all templates in the UI that were chosen
     checkAllSelected()
 </script>
 
@@ -113,24 +113,26 @@
         </div>
         <div class="table-body text-gray-2 m-top-8">
         {#each $templateCache as { id, name, modified_at }, i}
-            {#if (searchFilter.length > 2 && name.toLowerCase().includes(searchFilter.toLowerCase())) || searchFilter.length <= 2}
-                <div class="table-row flex-spaced p-horiz-8 m-right-8">
-                    <div class="nav-left">
-                        <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
-                        <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
-                        <div class="m-left-8">{trim(name)}</div>
-                    </div>
-                    <div class="nav-right">
-                        <div>{modified_at}</div>
-                    </div>
-                </div>
-            {/if}
+        <div class="table-row flex-spaced p-horiz-8 m-right-8" class:hide={searchFilter.length >= 2 && !name.toLowerCase().includes(searchFilter.toLowerCase())}>
+            <div class="nav-left">
+                <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
+                <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
+                <div class="m-left-8">{trim(name)}</div>
+            </div>
+            <div class="nav-right">
+                <div>{modified_at}</div>
+            </div>
+        </div>
         {/each}
         </div>
     </div>
 </div>
 
 <style>
+    .hide {
+        display: none!important;
+    }
+
     .template-filter-page {
         padding-top: var(--main-gutter-top);
         padding-left: var(--main-gutter-left);
