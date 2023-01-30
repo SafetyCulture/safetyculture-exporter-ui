@@ -79,7 +79,7 @@ jobs:
           uses: actions/upload-artifact@v2
           with:
             name: exporter-windows
-            path: exporter-windows-amd64.tar.gz
+            path: exporter-windows-amd64.zip
 
   release:
     runs-on: ubuntu-latest
