@@ -38,7 +38,7 @@
 		{value: "mysql", label: "MySQL"},
 		{value: "postgres", label: "Postgres"},
 		{value: "sqlserver", label: "SQL Server"},
-		{value: "reports", label: "Reports"},
+		// {value: "reports", label: "Reports"},
 	];
 
 	const POSTGRES_DIALECT = 'postgres';
