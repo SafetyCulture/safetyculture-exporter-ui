@@ -166,7 +166,7 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 		IntegrationVersion:  version.GetVersion(),
 	}
 	c := httpapi.NewClient(&cfg, apiOpts...)
-	res, err := c.WhoAmI(a.ctx)
+	res, err := httpapi.WhoAmI(a.ctx, c)
 
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "cannot check WhoAmI: %s", err.Error())
