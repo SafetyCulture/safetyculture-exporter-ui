@@ -27,7 +27,7 @@ jobs:
 
         - name: Install linux dependencies
           if: matrix.os == 'ubuntu-latest'
-          run: sudo apt-get update -y && sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential pkg-config  gcc-mingw-w64
+          run: sudo apt-get update -y && sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential pkg-config gcc-mingw-w64 zip
 
         - name: Use Node.js ${{ matrix.node-version }}
           uses: actions/setup-node@v3
