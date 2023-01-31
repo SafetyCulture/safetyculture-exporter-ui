@@ -8,6 +8,7 @@
     import {allTables} from "../lib/utils.js";
     import Button from "../components/Button.svelte";
     import {push} from "svelte-spa-router";
+    import Overlay from "../components/Overlay.svelte";
 
     let feedsToExport = []
     if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
@@ -17,6 +18,7 @@
         feedsToExport = allTables
     }
 
+    let cancelTriggered = false
     let exportCompleted = false
 
     onMount(() => {
@@ -24,15 +26,15 @@
             if (newValue === true) {
                 exportCompleted = true
             }
+            push("/config")
         })
     })
 
     function handleClose() {
+        cancelTriggered = true
         CancelExport().then(() => {
-            push("/config")
         })
     }
-
 
     ReadExportStatus();
 </script>
@@ -52,6 +54,12 @@
         <div class="nav-right">
             <Button label="Cancel Export" type="active2" onClick={handleClose}/>
         </div>
+    </div>
+
+    <div id="overlay-cancel-export">
+        {#if cancelTriggered && exportCompleted === false}
+            <Overlay>This might take a while ...</Overlay>
+        {/if}
     </div>
 
     <div class="progress-body m-top-16">
