@@ -365,7 +365,7 @@
 		<div class="download-alert" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
 			<div>This version is not longer supported</div>
 			<div>Latest version is {$latestVersion['latest']}</div>
-			<div>Please click me to download it</div>
+			<div>Please click here to download it</div>
 		</div>
 	</Overlay>
 {/if}
