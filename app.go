@@ -227,16 +227,13 @@ func (a *App) GetUserHomeDirectory() string {
 func (a *App) ReadExportStatus() {
 
 	for {
-		//fmt.Println()
 		exportStatus := a.exporter.GetExportStatus()
 
 		for _, item := range exportStatus.Feeds {
-			//fmt.Printf("emitting: update-%s %#v\n", item.FeedName, item)
 			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, item)
 		}
 
 		if exportStatus.ExportStarted && exportStatus.ExportCompleted {
-			//fmt.Println("emitting: finished-export")
 			runtime.EventsEmit(a.ctx, "finished-export", true)
 			break
 		}
@@ -275,6 +272,10 @@ func (a *App) ReadVersion() *VersionResponse {
 
 func (a *App) ReadBuild() string {
 	return osRuntime.GOOS
+}
+
+func (a *App) CancelExport() {
+	a.exporter.CancelExport()
 }
 
 func CreateSettingsDirectory() (string, error) {
