@@ -23,7 +23,7 @@
     <div>
         {#if !isNullOrEmptyObject($latestVersion)}
             <span>Current version: {$latestVersion['current']}</span>
-            {#if $latestVersion["should_update"] === true || $latestVersion['current'] === 'v0.0.0-dev'}
+            {#if $latestVersion['current'] !== $latestVersion['latest'] }
                 <span class="latest m-left-16 block-link" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>Latest version available: {$latestVersion['latest']}</span>
             {/if}
         {/if}

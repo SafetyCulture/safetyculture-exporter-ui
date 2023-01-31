@@ -20,7 +20,7 @@ func TestShouldUpdate(t *testing.T) {
 			name:         "Dev",
 			current:      "v0.0.0-dev",
 			new:          "v1.1.3",
-			shouldUpdate: false,
+			shouldUpdate: true,
 		},
 		{
 			name:         "Same Major One Minor",

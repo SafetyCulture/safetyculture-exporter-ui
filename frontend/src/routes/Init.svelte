@@ -5,6 +5,14 @@
 
     emptyStores();
 
+    ReadVersion().then(result => {
+        if (result != null) {
+            latestVersion.set(result);
+        } else {
+            latestVersion.set({})
+        }
+    })
+
     GetSettings().then(result => {
         shadowConfig.set(result);
 
@@ -30,14 +38,6 @@
         }
     })
 
-    ReadVersion().then(result => {
-        if (result != null) {
-            latestVersion.set(result);
-        } else {
-            latestVersion.set({})
-        }
-        console.debug(result)
-    })
 
 </script>
 

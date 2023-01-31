@@ -22,11 +22,6 @@ func GetIntegrationID() string {
 // ShouldUpdate compares 2 versions (semver)
 // return true if there is a major or 2 minor differences
 func ShouldUpdate(current string, new string) bool {
-	// don't force developers to update
-	if current == "v0.0.0-dev" {
-		return false
-	}
-
 	currentVer, err := vv.NewSemver(current)
 	if err != nil {
 		return false
