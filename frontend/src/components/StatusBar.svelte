@@ -7,6 +7,7 @@
 
     import {push} from "svelte-spa-router";
     import {BrowserOpenURL} from "../../wailsjs/runtime/runtime.js";
+    import {isNullOrEmptyObject} from "../lib/utils.js";
 
     function gotoWelcome() {
         push("/welcome")
@@ -33,9 +34,15 @@
         version = it
     })
 
-    if ($latestVersion === null || $latestVersion !== {}) {
+    if (isNullOrEmptyObject($latestVersion)) {
         GetLatestVersion().then(result => {
-            latestVersion.set(result);
+            if (result != null) {
+                latestVersion.set(result);
+            } else {
+                latestVersion.set({})
+            }
+        }).catch(e => {
+            latestVersion.set({})
         })
     }
 
@@ -51,7 +58,7 @@
 <div class="bar">
     <div>
         <span>Current version: {version}</span>
-        {#if $latestVersion !== {} && $latestVersion["Version"] !== version}
+        {#if !isNullOrEmptyObject($latestVersion) && $latestVersion["Version"] !== version}
             <span class="latest m-left-16 block-link" on:click={openURL($latestVersion['DownloadURL'])} on:keydown={openURL($latestVersion['DownloadURL'])}>Latest version available: {$latestVersion['Version']}</span>
         {/if}
     </div>
