@@ -14,10 +14,6 @@ export function ExportSQL() {
   return window['go']['main']['App']['ExportSQL']();
 }
 
-export function GetLatestVersion(arg1) {
-  return window['go']['main']['App']['GetLatestVersion'](arg1);
-}
-
 export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }

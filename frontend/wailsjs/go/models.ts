@@ -39,3 +39,26 @@ export namespace api {
 
 }
 
+export namespace main {
+	
+	export class VersionResponse {
+	    current: string;
+	    latest: string;
+	    download_url: string;
+	    should_update: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new VersionResponse(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.current = source["current"];
+	        this.latest = source["latest"];
+	        this.download_url = source["download_url"];
+	        this.should_update = source["should_update"];
+	    }
+	}
+
+}
+
