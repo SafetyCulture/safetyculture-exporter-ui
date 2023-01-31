@@ -8,11 +8,13 @@
 	import {
 		SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ReadBuild
 	} from "../../wailsjs/go/main/App.js"
-	import {shadowConfig} from '../lib/store.js';
-	import {Quit} from "../../wailsjs/runtime/runtime.js";
+	import {latestVersion, shadowConfig} from '../lib/store.js';
+	import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
 	import FormTextInput from "../components/FormTextInput.svelte";
 	import Button from "../components/Button.svelte";
+	import {isNullOrEmptyObject} from "../lib/utils.js";
+	import Overlay from "../components/Overlay.svelte";
 
 	let build = ""
 	ReadBuild().then(it => {
@@ -351,8 +353,23 @@
 		})
 	}
 
+	function openURL(url) {
+		BrowserOpenURL(url)
+	}
+
 	parseDbConnectionString();
 </script>
+
+{#if !isNullOrEmptyObject($latestVersion) && $latestVersion["should_update"] === true && $latestVersion['current'] !== 'v0.0.0-dev'}
+	<Overlay>
+		<div class="download-alert" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
+			<div>This version is not longer supported</div>
+			<div>Latest version is {$latestVersion['latest']}</div>
+			<div>Please click here to download it</div>
+		</div>
+	</Overlay>
+{/if}
+
 
 <div class="config-page">
 	<section class="top-nav">
@@ -474,8 +491,8 @@
 		overflow-y: auto;
 	}
 
-	.cursor-pointer {
+	.download-alert {
+		text-align: center;
 		cursor: pointer;
 	}
-
 </style>

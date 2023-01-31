@@ -242,13 +242,32 @@ func (a *App) ReadExportStatus() {
 	}
 }
 
-func (a *App) ReadVersion() string {
-	return version.GetVersion()
+type VersionResponse struct {
+	Current      string `json:"current"`
+	Latest       string `json:"latest"`
+	DownloadURL  string `json:"download_url"`
+	ShouldUpdate bool   `json:"should_update"`
 }
 
-// GetLatestVersion will connect to GitHub and get the latest tag if newer + download URLs
-func (a *App) GetLatestVersion(currentVersion string) *update.ReleaseInfo {
-	return update.Check(currentVersion, gitRepoExporterUI)
+func (a *App) ReadVersion() *VersionResponse {
+	var current = version.GetVersion()
+	var latest string
+	var downloadURL string
+	var shouldUpdate bool
+
+	releaseInfo := update.Check(current, gitRepoExporterUI)
+	if releaseInfo != nil {
+		latest = releaseInfo.Version
+		downloadURL = releaseInfo.DownloadURL
+		shouldUpdate = version.ShouldUpdate(current, latest)
+	}
+
+	return &VersionResponse{
+		Current:      current,
+		Latest:       latest,
+		DownloadURL:  downloadURL,
+		ShouldUpdate: shouldUpdate,
+	}
 }
 
 func (a *App) ReadBuild() string {
@@ -256,7 +275,7 @@ func (a *App) ReadBuild() string {
 }
 
 func (a *App) CancelExport() {
-	a.exporter.CancelExport()
+	//a.exporter.CancelExport()
 }
 
 func CreateSettingsDirectory() (string, error) {

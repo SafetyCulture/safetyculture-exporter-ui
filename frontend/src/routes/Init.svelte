@@ -1,9 +1,17 @@
 <script>
     import {push} from 'svelte-spa-router'
-    import {GetSettings, ValidateApiKey} from "../../wailsjs/go/main/App.js"
+    import {ReadVersion, GetSettings, ValidateApiKey} from "../../wailsjs/go/main/App.js"
     import {shadowConfig, latestVersion, emptyStores} from '../lib/store.js';
 
     emptyStores();
+
+    ReadVersion().then(result => {
+        if (result != null) {
+            latestVersion.set(result);
+        } else {
+            latestVersion.set({})
+        }
+    })
 
     GetSettings().then(result => {
         shadowConfig.set(result);
@@ -29,5 +37,7 @@
             push("/welcome")
         }
     })
+
+
 </script>
 
