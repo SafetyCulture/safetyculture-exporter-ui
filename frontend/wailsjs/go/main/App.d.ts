@@ -3,6 +3,8 @@
 import {update} from '../models';
 import {api} from '../models';
 
+export function CancelExport():Promise<void>;
+
 export function CheckApiKey():Promise<boolean>;
 
 export function ExportCSV():Promise<void>;

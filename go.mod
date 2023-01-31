@@ -3,7 +3,7 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 go 1.18
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230131002107-87f9cb0918f1
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230131013544-aee0d0c0c090
 	github.com/wailsapp/wails/v2 v2.3.1
 )
 
@@ -36,7 +36,7 @@ require (
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
-	github.com/mattn/go-sqlite3 v1.14.15 // indirect
+	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/microsoft/go-mssqldb v0.19.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect

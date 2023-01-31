@@ -1,11 +1,13 @@
 <script>
     import './common.css';
-    import {ReadExportStatus} from "../../wailsjs/go/main/App.js"
+    import {CancelExport, ReadExportStatus} from "../../wailsjs/go/main/App.js"
     import Status from "./../components/Export/Status.svelte";
     import {shadowConfig} from "../lib/store.js";
     import {onMount} from "svelte";
     import {EventsOn} from "../../wailsjs/runtime/runtime.js";
     import {allTables} from "../lib/utils.js";
+    import Button from "../components/Button.svelte";
+    import {push} from "svelte-spa-router";
 
     let feedsToExport = []
     if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
@@ -25,6 +27,13 @@
         })
     })
 
+    function handleClose() {
+        CancelExport().then(() => {
+            push("/config")
+        })
+    }
+
+
     ReadExportStatus();
 </script>
 
@@ -40,6 +49,9 @@
             {/if}
         </div>
         <div class="inline status-title p-left-8">Export Status</div>
+        <div class="nav-right">
+            <Button label="Cancel Export" type="active2" onClick={handleClose}/>
+        </div>
     </div>
 
     <div class="progress-body m-top-16">
