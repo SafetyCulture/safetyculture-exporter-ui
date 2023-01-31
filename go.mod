@@ -3,7 +3,7 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 go 1.18
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230130040220-29af9ac0ba78
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230131013544-aee0d0c0c090
 	github.com/wailsapp/wails/v2 v2.3.1
 )
 
@@ -13,7 +13,7 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/gocarina/gocsv v0.0.0-20220310154401-d4df709ca055 // indirect
-	github.com/gofrs/uuid v4.3.1+incompatible // indirect
+	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect

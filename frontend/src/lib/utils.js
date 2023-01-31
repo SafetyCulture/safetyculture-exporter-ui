@@ -4,6 +4,14 @@ export function trim(value, size) {
     }
     return value
 }
+
+export function isNullOrEmptyObject(obj) {
+    if(obj === null) {
+        return true
+    }
+    return Object.keys(obj).length === 0;
+}
+
 export const allTables = ['inspections', 'inspection_items', 'schedules', 'templates', 'template_permissions',
     'sites', 'site_members', 'groups', 'group_users', 'schedule_assignees', 'schedule_occurrences', 'actions',
     'action_assignees', 'issues', 'assets', 'users'];
