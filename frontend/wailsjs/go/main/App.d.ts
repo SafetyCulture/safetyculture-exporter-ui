@@ -7,6 +7,8 @@ export function CancelExport():Promise<void>;
 
 export function CheckApiKey():Promise<boolean>;
 
+export function CheckDBConnection():Promise<void>;
+
 export function ExportCSV():Promise<void>;
 
 export function ExportSQL():Promise<void>;

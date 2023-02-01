@@ -10,6 +10,10 @@ export function CheckApiKey() {
   return window['go']['main']['App']['CheckApiKey']();
 }
 
+export function CheckDBConnection() {
+  return window['go']['main']['App']['CheckDBConnection']();
+}
+
 export function ExportCSV() {
   return window['go']['main']['App']['ExportCSV']();
 }

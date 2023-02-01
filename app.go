@@ -137,8 +137,12 @@ func (a *App) ExportCSV() {
 	a.exporter.RunCSV()
 }
 
-func (a *App) ExportSQL() {
-	a.exporter.RunSQL()
+func (a *App) CheckDBConnection() error {
+	return a.exporter.CheckDBConnection()
+}
+
+func (a *App) ExportSQL() error {
+	return a.exporter.RunSQL()
 }
 
 func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
