@@ -22,7 +22,6 @@
 
     onMount(() => {
         EventsOn("update-"+name, (newValue) => {
-						console.log(newValue['feed_name'], newValue)
 						counterDecremental = newValue['counter_decremental']
             if (newValue['started'] === true && newValue['finished'] === false) {
                 switch (newValue['stage']) {
