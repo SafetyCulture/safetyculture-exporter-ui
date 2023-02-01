@@ -275,7 +275,7 @@ func (a *App) ReadBuild() string {
 }
 
 func (a *App) CancelExport() {
-	//a.exporter.CancelExport()
+	a.exporter.CancelExport()
 }
 
 func CreateSettingsDirectory() (string, error) {
