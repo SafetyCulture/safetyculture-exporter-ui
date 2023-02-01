@@ -82,7 +82,7 @@
             {:else}
                 <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon">
             {/if}
-            <div class="h1 p-left-8">Export Configuration</div>
+            <div class="h1 p-left-8">Template selection</div>
         </div>
         <div class="nav-right">
             <Button label="Done" type="active2" onClick={handleDone}/>
