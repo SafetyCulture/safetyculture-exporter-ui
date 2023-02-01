@@ -12,7 +12,8 @@
     export let name = '';
     export let status = statusQueued
 
-    let remaining = 0
+    let counter = -1
+    let counterDecremental = true
     let pillType = "neutral"
 
     function formatExportItemName(str) {
@@ -21,6 +22,8 @@
 
     onMount(() => {
         EventsOn("update-"+name, (newValue) => {
+						console.log(newValue['feed_name'], newValue)
+						counterDecremental = newValue['counter_decremental']
             if (newValue['started'] === true && newValue['finished'] === false) {
                 switch (newValue['stage']) {
                     case 'API_DOWNLOAD':
@@ -30,16 +33,16 @@
                         status = statusExporting
                         break
                 }
-                remaining = newValue['remaining']
+                counter = newValue['counter']
             }
 
             if (newValue['started'] === true && newValue['finished'] === true) {
                 if (newValue['has_error'] === false) {
                     status = statusComplete
-                    remaining = 0
+	                  counter = 0
                 } else {
                     status = statusFailed
-                    remaining = 0
+	                  counter = 0
                 }
             }
 
@@ -66,7 +69,9 @@
 <td class="status-col-2">
     <Pill name={status} type={pillType}/>
 </td>
-<td class="status-col-3">{(remaining === -1 || remaining === 0) ? "-" : remaining}</td>
+<td class="status-col-3">
+		{(counter === -1 || counter === 0) ? "-" : counter + " " + (counterDecremental === true ? "remaining" : "downloaded")}
+</td>
 
 <style>
     td {

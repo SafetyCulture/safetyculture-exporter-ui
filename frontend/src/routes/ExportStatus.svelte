@@ -9,11 +9,14 @@
 
     let feedsToExport = []
     if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
-        feedsToExport = $shadowConfig["Export"]["Tables"]
+        feedsToExport = Array.from($shadowConfig["Export"]["Tables"])
     }
     if (feedsToExport.length === 0) {
-        feedsToExport = allTables
+        feedsToExport = Array.from(allTables)
     }
+		if ($shadowConfig["Export"]["Media"] === true && !feedsToExport.includes("media")) {
+			feedsToExport.push("media")
+		}
 
     let exportCompleted = false
 
@@ -47,8 +50,8 @@
             <thead>
                 <tr class="text-weak">
                     <th class="status-col-1">Export item</th>
-                    <th class="status-col-2">Progress</th>
-                    <th class="status-col-3">Remaining</th>
+                    <th class="status-col-2">Status</th>
+                    <th class="status-col-3">Progress</th>
                 </tr>
             </thead>
             <tbody>
