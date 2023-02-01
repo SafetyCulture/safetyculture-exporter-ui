@@ -14,9 +14,9 @@
     if (feedsToExport.length === 0) {
         feedsToExport = Array.from(allTables)
     }
-		if ($shadowConfig["Export"]["Media"] === true && !feedsToExport.includes("media")) {
-			feedsToExport.push("media")
-		}
+    if ($shadowConfig["Export"]["Media"] === true && !feedsToExport.includes("media")) {
+        feedsToExport.push("media")
+    }
 
     let exportCompleted = false
 

@@ -22,8 +22,7 @@
 
     onMount(() => {
         EventsOn("update-"+name, (newValue) => {
-
-			counterDecremental = newValue['counter_decremental']
+            counterDecremental = newValue['counter_decremental']
             if (newValue['started'] === true && newValue['finished'] === false) {
                 switch (newValue['stage']) {
                     case 'API_DOWNLOAD':
@@ -39,12 +38,10 @@
             if (newValue['started'] === true && newValue['finished'] === true) {
                 if (newValue['has_error'] === false) {
                     status = statusComplete
-
-	                counter = 0
+                    counter = 0
                 } else {
                     status = statusFailed
-
-	                counter = 0
+                    counter = 0
                 }
             }
 
