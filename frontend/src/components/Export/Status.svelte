@@ -10,6 +10,7 @@
     const statusExporting = "Exporting"
 
     export let name = '';
+    export let cancelled = false;
     export let status = statusQueued
 
     let counter = -1
@@ -45,6 +46,7 @@
                 }
             }
 
+
             switch (status) {
                 case 'Complete':
                     pillType = 'success'
@@ -66,7 +68,11 @@
 
 <td class="status-col-1">{formatExportItemName(name)}</td>
 <td class="status-col-2">
-    <Pill name={status} type={pillType}/>
+    {#if cancelled === true }
+        <Pill name="Cancelled" type="cancelled"/>
+    {:else}
+        <Pill name={status} type={pillType}/>
+    {/if}
 </td>
 <td class="status-col-3">
 		{(counter === -1 || counter === 0) ? "-" : counter + " " + (counterDecremental === true ? "remaining" : "downloaded")}

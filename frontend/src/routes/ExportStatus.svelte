@@ -62,14 +62,18 @@
     <section class="top-nav">
         <div class="nav-left">
             <div class=" inline">
-                {#if exportCompleted}
-                    <img id="status-completed" src='/images/completed.png' alt="export completed icon">
+                {#if cancelTriggered}
+                    <img id="status-cancelled" src='/images/cancelled.png' alt="export cancelled icon" width="24" height="24">
+                {:else if exportCompleted}
+                    <img id="status-completed" src='/images/completed.png' alt="export completed icon" width="24" height="24">
                 {:else}
-                    <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon">
+                    <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon" width="24" height="24">
                 {/if}
             </div>
-            <div class="nav-left inline status-title p-left-16">
-                {#if exportCompleted}
+            <div class="nav-left inline status-title p-left-8">
+                {#if cancelTriggered}
+                    Cancelled
+                {:else if exportCompleted}
                     Completed
                 {:else}
                     In Progress
@@ -84,9 +88,9 @@
                     {#if exportType  === "csv"}
                         <Button label="Open Export Folder" type="active-white" onClick={openExportFolder}/>
                     {/if}
-                    <Button label="Close" type="active-purple" onClick={handleClose}/>
+                    <Button label="Close" type="active-purple" onClick={goBack}/>
                 {:else}
-                    <Button label="Go BacK" type="active-purple" onClick={goBack}/>
+                    <Button label="Go Back" type="active-purple" onClick={goBack}/>
                 {/if}
             {/if}
         </div>
@@ -109,7 +113,7 @@
             </thead>
             <tbody>
             {#each feedsToExport as feed}
-                <tr><Status name={feed}></Status></tr>
+                <tr><Status name={feed} cancelled={cancelTriggered}></Status></tr>
             {/each}
             </tbody>
         </table>
