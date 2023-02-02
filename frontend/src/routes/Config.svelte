@@ -15,6 +15,7 @@
 	import Button from "../components/Button.svelte";
 	import {isNullOrEmptyObject} from "../lib/utils.js";
 	import Overlay from "../components/Overlay.svelte";
+	import StatusBar from "../components/StatusBar.svelte";
 
 	let build = ""
 	ReadBuild().then(it => {
@@ -462,6 +463,8 @@
 		</section>
 	</div>
 </div>
+
+<StatusBar/>
 
 <style>
 	.config-page {

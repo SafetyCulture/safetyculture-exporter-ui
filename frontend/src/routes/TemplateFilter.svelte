@@ -7,6 +7,7 @@
     import {trim} from "../lib/utils.js";
     import Button from "../components/Button.svelte";
     import Overlay from "../components/Overlay.svelte";
+    import StatusBar from "../components/StatusBar.svelte";
 
     let searchFilter = ""
     let isChecked = false
@@ -127,6 +128,8 @@
         </div>
     </div>
 </div>
+
+<StatusBar/>
 
 <style>
     .hide {
