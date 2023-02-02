@@ -9,6 +9,7 @@
      class:info={type === 'info'}
      class:neutral={type === 'neutral'}
      class:error={type === 'error'}
+     class:cancelled={type === 'cancelled'}
 >{name}</div>
 
 <style>
@@ -31,6 +32,11 @@
     }
 
     .neutral {
+        background-color: #EEF1F7;
+        color: #3F495A;
+    }
+
+    .cancelled {
         background-color: #EEF1F7;
         color: #3F495A;
     }

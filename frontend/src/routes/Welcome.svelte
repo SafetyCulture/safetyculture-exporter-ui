@@ -66,7 +66,7 @@
 		<section class="storage-info">
 			<div class="note border-round-8">
 				<div>
-					<img src="../images/round_exclamation_mark.png" alt="alert icon" width="20" height="20">
+					<img src="../images/round-exclamation-mark.png" alt="alert icon" width="24" height="24">
 				</div>
 				<div>
 					<div class="note-title">Before you continue</div>
