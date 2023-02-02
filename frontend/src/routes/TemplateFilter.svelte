@@ -86,7 +86,7 @@
             <div class="h1 p-left-8">Template selection</div>
         </div>
         <div class="nav-right">
-            <Button label="Done" type="active2" onClick={handleDone}/>
+            <Button label="Done" type="active-white" onClick={handleDone}/>
         </div>
     </div>
 

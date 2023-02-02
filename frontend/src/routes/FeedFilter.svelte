@@ -106,7 +106,7 @@
             <div class="h1">Feed Export</div>
         </div>
         <div class="nav-right">
-            <Button label="Done" type="active2" onClick={handleDone}/>
+            <Button label="Done" type="active-white" onClick={handleDone}/>
         </div>
     </section>
 

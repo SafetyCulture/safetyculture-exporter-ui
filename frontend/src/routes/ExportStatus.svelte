@@ -22,6 +22,8 @@
         feedsToExport.push("media")
     }
 
+    let exportType = $shadowConfig["Session"]["ExportType"]
+
     let cancelTriggered = false
     let exportCompleted = false
 
@@ -43,8 +45,11 @@
         Quit()
     }
 
+    function goBack() {
+        push("/config")
+    }
+
     function openExportFolder() {
-        // BrowserOpenURL(shadowConfig["Export"]["Path"])
         OpenDirectory($shadowConfig["Export"]["Path"])
     }
 
@@ -73,13 +78,20 @@
         </div>
         <div class="nav-right">
             {#if !exportCompleted}
-                <Button label="Cancel Export" type="active2" onClick={handleCancel}/>
+                <Button label="Cancel Export" type="active-red" onClick={handleCancel}/>
             {:else}
-                <Button label="Open Export Folder" type="active2" onClick={openExportFolder}/>
-                <Button label="Close" type="active" onClick={handleClose}/>
+                {#if !cancelTriggered}
+                    {#if exportType  === "csv"}
+                        <Button label="Open Export Folder" type="active-white" onClick={openExportFolder}/>
+                    {/if}
+                    <Button label="Close" type="active-purple" onClick={handleClose}/>
+                {:else}
+                    <Button label="Go BacK" type="active-purple" onClick={goBack}/>
+                {/if}
             {/if}
         </div>
     </section>
+
     <div id="overlay-cancel-export">
         {#if cancelTriggered && exportCompleted === false}
             <Overlay>This might take a while ...</Overlay>

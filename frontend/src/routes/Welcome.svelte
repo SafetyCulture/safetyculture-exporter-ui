@@ -60,7 +60,7 @@
 				</div>
 			{/if}
 
-			<Button label={buttonLabel} type="active" error={displayValidationError} clazz="m-top-8" onClick={validate}/>
+			<Button label={buttonLabel} type="active-purple" error={displayValidationError} clazz="m-top-8" onClick={validate}/>
 		</section>
 
 		<section class="storage-info">

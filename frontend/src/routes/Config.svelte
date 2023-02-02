@@ -16,6 +16,7 @@
 	import {isNullOrEmptyObject} from "../lib/utils.js";
 	import Overlay from "../components/Overlay.svelte";
 	import StatusBar from "../components/StatusBar.svelte";
+	import FormPassword from "../components/FormPassword.svelte";
 
 	let build = ""
 	ReadBuild().then(it => {
@@ -401,8 +402,8 @@
 			<div class="h1 p-left-8">Export Configuration</div>
 		</div>
 		<div class="nav-right">
-			<Button label="Save and close" type="active2" onClick={handleSaveAndClose}/>
-			<Button label="Save and export" type="active" clazz="m-left-8" error={formError} onClick={handleSaveAndExport}/>
+			<Button label="Save and close" type="active-white" onClick={handleSaveAndClose}/>
+			<Button label="Save and export" type="active-purple" clazz="m-left-8" error={formError} onClick={handleSaveAndExport}/>
 		</div>
 	</section>
 	<div class="config-body m-top-8">
@@ -451,7 +452,7 @@
 					<FormTextInput label="Host address" placeholder="e.g. localhost" error={dbHostShowError} bind:value={dbHost}/>
 					<FormTextInput label="Host port" placeholder={dbPortPlaceholder} error={dbPortShowError} bind:value={dbPort}/>
 					<FormTextInput label="Username" placeholder="e.g. john" error={dbUserShowError} bind:value={dbUser}/>
-					<FormTextInput label="Password" placeholder="e.q. mySup3rS3cr3t" error={dbPasswordShowError} bind:value={dbPassword}/>
+					<FormPassword label="Password" placeholder="e.q. mySup3rS3cr3t" error={dbPasswordShowError} bind:value={dbPassword}/>
 					<FormTextInput label="Database name" placeholder="e.g. safetyculture" error={dbNameShowError} bind:value={dbName}/>
 					<hr>
 				</div>
