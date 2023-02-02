@@ -6,9 +6,7 @@
     import Page404 from "./routes/Page404.svelte";
     import TemplateFilter from "./routes/TemplateFilter.svelte";
     import FeedFilter from "./routes/FeedFilter.svelte";
-    import StatusBar from "./components/StatusBar.svelte";
     import ExportStatus from "./routes/ExportStatus.svelte";
-    import DebugMem from "./routes/DebugMem.svelte";
 </script>
 
 <div class="container">
@@ -19,11 +17,8 @@
 	'/config/templates': TemplateFilter,
 	'/config/tables': FeedFilter,
 	'/export/status': ExportStatus,
-	'/debug': DebugMem,
 	'*': Page404
 }} />
-
-<StatusBar/>
 </div>
 
 <style>

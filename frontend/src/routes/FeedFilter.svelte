@@ -3,6 +3,7 @@
     import {shadowConfig} from "../lib/store.js";
     import {push} from "svelte-spa-router";
     import Button from "../components/Button.svelte";
+    import StatusBar from "../components/StatusBar.svelte";
 
 
     let data = [
@@ -139,6 +140,8 @@
         </div>
     </section>
 </div>
+
+<StatusBar/>
 
 <style>
     .table-filter-page {

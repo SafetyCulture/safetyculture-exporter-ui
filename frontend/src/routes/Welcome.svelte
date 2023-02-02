@@ -6,6 +6,7 @@
 	import {shadowConfig, templateCache} from '../lib/store.js';
 	import ValidatableInput from "../components/ValidatableInput.svelte";
 	import Button from "../components/Button.svelte";
+	import StatusBar from "../components/StatusBar.svelte";
 
 
 	let isValid = false;
@@ -80,6 +81,8 @@
 		</div>
 	</section>
 </div>
+
+<StatusBar/>
 
 <style>
 	.welcome-page {

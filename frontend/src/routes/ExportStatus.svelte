@@ -9,6 +9,7 @@
     import Button from "../components/Button.svelte";
     import {push} from "svelte-spa-router";
     import Overlay from "../components/Overlay.svelte";
+    import StatusBar from "../components/StatusBar.svelte";
 
     let feedsToExport = []
     if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
@@ -102,6 +103,8 @@
         </table>
     </div>
 </div>
+
+<StatusBar/>
 
 <style>
     .status-page {
