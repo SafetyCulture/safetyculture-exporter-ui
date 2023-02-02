@@ -21,6 +21,8 @@ export function GetUserHomeDirectory():Promise<string>;
 
 export function Greet(arg1:string):Promise<string>;
 
+export function OpenDirectory(arg1:string):Promise<void>;
+
 export function ReadBuild():Promise<string>;
 
 export function ReadExportStatus():Promise<void>;

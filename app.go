@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	osRuntime "runtime"
@@ -312,5 +313,19 @@ func GetSettingDirectoryPath() (string, error) {
 			return "", errors.New("can't get user's home directory")
 		}
 		return wd, nil
+	}
+}
+
+func (a *App) OpenDirectory(dir string) {
+	var cmd *exec.Cmd
+	if osRuntime.GOOS == "windows" {
+		cmd = exec.Command("start", dir)
+	} else {
+		cmd = exec.Command("open", dir)
+	}
+
+	err := cmd.Start()
+	if err != nil {
+		// handle error
 	}
 }
