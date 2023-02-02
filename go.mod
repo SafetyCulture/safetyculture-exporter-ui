@@ -3,7 +3,7 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 go 1.18
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230201235804-5aeba8cdca63
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230202033141-b8c42bdc01e6
 	github.com/hashicorp/go-version v1.6.0
 	github.com/stretchr/testify v1.8.1
 	github.com/wailsapp/wails/v2 v2.3.1
@@ -69,6 +69,3 @@ require (
 	gorm.io/driver/sqlserver v1.4.2 // indirect
 	gorm.io/gorm v1.24.3 // indirect
 )
-
-//replace github.com/wailsapp/wails/v2 v2.2.0 => /Users/gaurav.verma/go/pkg/mod
-//replace github.com/SafetyCulture/safetyculture-exporter => /Users/mick/go/src/github.com/SafetyCulture/safetyculture-exporter
