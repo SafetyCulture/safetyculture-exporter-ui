@@ -9,8 +9,9 @@
 
 <button class="button {clazz}"
         class:button-error={error}
-        class:button-purple={type === 'active'}
-        class:button-white={type === 'active2'}
+        class:button-purple={type === 'active-purple'}
+        class:button-white={type === 'active-white'}
+        class:button-red={type === 'active-red'}
         on:click={onClick}
 >{label}</button>
 
@@ -38,6 +39,12 @@
         background: #675DF4;
         color: #FFFFFF;
         border-color: #FFFFFF;
+    }
+
+    .button-red {
+        background: #b50d0d;
+        color: #FFFFFF;
+        border-color: #FFFFFF;;
     }
 
     .button-error {
