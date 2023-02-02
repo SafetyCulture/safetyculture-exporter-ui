@@ -1,10 +1,10 @@
 <script>
     import './common.css';
-    import {CancelExport, ReadExportStatus} from "../../wailsjs/go/main/App.js"
+    import {CancelExport, ReadExportStatus, OpenDirectory} from "../../wailsjs/go/main/App.js"
     import Status from "./../components/Export/Status.svelte";
     import {shadowConfig} from "../lib/store.js";
     import {onMount} from "svelte";
-    import {EventsOn} from "../../wailsjs/runtime/runtime.js";
+    import {EventsOn, Quit} from "../../wailsjs/runtime/runtime.js";
     import {allTables} from "../lib/utils.js";
     import Button from "../components/Button.svelte";
     import {push} from "svelte-spa-router";
@@ -30,14 +30,22 @@
             if (newValue === true) {
                 exportCompleted = true
             }
-            push("/config")
         })
     })
 
-    function handleClose() {
+    function handleCancel() {
         cancelTriggered = true
         CancelExport().then(() => {
         })
+    }
+
+    function handleClose() {
+        Quit()
+    }
+
+    function openExportFolder() {
+        // BrowserOpenURL(shadowConfig["Export"]["Path"])
+        OpenDirectory($shadowConfig["Export"]["Path"])
     }
 
     ReadExportStatus();
@@ -46,20 +54,32 @@
 <div class="status-page">
     <img class="logo" src="../images/logo.png" alt="SafetyCulture logo"/>
 
-    <div class="progress-title m-top-32">
-        <div class="inline">
-            {#if exportCompleted}
-                <img id="status-completed" src='/images/completed.png' alt="export completed icon">
+    <section class="top-nav">
+        <div class="nav-left">
+            <div class=" inline">
+                {#if exportCompleted}
+                    <img id="status-completed" src='/images/completed.png' alt="export completed icon">
+                {:else}
+                    <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon">
+                {/if}
+            </div>
+            <div class="nav-left inline status-title p-left-16">
+                {#if exportCompleted}
+                    Completed
+                {:else}
+                    In Progress
+                {/if}
+            </div>
+        </div>
+        <div class="nav-right">
+            {#if !exportCompleted}
+                <Button label="Cancel Export" type="active2" onClick={handleCancel}/>
             {:else}
-                <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon">
+                <Button label="Open Export Folder" type="active2" onClick={openExportFolder}/>
+                <Button label="Close" type="active" onClick={handleClose}/>
             {/if}
         </div>
-        <div class="inline status-title p-left-8">Export Status</div>
-        <div class="nav-right">
-            <Button label="Cancel Export" type="active2" onClick={handleClose}/>
-        </div>
-    </div>
-
+    </section>
     <div id="overlay-cancel-export">
         {#if cancelTriggered && exportCompleted === false}
             <Overlay>This might take a while ...</Overlay>
@@ -97,16 +117,6 @@
 
     .logo {
         width: 150px;
-    }
-
-    .progress-title {
-        display: flex;
-        align-items: center;
-        justify-content: start;
-    }
-
-    .progress-title .inline {
-        display: flex;
     }
 
     .status-title {

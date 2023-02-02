@@ -16,7 +16,7 @@
 	'/config': Config,
 	'/config/templates': TemplateFilter,
 	'/config/tables': FeedFilter,
-	'/exportStatus': ExportStatus,
+	'/export/status': ExportStatus,
 	'*': Page404
 }} />
 </div>

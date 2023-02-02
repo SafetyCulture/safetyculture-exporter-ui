@@ -10,6 +10,10 @@ export function CheckApiKey() {
   return window['go']['main']['App']['CheckApiKey']();
 }
 
+export function CheckDBConnection() {
+  return window['go']['main']['App']['CheckDBConnection']();
+}
+
 export function ExportCSV() {
   return window['go']['main']['App']['ExportCSV']();
 }
@@ -32,6 +36,10 @@ export function GetUserHomeDirectory() {
 
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
+}
+
+export function OpenDirectory(arg1) {
+  return window['go']['main']['App']['OpenDirectory'](arg1);
 }
 
 export function ReadBuild() {

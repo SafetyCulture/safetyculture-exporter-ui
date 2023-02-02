@@ -6,7 +6,7 @@
 	import Select from 'svelte-select';
 	import { DateInput } from 'date-picker-svelte'
 	import {
-		SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ReadBuild
+		SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ReadBuild,CheckDBConnection
 	} from "../../wailsjs/go/main/App.js"
 	import {latestVersion, shadowConfig} from '../lib/store.js';
 	import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
@@ -65,6 +65,7 @@
 	let dbPassword='', dbPasswordShowError = false
 	let dbName='', dbNameShowError = false
 	let formError = false
+	let dbError = false
 
 	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
 
@@ -306,13 +307,18 @@
 			switch (selectedExportFormat.value) {
 				case 'csv':
 					ExportCSV()
-					push("/exportStatus")
+					push("/export/status")
 					break
 				case 'mysql':
 				case 'postgres':
 				case 'sqlserver':
-					ExportSQL()
-					push("/exportStatus")
+					CheckDBConnection().then(() => {
+						ExportSQL()
+						push("/export/status")
+					})
+					.catch(() => {
+						dbError = true
+					})
 					break
 				case 'reports':
 					console.debug('NOT SUPPORTED')
@@ -358,6 +364,10 @@
 		BrowserOpenURL(url)
 	}
 
+	function removeOverlay() {
+		dbError = false
+	}
+
 	parseDbConnectionString();
 </script>
 
@@ -367,6 +377,16 @@
 			<div>This version is not longer supported</div>
 			<div>Latest version is {$latestVersion['latest']}</div>
 			<div>Please click here to download it</div>
+		</div>
+	</Overlay>
+{/if}
+
+{#if dbError === true}
+	<Overlay>
+		<div class="db-error" on:click={removeOverlay} on:keydown={removeOverlay}>
+			<div>Error connecting to the database</div>
+			<div>Please ensure the database details are correct</div>
+			<div>Click <a on:click={removeOverlay} on:keydown={removeOverlay}>here</a> to go back</div>
 		</div>
 	</Overlay>
 {/if}
@@ -495,6 +515,11 @@
 	}
 
 	.download-alert {
+		text-align: center;
+		cursor: pointer;
+	}
+
+	.db-error {
 		text-align: center;
 		cursor: pointer;
 	}

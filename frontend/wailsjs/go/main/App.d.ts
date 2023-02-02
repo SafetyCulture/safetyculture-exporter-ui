@@ -7,6 +7,8 @@ export function CancelExport():Promise<void>;
 
 export function CheckApiKey():Promise<boolean>;
 
+export function CheckDBConnection():Promise<void>;
+
 export function ExportCSV():Promise<void>;
 
 export function ExportSQL():Promise<void>;
@@ -18,6 +20,8 @@ export function GetTemplates():Promise<Array<api.TemplateResponseItem>>;
 export function GetUserHomeDirectory():Promise<string>;
 
 export function Greet(arg1:string):Promise<string>;
+
+export function OpenDirectory(arg1:string):Promise<void>;
 
 export function ReadBuild():Promise<string>;
 
