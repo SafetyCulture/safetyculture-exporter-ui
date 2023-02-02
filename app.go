@@ -5,20 +5,26 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
-	runtime2 "runtime"
-	"strings"
+	osRuntime "runtime"
+	"time"
 
+	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/version"
 	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
 	"github.com/SafetyCulture/safetyculture-exporter/pkg/httpapi"
+	"github.com/SafetyCulture/safetyculture-exporter/pkg/update"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
+const gitRepoExporterUI string = "safetyculture-exporter-ui"
+
 // App struct
 type App struct {
-	ctx context.Context
-	cm  *exporterAPI.ConfigurationManager
+	ctx      context.Context
+	cm       *exporterAPI.ConfigurationManager
+	exporter *exporterAPI.SafetyCultureExporter
 }
 
 // NewApp creates a new App application struct
@@ -53,6 +59,16 @@ func (a *App) startup(ctx context.Context) {
 		a.cm = cm
 	}
 
+	ver := exporterAPI.AppVersion{
+		IntegrationID:      version.GetIntegrationID(),
+		IntegrationVersion: version.GetVersion(),
+	}
+
+	a.exporter, err = exporterAPI.NewSafetyCultureExporter(a.cm.Configuration, &ver)
+	if err != nil {
+		runtime.LogError(ctx, err.Error())
+		panic("failed to load configuration")
+	}
 	a.ctx = ctx
 }
 
@@ -63,13 +79,75 @@ func checkForConfigFile(basePath string) bool {
 	return true
 }
 
+// SelectDirectory opens a directory dialog and returns the path of the selected directory
+func (a *App) SelectDirectory(currentDir string) string {
+	var defaultDir string
+	homeDir, err := os.UserHomeDir()
+	if len(currentDir) == 0 {
+		if err != nil {
+			runtime.LogErrorf(a.ctx, "failed to get the working directory, %v", err)
+			panic("failed to get working directory")
+		}
+		defaultDir = homeDir
+	}
+
+	defaultDir = currentDir
+
+	directoryDialog, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
+		DefaultDirectory:     defaultDir,
+		CanCreateDirectories: true,
+	})
+
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "can't open directory dialog, %v", err)
+		return homeDir
+	}
+
+	return directoryDialog
+}
+
+func (a *App) SelectSettingsDirectory() {
+	settingsDir, err := GetSettingDirectoryPath()
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "can't open directory dialog, %v", err)
+		return
+	}
+
+	_, err = runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		DefaultDirectory: settingsDir,
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "*.log",
+				Pattern:     "*.log",
+			},
+		},
+	})
+
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "can't open directory dialog, %v", err)
+		return
+	}
+}
+
 // Greet returns a greeting for the given name
 func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
 
 func (a *App) ExportCSV() {
+	a.exporter.RunCSV()
+}
 
+func (a *App) CheckDBConnection() error {
+	return a.exporter.CheckDBConnection()
+}
+
+func (a *App) ExportSQL() error {
+	return a.exporter.RunSQL()
+}
+
+func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
+	return a.exporter.GetTemplateList()
 }
 
 // CheckApiKey validates the api key from the config file if it exists
@@ -86,8 +164,14 @@ func (a *App) CheckApiKey() bool {
 func (a *App) ValidateApiKey(apiKey string) bool {
 	var apiOpts []httpapi.Opt
 
-	c := httpapi.NewClient(a.cm.Configuration.API.URL, fmt.Sprintf("Bearer %s", apiKey), apiOpts...)
-	res, err := c.WhoAmI(a.ctx)
+	cfg := httpapi.ClientCfg{
+		Addr:                a.cm.Configuration.API.URL,
+		AuthorizationHeader: fmt.Sprintf("Bearer %s", apiKey),
+		IntegrationID:       version.GetIntegrationID(),
+		IntegrationVersion:  version.GetVersion(),
+	}
+	c := httpapi.NewClient(&cfg, apiOpts...)
+	res, err := httpapi.WhoAmI(a.ctx, c)
 
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "cannot check WhoAmI: %s", err.Error())
@@ -101,13 +185,102 @@ func (a *App) ValidateApiKey(apiKey string) bool {
 
 	runtime.LogInfo(a.ctx, "saving the key")
 
-	if strings.Compare(apiKey, a.cm.Configuration.AccessToken) != 0 {
+	if apiKey != a.cm.Configuration.AccessToken {
+		// save configuration
 		a.cm.Configuration.AccessToken = apiKey
 		if err := a.cm.SaveConfiguration(); err != nil {
 			runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
 		}
+
+		ver := exporterAPI.AppVersion{
+			IntegrationID:      version.GetIntegrationID(),
+			IntegrationVersion: version.GetVersion(),
+		}
+
+		a.exporter, err = exporterAPI.NewSafetyCultureExporter(a.cm.Configuration, &ver)
+		if err != nil {
+			runtime.LogError(a.ctx, err.Error())
+			panic("failed to re-load configuration")
+		}
 	}
 	return true
+}
+
+// GetSettings gets the configuration from the YAML file
+func (a *App) GetSettings() *exporterAPI.ExporterConfiguration {
+	return a.cm.Configuration
+}
+
+// SaveSettings saves the configuration to the YAML file
+func (a *App) SaveSettings(cfg *exporterAPI.ExporterConfiguration) {
+	a.cm.Configuration = cfg
+	if err := a.cm.SaveConfiguration(); err != nil {
+		runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
+	}
+	a.exporter.SetConfiguration(cfg)
+	a.exporter.CleanExportStatus()
+}
+
+func (a *App) GetUserHomeDirectory() string {
+	dir, err := os.UserHomeDir()
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "failed to find user's home directory, %v", err)
+	}
+	return dir
+}
+
+func (a *App) ReadExportStatus() {
+
+	for {
+		exportStatus := a.exporter.GetExportStatus()
+
+		for _, item := range exportStatus.Feeds {
+			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, item)
+		}
+
+		if exportStatus.ExportStarted && exportStatus.ExportCompleted {
+			runtime.EventsEmit(a.ctx, "finished-export", true)
+			break
+		}
+
+		time.Sleep(500 * time.Millisecond)
+	}
+}
+
+type VersionResponse struct {
+	Current      string `json:"current"`
+	Latest       string `json:"latest"`
+	DownloadURL  string `json:"download_url"`
+	ShouldUpdate bool   `json:"should_update"`
+}
+
+func (a *App) ReadVersion() *VersionResponse {
+	var current = version.GetVersion()
+	var latest string
+	var downloadURL string
+	var shouldUpdate bool
+
+	releaseInfo := update.Check(current, gitRepoExporterUI)
+	if releaseInfo != nil {
+		latest = releaseInfo.Version
+		downloadURL = releaseInfo.DownloadURL
+		shouldUpdate = version.ShouldUpdate(current, latest)
+	}
+
+	return &VersionResponse{
+		Current:      current,
+		Latest:       latest,
+		DownloadURL:  downloadURL,
+		ShouldUpdate: shouldUpdate,
+	}
+}
+
+func (a *App) ReadBuild() string {
+	return osRuntime.GOOS
+}
+
+func (a *App) CancelExport() {
+	a.exporter.CancelExport()
 }
 
 func CreateSettingsDirectory() (string, error) {
@@ -127,17 +300,32 @@ func CreateSettingsDirectory() (string, error) {
 }
 
 func GetSettingDirectoryPath() (string, error) {
-	if runtime2.GOOS == "darwin" {
+	switch osRuntime.GOOS {
+	case "darwin":
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			return "", errors.New("can't get user's home directory")
 		}
 		return filepath.Join(homeDir, "/Library/Application Support/safetyculture-exporter"), nil
+	default:
+		wd, err := os.Getwd()
+		if err != nil {
+			return "", errors.New("can't get user's home directory")
+		}
+		return wd, nil
+	}
+}
+
+func (a *App) OpenDirectory(dir string) {
+	var cmd *exec.Cmd
+	if osRuntime.GOOS == "windows" {
+		cmd = exec.Command("start", dir)
+	} else {
+		cmd = exec.Command("open", dir)
 	}
 
-	wd, err := os.Getwd()
+	err := cmd.Start()
 	if err != nil {
-		return "", errors.New("can't get user's home directory")
+		// handle error
 	}
-	return wd, nil
 }

@@ -1,5 +1,8 @@
 #!/bin/bash
 
-wails build -platform windows/amd64 -clean
+echo "BUILDING WITH VERSION: ${VERSION}"
+echo "CGO ENABLED: ${CGO_ENABLED}"
 
-tar -czf exporter-windows-amd64.tar.gz ./build/bin/safetyculture-exporter.exe
+wails build -platform windows/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}" -skipbindings
+
+zip -j exporter-windows-amd64.zip ./build/bin/safetyculture-exporter.exe

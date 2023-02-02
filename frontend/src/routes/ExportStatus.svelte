@@ -1,0 +1,149 @@
+<script>
+    import './common.css';
+    import {CancelExport, ReadExportStatus, OpenDirectory} from "../../wailsjs/go/main/App.js"
+    import Status from "./../components/Export/Status.svelte";
+    import {shadowConfig} from "../lib/store.js";
+    import {onMount} from "svelte";
+    import {EventsOn, Quit} from "../../wailsjs/runtime/runtime.js";
+    import {allTables} from "../lib/utils.js";
+    import Button from "../components/Button.svelte";
+    import {push} from "svelte-spa-router";
+    import Overlay from "../components/Overlay.svelte";
+    import StatusBar from "../components/StatusBar.svelte";
+
+    let feedsToExport = []
+    if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
+        feedsToExport = Array.from($shadowConfig["Export"]["Tables"])
+    }
+    if (feedsToExport.length === 0) {
+        feedsToExport = Array.from(allTables)
+    }
+    if ($shadowConfig["Export"]["Media"] === true && !feedsToExport.includes("media")) {
+        feedsToExport.push("media")
+    }
+
+    let cancelTriggered = false
+    let exportCompleted = false
+
+    onMount(() => {
+        EventsOn("finished-export", (newValue) => {
+            if (newValue === true) {
+                exportCompleted = true
+            }
+        })
+    })
+
+    function handleCancel() {
+        cancelTriggered = true
+        CancelExport().then(() => {
+        })
+    }
+
+    function handleClose() {
+        Quit()
+    }
+
+    function openExportFolder() {
+        // BrowserOpenURL(shadowConfig["Export"]["Path"])
+        OpenDirectory($shadowConfig["Export"]["Path"])
+    }
+
+    ReadExportStatus();
+</script>
+
+<div class="status-page">
+    <img class="logo" src="../images/logo.png" alt="SafetyCulture logo"/>
+
+    <section class="top-nav">
+        <div class="nav-left">
+            <div class=" inline">
+                {#if exportCompleted}
+                    <img id="status-completed" src='/images/completed.png' alt="export completed icon">
+                {:else}
+                    <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon">
+                {/if}
+            </div>
+            <div class="nav-left inline status-title p-left-16">
+                {#if exportCompleted}
+                    Completed
+                {:else}
+                    In Progress
+                {/if}
+            </div>
+        </div>
+        <div class="nav-right">
+            {#if !exportCompleted}
+                <Button label="Cancel Export" type="active2" onClick={handleCancel}/>
+            {:else}
+                <Button label="Open Export Folder" type="active2" onClick={openExportFolder}/>
+                <Button label="Close" type="active" onClick={handleClose}/>
+            {/if}
+        </div>
+    </section>
+    <div id="overlay-cancel-export">
+        {#if cancelTriggered && exportCompleted === false}
+            <Overlay>This might take a while ...</Overlay>
+        {/if}
+    </div>
+
+    <div class="progress-body m-top-16">
+        <table class="status-table">
+            <thead>
+                <tr class="text-weak">
+                    <th class="status-col-1">Export item</th>
+                    <th class="status-col-2">Status</th>
+                    <th class="status-col-3">Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+            {#each feedsToExport as feed}
+                <tr><Status name={feed}></Status></tr>
+            {/each}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<StatusBar/>
+
+<style>
+    .status-page {
+        padding-top: var(--main-gutter-top);
+        padding-left: var(--main-gutter-left);
+        padding-right: var(--main-gutter-right);
+        background-color: #E9EEF6;
+        height: 100%;
+    }
+
+    .logo {
+        width: 150px;
+    }
+
+    .status-title {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .progress-body {
+        background-color: white;
+        height: calc( 100vh - 200px );
+        padding: 20px 16px;
+        overflow-y: scroll;
+
+    }
+
+    .status-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .status-table th {
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .status-table tr {
+        font-size: 14px;
+        border-bottom: 1px solid #EEF1F7;
+    }
+</style>

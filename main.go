@@ -25,9 +25,10 @@ func main() {
 
 	// Create application with options
 	err = wails.Run(&options.App{
-		Title:  "SafetyCulture Exporter",
-		Width:  1024,
-		Height: 768,
+		Title:         "SafetyCulture Exporter",
+		Width:         1024,
+		Height:        768,
+		DisableResize: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
@@ -36,7 +37,7 @@ func main() {
 			app,
 		},
 		LogLevel: logger.INFO,
-		Logger: extLogger.GetExporterLogger(settingsDir),
+		Logger:   extLogger.GetExporterLogger(settingsDir),
 	})
 
 	if err != nil {
