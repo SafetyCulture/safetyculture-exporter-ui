@@ -38,6 +38,7 @@
         color: whitesmoke;
         display: flex;
         justify-content: space-between;
+        height: auto;
     }
 
     .latest {
