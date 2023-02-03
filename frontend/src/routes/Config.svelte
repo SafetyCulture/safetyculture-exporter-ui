@@ -67,6 +67,7 @@
 	let dbName='', dbNameShowError = false
 	let formError = false
 	let dbError = false
+	let showBanner = false
 
 	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
 
@@ -299,6 +300,7 @@
 	}
 
 	function handleSaveAndExport() {
+		showBanner = true
 		formError = validateExport()
 		if (formError === true) {
 			return
@@ -314,6 +316,7 @@
 				case 'postgres':
 				case 'sqlserver':
 					CheckDBConnection().then(() => {
+						showBanner = false
 						ExportSQL()
 						push("/export/status")
 					})
@@ -367,6 +370,7 @@
 
 	function removeOverlay() {
 		dbError = false
+		showBanner = false
 	}
 
 	parseDbConnectionString();
@@ -381,6 +385,12 @@
 		</div>
 	</Overlay>
 {/if}
+
+
+{#if showBanner === true}
+	<Overlay>This might take a while ...</Overlay>
+{/if}
+
 
 {#if dbError === true}
 	<Overlay>
