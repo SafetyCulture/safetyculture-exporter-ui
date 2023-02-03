@@ -442,7 +442,7 @@
 		</section>
 		<section class="export-details border-round-8">
 			<div class="h3">Export details</div>
-			<div class="label">Data export format</div>
+			<div class="label">Export data as:</div>
 			<div class="border-weak border-round-8 m-top-4">
 				<Select items={dataExportFormatItems} clearable={false} showChevron={true} searchable={false} on:change={handleExportFormatUpdate} --border="0px" bind:value={selectedExportFormat} />
 			</div>

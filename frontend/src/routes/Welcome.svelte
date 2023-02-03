@@ -7,6 +7,7 @@
 	import ValidatableInput from "../components/ValidatableInput.svelte";
 	import Button from "../components/Button.svelte";
 	import StatusBar from "../components/StatusBar.svelte";
+	import {BrowserOpenURL} from "../../wailsjs/runtime/runtime.js";
 
 
 	let isValid = false;
@@ -15,6 +16,10 @@
 	let displayValidationError = false
 	let tries = 1
 	let accessToken = $shadowConfig["AccessToken"]
+
+	function openURL() {
+		BrowserOpenURL("https://app.safetyculture.com/account/api-tokens")
+	}
 
 	function validate() {
 		tries++
@@ -50,7 +55,7 @@
 			<div class="h1">Welcome to SafetyCulture Exporter</div>
 		</section>
 		<section class="token-validation">
-			<div class="token-validation-text">Generate an API token from your SafetyCulture <span class="link">user profile</span>.</div>
+			<div class="token-validation-text">Generate an API token from your SafetyCulture <span class="link" on:click={openURL}>user profile</span>.</div>
 			<ValidatableInput placeholder="Enter API Token here" error={displayValidationError} bind:value={accessToken}/>
 
 			{#if displayBadApiKeyErr}
