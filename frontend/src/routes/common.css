@@ -40,6 +40,7 @@ body::-webkit-scrollbar {
 
 .link {
     color: #4740D4;
+    cursor: pointer;
 }
 
 .text-size-small {
