@@ -47,6 +47,16 @@ jobs:
             echo "${{ env.GITHUB_HEAD_REF }}"
             choco install mingw
             wails build -platform windows/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}" -skipbindings
+
+        - name: Sign Windows Binary
+          if: matrix-os == 'windows-latest'
+          run: |
+            echo "Creating certificate file"
+            New-Item -ItemType directory -Path certificate
+            Set-Content -Path certificate\certificate.txt -Value "${{ secrets.WIN_SIGNING_CERT }}"
+            certutil -decode certificate\certificate.txt certificate\certificate.pfx
+            echo "Signing binary"
+            & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p "${{ secrets.WIN_SIGNING_CERT_PASSWORD }}" .\build\bin\safetyculture-exporter.exe
             Compress-Archive -Path .\build\bin\safetyculture-exporter.exe -DestinationPath .\exporter-windows-amd64.zip
 
         - name: Build package linux
