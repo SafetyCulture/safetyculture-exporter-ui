@@ -49,7 +49,7 @@ jobs:
             wails build -platform windows/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}" -skipbindings
 
         - name: Sign Windows Binary
-          if: matrix-os == 'windows-latest'
+          if: matrix.os == 'windows-latest'
           run: |
             echo "Creating certificate file"
             New-Item -ItemType directory -Path certificate
