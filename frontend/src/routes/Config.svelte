@@ -519,7 +519,7 @@
 
 	.export-details {
 		width: 380px;
-		height: 610px;
+		height: 590px;
 		background-color: #E9EEF6;
 		padding: 16px;
 		overflow-y: auto;
