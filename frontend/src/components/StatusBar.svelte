@@ -33,12 +33,15 @@
 
 <style>
     .bar {
+        position: absolute;
         padding: 5px 10px;
         background-color: #675DF4;
         color: whitesmoke;
         display: flex;
         justify-content: space-between;
         height: auto;
+        width: 100%;
+        bottom: 0;
     }
 
     .latest {
