@@ -118,5 +118,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "exporter*.zip,exporter*.tar.gz,safetyculture-exporter-x86_64.exe"
+          artifacts: "exporter*.zip,exporter*.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
