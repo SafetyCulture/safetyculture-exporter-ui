@@ -63,6 +63,12 @@
         isChecked = true;
     }
 
+    function toggleHeaderCheckbox() {
+        if (isChecked) {
+            isChecked = false;
+        }
+    }
+
     function toggleBodyCheckboxes() {
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         for (const checkbox of checkboxes) {
@@ -122,7 +128,7 @@
             <div class="table-row p-horiz-8">
                 {#if left}
                 <div class="table-cell">
-                    <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["Tables"]} value="{left.id}"/>
+                    <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["Tables"]} value="{left.id}"/>
                     <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
                     <div class="m-left-8">{trim(left.name)}</div>
                 </div>
@@ -130,7 +136,7 @@
 
                 {#if right}
                 <div class="table-cell">
-                    <input type="checkbox" class="checkbox-purple" bind:group={$shadowConfig["Export"]["Tables"]} value="{right.id}"/>
+                    <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["Tables"]} value="{right.id}"/>
                     <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
                     <div class="m-left-8">{trim(right.name)}</div>
                 </div>
