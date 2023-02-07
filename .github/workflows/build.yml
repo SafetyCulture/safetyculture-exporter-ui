@@ -14,7 +14,7 @@ jobs:
         matrix:
           go-version: [1.18]
           node-version: [16]
-          os: [ubuntu-latest, macos-latest]
+          os: [windows-latest, ubuntu-latest, macos-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -38,13 +38,26 @@ jobs:
           run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.3.1
 
         - name: Build package windows
-          if: matrix.os == 'ubuntu-latest'
+          if: matrix.os == 'windows-latest'
           run: |
-            export PATH=$PATH:$(go env GOPATH)/bin
+            $GP = (go env GOPATH)
+            $env:path = "$env:path;$GP\bin"
             echo "building on ${{ matrix.os }}"
-            echo ${{ env.GITHUB_REF }}
-            echo ${{ env.GITHUB_HEAD_REF }}
-            CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc VERSION=${{ github.ref_name }} ./scripts/build-windows.sh          
+            echo "${{ env.GITHUB_REF }}"
+            echo "${{ env.GITHUB_HEAD_REF }}"
+            choco install mingw
+            wails build -platform windows/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}" -skipbindings
+
+        - name: Sign Windows Binary
+          if: matrix.os == 'windows-latest'
+          run: |
+            echo "Creating certificate file"
+            New-Item -ItemType directory -Path certificate
+            Set-Content -Path certificate\certificate.txt -Value "${{ secrets.WIN_SIGNING_CERT }}"
+            certutil -decode certificate\certificate.txt certificate\certificate.pfx
+            echo "Signing binary"
+            & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p "${{ secrets.WIN_SIGNING_CERT_PASSWORD }}" .\build\bin\safetyculture-exporter.exe
+            Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\safetyculture-exporter-x86_64.exe
 
         - name: Build package linux
           if: matrix.os == 'ubuntu-latest'
@@ -75,11 +88,11 @@ jobs:
             path: exporter-linux-amd64.tar.gz
 
         - name: Upload artifacts windows
-          if: matrix.os == 'ubuntu-latest'
+          if: matrix.os == 'windows-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-windows
-            path: exporter-windows-amd64.zip
+            path: safetyculture-exporter-x86_64.exe
 
   release:
     runs-on: ubuntu-latest
@@ -105,5 +118,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "exporter*.zip,exporter*.tar.gz"
+          artifacts: "exporter*.zip,exporter*.tar.gz,safetyculture-exporter-x86_64.exe"
           allowUpdates: true

@@ -5,13 +5,15 @@ import {main} from '../models';
 
 export function CancelExport():Promise<void>;
 
-export function CheckApiKey():Promise<boolean>;
+export function CheckApiKey():Promise<string>;
 
 export function CheckDBConnection():Promise<void>;
 
 export function ExportCSV():Promise<void>;
 
 export function ExportSQL():Promise<void>;
+
+export function GetSettingDir():Promise<string>;
 
 export function GetSettings():Promise<api.ExporterConfiguration>;
 
@@ -35,4 +37,4 @@ export function SelectDirectory(arg1:string):Promise<string>;
 
 export function SelectSettingsDirectory():Promise<void>;
 
-export function ValidateApiKey(arg1:string):Promise<boolean>;
+export function ValidateApiKey(arg1:string):Promise<string>;

@@ -60,11 +60,11 @@
 		mysql: MYSQL_DIALECT,
 	};
 
-	let dbHost = '', dbHostShowError = false
-	let dbPort='', dbPortPlaceholder = "e.g. " + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false
-	let dbUser='', dbUserShowError = false
-	let dbPassword='', dbPasswordShowError = false
-	let dbName='', dbNameShowError = false
+	let dbHost = '', dbHostShowError = false, dbHostErrMsg = 'Host cannot be empty'
+	let dbPort='', dbPortPlaceholder = "e.g. " + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false, dbPortErrMsg = 'Port invalid or empty'
+	let dbUser='', dbUserShowError = false, dbUserErrMsg = 'Username cannot be empty'
+	let dbPassword='', dbPasswordShowError = false, dbPasswordErrMsg = 'Password cannot be empty'
+	let dbName='', dbNameShowError = false, dbNameErrMsg = 'Database name cannot be empty'
 	let formError = false
 	let dbError = false
 	let showBanner = false
@@ -387,7 +387,7 @@
 {/if}
 
 
-{#if showBanner === true}
+{#if formError === false && showBanner === true}
 	<Overlay>This might take a while ...</Overlay>
 {/if}
 
@@ -406,10 +406,10 @@
 <div class="config-page">
 	<section class="top-nav">
 		<div class="nav-left">
-			<div class="block-link p-left-8" on:click={handleBackButton} on:keypress={handleBackButton}>
+			<div class="block-link" on:click={handleBackButton} on:keypress={handleBackButton}>
 				<img src="../images/arrow-left.png" alt="back arrow icon" width="15" height="15">
 			</div>
-			<div class="h1 p-left-8">Export Configuration</div>
+			<div class="h1 p-left-16">Export Configuration</div>
 		</div>
 		<div class="nav-right">
 			<Button label="Save and close" type="active-white" onClick={handleSaveAndClose}/>
@@ -459,11 +459,11 @@
 			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat.value)}
 				<div>
 					<div class="label">Database details:</div>
-					<FormTextInput label="Host address" placeholder="e.g. localhost" error={dbHostShowError} bind:value={dbHost}/>
-					<FormTextInput label="Host port" placeholder={dbPortPlaceholder} error={dbPortShowError} bind:value={dbPort}/>
-					<FormTextInput label="Username" placeholder="e.g. john" error={dbUserShowError} bind:value={dbUser}/>
-					<FormPassword label="Password" placeholder="e.q. mySup3rS3cr3t" error={dbPasswordShowError} bind:value={dbPassword}/>
-					<FormTextInput label="Database name" placeholder="e.g. safetyculture" error={dbNameShowError} bind:value={dbName}/>
+					<FormTextInput label="Host address" placeholder="e.g. localhost" error={dbHostShowError} errorMsg={dbHostErrMsg} bind:value={dbHost}/>
+					<FormTextInput label="Host port" placeholder={dbPortPlaceholder} pattern="^([0-9]{1,5})$" maxlength=5 error={dbPortShowError} errorMsg={dbPortErrMsg} bind:value={dbPort}/>
+					<FormTextInput label="Username" placeholder="e.g. db-admin" error={dbUserShowError} errorMsg={dbUserErrMsg} bind:value={dbUser}/>
+					<FormPassword label="Password" placeholder="e.g. s3cur3p@ssw0rd" error={dbPasswordShowError} errorMsg={dbPasswordErrMsg} bind:value={dbPassword}/>
+					<FormTextInput label="Database name" placeholder="e.g. safetyculture-data" error={dbNameShowError} errorMsg={dbNameErrMsg} bind:value={dbName}/>
 					<hr>
 				</div>
 			{/if}

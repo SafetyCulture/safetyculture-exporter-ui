@@ -3,12 +3,15 @@
 
     export let label = ''
     export let placeholder = ''
+    export let pattern = ''
     export let error = false
+    export let errorMsg = ''
     export let value = '';
+    export let maxlength;
 </script>
 
 <div class="form-label">{label}</div>
-<ValidatableInput placeholder={placeholder} error={error} bind:value={value}/>
+<ValidatableInput placeholder={placeholder} pattern={pattern} error={error} errorMsg={errorMsg} maxlength={maxlength} bind:value={value}/>
 
 <style>
     .form-label {

@@ -3,6 +3,9 @@ package main
 import (
 	"embed"
 	"fmt"
+	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/version"
+	"github.com/wailsapp/wails/v2/pkg/options/mac"
+	"github.com/wailsapp/wails/v2/pkg/options/windows"
 
 	extLogger "github.com/SafetyCulture/safetyculture-exporter/pkg/logger"
 	"github.com/wailsapp/wails/v2"
@@ -13,6 +16,9 @@ import (
 
 //go:embed frontend/dist
 var assets embed.FS
+
+//go:embed build/appicon.png
+var icon []byte
 
 func main() {
 	// Create an instance of the app structure
@@ -38,6 +44,19 @@ func main() {
 		},
 		LogLevel: logger.INFO,
 		Logger:   extLogger.GetExporterLogger(settingsDir),
+		Windows: &windows.Options{
+			WebviewIsTransparent: false,
+			WindowIsTranslucent:  false,
+		},
+		Mac: &mac.Options{
+			WebviewIsTransparent: false,
+			WindowIsTranslucent:  false,
+			About: &mac.AboutInfo{
+				Title:   "SafetyCulture Exporter",
+				Message: fmt.Sprintf("Version %v\n\nCopyright \u00a9 2023\nSafetyCulture Pty Ltd.", version.GetVersion()),
+				Icon:    icon,
+			},
+		},
 	})
 
 	if err != nil {

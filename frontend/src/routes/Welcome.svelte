@@ -13,6 +13,7 @@
 	let isValid = false;
 	let buttonLabel = "Verify"
 	let displayBadApiKeyErr = false
+	let displayConnectionErr = false
 	let displayValidationError = false
 	let tries = 1
 	let accessToken = $shadowConfig["AccessToken"]
@@ -29,12 +30,20 @@
 			return
 		}
 
-		ValidateApiKey(accessToken).then((result) => {
-			isValid = result
-			if (isValid === false) {
-				buttonLabel = "Try again"
+		function checkErr(errMsg) {
+			if (errMsg === "connection error") {
+				displayConnectionErr = true
+				displayValidationError = true
+			} else {
 				displayBadApiKeyErr = true
 				displayValidationError = true
+			}
+		}
+
+		ValidateApiKey(accessToken).then((result) => {
+			if (result !== "") {
+				buttonLabel = "Try again"
+				checkErr(result);
 			} else {
 				displayValidationError = false
 
@@ -65,6 +74,13 @@
 				</div>
 			{/if}
 
+			{#if displayConnectionErr}
+				<div class="error-block">
+					<div class="error-block-title">Connection error</div>
+					<div class="error-block-body">It looks like you are not connected to the internet or behind a firewall. Please check your connection and try again.</div>
+				</div>
+			{/if}
+
 			<Button label={buttonLabel} type="active-purple" error={displayValidationError} clazz="m-top-8" onClick={validate}/>
 		</section>
 
@@ -82,7 +98,7 @@
 	</section>
 	<section class="welcome-right-side">
 		<div class="right-image">
-			<img src="../images/token_example.png" alt="example generating token">
+			<img src="../images/token-example.png" alt="example generating token">
 		</div>
 	</section>
 </div>
@@ -96,7 +112,8 @@
 
 	.welcome-left-side {
 		width: 50%;
-		padding: 20px;
+		padding-left: 30px;
+		padding-top: 50px;
 	}
 
 	.welcome-right-side {
@@ -127,6 +144,7 @@
 		flex-direction: row;
 		gap: 16px;
 		font-size: 0.9rem;
+		width: 95%;
 	}
 
 	.note .note-title {
@@ -144,9 +162,10 @@
 	}
 
 	.right-image img {
+		padding-top: 90px;
+		padding-right: 20px;
 		height: 100%;
 		width: 100%;
-		object-fit: contain;
 	}
 
 	div.error-block {
