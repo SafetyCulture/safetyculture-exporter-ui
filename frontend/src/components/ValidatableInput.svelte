@@ -1,19 +1,39 @@
 <script>
     export let placeholder = ''
+    export let pattern = ''
     export let error = false
+    export let errorMsg = ''
     export let value = '';
+    export let maxlength;
 </script>
 
 <input
         class="form-input" class:input-error={error}
         type="text"
         placeholder={placeholder}
+        pattern={pattern}
+        maxlength={maxlength}
         bind:value={value}
 />
+
+{#if error}
+    <div class="input-error-block">
+        <div class="input-error-title">{errorMsg}</div>
+    </div>
+{/if}
 
 <style>
     .input-error {
         border-color: #9b3d41!important;
+    }
+
+    .input-error-block {
+        font-size: 0.7rem;
+        color: #A02228;
+    }
+
+    input-error-title {
+        color: #A02228;
     }
 
     .input-error::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -30,7 +50,7 @@
     }
 
     .form-input {
-        width: 100%;
+        width: 95%;
         padding: 10px 16px;
         border-radius: 8px;
         border: 1px solid #BFC5D4;

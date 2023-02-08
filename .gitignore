@@ -28,7 +28,8 @@ dist/
 *.log
 perf.md
 
-/build/
+/build/bin
+/build/darwin
 /frontend/dist/
 /frontend/node_modules/
 /export

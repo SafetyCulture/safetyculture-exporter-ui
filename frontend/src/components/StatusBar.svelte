@@ -1,6 +1,7 @@
 <script>
     import {
-        SelectSettingsDirectory
+        OpenDirectory,
+        GetSettingDir
     } from "../../wailsjs/go/main/App.js"
 
     import {latestVersion} from '../lib/store.js';
@@ -9,7 +10,7 @@
     import {isNullOrEmptyObject} from "../lib/utils.js";
 
     function openFolderDialog() {
-        SelectSettingsDirectory()
+        OpenDirectory(GetSettingDir)
     }
 
     function openURL(url) {

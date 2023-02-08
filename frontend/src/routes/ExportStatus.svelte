@@ -70,7 +70,7 @@
                     <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon" width="24" height="24">
                 {/if}
             </div>
-            <div class="nav-left inline status-title p-left-8">
+            <div class="nav-left inline status-title p-left-16">
                 {#if cancelTriggered}
                     Cancelled
                 {:else if exportCompleted}
@@ -88,7 +88,7 @@
                     {#if exportType  === "csv"}
                         <Button label="Open Export Folder" type="active-white" onClick={openExportFolder}/>
                     {/if}
-                    <Button label="Close" type="active-purple" onClick={goBack}/>
+                    <Button label="Close" clazz="m-left-8" type="active-purple" onClick={handleClose}/>
                 {:else}
                     <Button label="Go Back" type="active-purple" onClick={goBack}/>
                 {/if}

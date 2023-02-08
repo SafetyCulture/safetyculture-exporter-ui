@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"path"
@@ -151,59 +152,73 @@ func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
 }
 
 // CheckApiKey validates the api key from the config file if it exists
-func (a *App) CheckApiKey() bool {
+func (a *App) CheckApiKey() string {
 	token := a.cm.Configuration.AccessToken
 	if len(token) == 0 {
-		return false
+		return "token can't be blank"
 	}
 
 	return a.ValidateApiKey(token)
 }
 
-// ValidateApiKey validates the api, returns true if valid, false otherwise
-func (a *App) ValidateApiKey(apiKey string) bool {
-	var apiOpts []httpapi.Opt
-
-	cfg := httpapi.ClientCfg{
-		Addr:                a.cm.Configuration.API.URL,
-		AuthorizationHeader: fmt.Sprintf("Bearer %s", apiKey),
-		IntegrationID:       version.GetIntegrationID(),
-		IntegrationVersion:  version.GetVersion(),
-	}
-	c := httpapi.NewClient(&cfg, apiOpts...)
-	res, err := httpapi.WhoAmI(a.ctx, c)
-
+func checkConn(ctx context.Context) (bool, string) {
+	// Try to connect to google.com:80
+	_, err := net.DialTimeout("tcp", "api.safetyculture.io:80", 1*time.Second)
 	if err != nil {
-		runtime.LogErrorf(a.ctx, "cannot check WhoAmI: %s", err.Error())
-		return false
+		runtime.LogErrorf(ctx, "connection error: %s", err.Error())
+		return false, "connection error"
 	}
+	return true, ""
+}
 
-	if res != nil && (res.UserID == "" || res.OrganisationID == "") {
-		runtime.LogErrorf(a.ctx, "cannot validate the credentials for the given ApiKey: %s", err.Error())
-		return false
-	}
+// ValidateApiKey validates the api, returns true if valid, false otherwise
+func (a *App) ValidateApiKey(apiKey string) string {
+	result, errMsg := checkConn(a.ctx)
+	if result {
+		var apiOpts []httpapi.Opt
 
-	runtime.LogInfo(a.ctx, "saving the key")
-
-	if apiKey != a.cm.Configuration.AccessToken {
-		// save configuration
-		a.cm.Configuration.AccessToken = apiKey
-		if err := a.cm.SaveConfiguration(); err != nil {
-			runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
+		cfg := httpapi.ClientCfg{
+			Addr:                a.cm.Configuration.API.URL,
+			AuthorizationHeader: fmt.Sprintf("Bearer %s", apiKey),
+			IntegrationID:       version.GetIntegrationID(),
+			IntegrationVersion:  version.GetVersion(),
 		}
+		c := httpapi.NewClient(&cfg, apiOpts...)
+		res, err := httpapi.WhoAmI(a.ctx, c)
 
-		ver := exporterAPI.AppVersion{
-			IntegrationID:      version.GetIntegrationID(),
-			IntegrationVersion: version.GetVersion(),
-		}
-
-		a.exporter, err = exporterAPI.NewSafetyCultureExporter(a.cm.Configuration, &ver)
 		if err != nil {
-			runtime.LogError(a.ctx, err.Error())
-			panic("failed to re-load configuration")
+			runtime.LogErrorf(a.ctx, "cannot check WhoAmI: %s", err.Error())
+			return err.Error()
 		}
+
+		if res != nil && (res.UserID == "" || res.OrganisationID == "") {
+			runtime.LogErrorf(a.ctx, "cannot validate the credentials for the given ApiKey: %s", err.Error())
+			return err.Error()
+		}
+
+		runtime.LogInfo(a.ctx, "saving the key")
+
+		if apiKey != a.cm.Configuration.AccessToken {
+			// save configuration
+			a.cm.Configuration.AccessToken = apiKey
+			if err := a.cm.SaveConfiguration(); err != nil {
+				runtime.LogErrorf(a.ctx, "cannot save configuration: %s", err.Error())
+			}
+
+			ver := exporterAPI.AppVersion{
+				IntegrationID:      version.GetIntegrationID(),
+				IntegrationVersion: version.GetVersion(),
+			}
+
+			a.exporter, err = exporterAPI.NewSafetyCultureExporter(a.cm.Configuration, &ver)
+			if err != nil {
+				runtime.LogError(a.ctx, err.Error())
+				panic("failed to re-load configuration")
+			}
+		}
+		return ""
 	}
-	return true
+	return errMsg
 }
 
 // GetSettings gets the configuration from the YAML file
@@ -314,6 +329,10 @@ func GetSettingDirectoryPath() (string, error) {
 		}
 		return wd, nil
 	}
+}
+
+func (a *App) GetSettingDir() (string, error) {
+	return GetSettingDirectoryPath()
 }
 
 func (a *App) OpenDirectory(dir string) {

@@ -22,6 +22,10 @@ export function ExportSQL() {
   return window['go']['main']['App']['ExportSQL']();
 }
 
+export function GetSettingDir() {
+  return window['go']['main']['App']['GetSettingDir']();
+}
+
 export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
