@@ -331,20 +331,24 @@ func GetSettingDirectoryPath() (string, error) {
 	}
 }
 
-func (a *App) GetSettingDir() (string, error) {
-	return GetSettingDirectoryPath()
+func (a *App) GetSettingDir() string {
+	result, err := GetSettingDirectoryPath()
+	if err != nil {
+		return a.GetUserHomeDirectory()
+	}
+	return result
 }
 
 func (a *App) OpenDirectory(dir string) {
 	var cmd *exec.Cmd
 	if osRuntime.GOOS == "windows" {
-		cmd = exec.Command("start", dir)
+		cmd = exec.Command("start", "%windir%\\explorer.exe", dir)
 	} else {
 		cmd = exec.Command("open", dir)
 	}
 
 	err := cmd.Start()
 	if err != nil {
-		// handle error
+		runtime.LogErrorf(a.ctx, "can't open directory %s, %v", dir, err)
 	}
 }
