@@ -342,7 +342,7 @@ func (a *App) GetSettingDir() string {
 func (a *App) OpenDirectory(dir string) {
 	var cmd *exec.Cmd
 	if osRuntime.GOOS == "windows" {
-		cmd = exec.Command("start", dir)
+		cmd = exec.Command("explorer", dir)
 	} else {
 		cmd = exec.Command("open", dir)
 	}
