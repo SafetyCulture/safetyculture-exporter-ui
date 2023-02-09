@@ -55,20 +55,19 @@ jobs:
         - name: Sign binary
           if: matrix.os == 'windows-latest'
           run: |
-            Invoke-WebRequest -OutFile eSigner_CKA_1.0.3.zip “https://www.ssl.com/download/ssl-com-esigner-cka-1-0-3”
+            Invoke-WebRequest -OutFile eSigner_CKA_1.0.3.zip "https://www.ssl.com/download/ssl-com-esigner-cka-1-0-3"
             Expand-Archive -Force eSigner_CKA_1.0.3.zip
             Remove-Item eSigner_CKA_1.0.3.zip
             Move-Item -Destination "eSigner_CKA_1.0.3.exe" -Path "eSigner_CKA_1.0.3\SSL.COM eSigner CKA_1.0.3.exe"
             New-Item -ItemType Directory -Force -Path ${{ env.INSTALL_DIR }}
-            ./eSigner_CKA_1.0.3.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR=”${{ env.INSTALL_DIR }}” | Out-Null
-            ${{ env.INSTALL_DIR }}/eSignerCKATool.exe config -mode “${{ secrets.MODE }}” -user “${{ secrets.USERNAME }}” -pass “${{ secrets.PASSWORD }}” -totp “${{ secrets.TOTP_SECRET }}” -key “${{ env.MASTER_KEY_FILE }}” -r
+            ./eSigner_CKA_1.0.3.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR=${{ env.INSTALL_DIR }} | Out-Null
+            ${{ env.INSTALL_DIR }}/eSignerCKATool.exe config -mode ${{ secrets.MODE }} -user ${{ secrets.USERNAME }} -pass ${{ secrets.PASSWORD }} -totp ${{ secrets.TOTP_SECRET }} -key ${{ env.MASTER_KEY_FILE }} -r
             ${{ env.INSTALL_DIR }}/eSignerCKATool.exe unload
             ${{ env.INSTALL_DIR }}/eSignerCKATool.exe load
             $CodeSigningCert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
-            echo “THUMBPRINT=$($CodeSigningCert.Thumbprint)” >> $env:GITHUB_ENV
-            Get-ChildItem -Path Env:
+            echo "THUMBPRINT=$($CodeSigningCert.Thumbprint)" >> $env:GITHUB_ENV
             Set-Location "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/"
-            .\signtool.exe sign /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.THUMBPRINT }} "D:\a\safetyculture-exporter-ui\safetyculture-exporter-ui\build\bin\safetyculture-exporter.exe"
+            .\signtool.exe sign /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 $($CodeSigningCert.Thumbprint) "D:\a\safetyculture-exporter-ui\safetyculture-exporter-ui\build\bin\safetyculture-exporter.exe"
             Set-Location "D:\a\safetyculture-exporter-ui\safetyculture-exporter-ui"
             Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination exporter-windows-x86_64.exe
 
