@@ -7,6 +7,10 @@ on:
   push:
     tags:
       - "v*.*.*"
+env:
+  MASTER_KEY: master.key
+  INSTALL_DIR: C:\Users\runneradmin\eSignerCKA
+  MASTER_KEY_FILE: C:\Users\runneradmin\eSignerCKA\master.key
 
 jobs:
   package:
@@ -14,7 +18,7 @@ jobs:
         matrix:
           go-version: [1.18]
           node-version: [16]
-          os: [windows-latest, ubuntu-latest, macos-latest]
+          os: [windows-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -48,16 +52,32 @@ jobs:
             choco install mingw
             wails build -platform windows/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}" -skipbindings
 
-        - name: Sign Windows Binary
-          if: matrix.os == 'windows-latest'
+#         - name: Sign Windows Binary
+#           if: matrix.os == 'windows-latest'
+#           run: |
+#             echo "Creating certificate file"
+#             New-Item -ItemType directory -Path certificate
+#             Set-Content -Path certificate\certificate.txt -Value "${{ secrets.WIN_SIGNING_CERT }}"
+#             certutil -decode certificate\certificate.txt certificate\certificate.pfx
+#             echo "Signing binary"
+#             & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p "${{ secrets.WIN_SIGNING_CERT_PASSWORD }}" .\build\bin\safetyculture-exporter.exe
+#             Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
+
+        - name: Download and Unzip eSignerCKA Setup
+          if: matrix-os == 'windows-latest'
           run: |
-            echo "Creating certificate file"
-            New-Item -ItemType directory -Path certificate
-            Set-Content -Path certificate\certificate.txt -Value "${{ secrets.WIN_SIGNING_CERT }}"
-            certutil -decode certificate\certificate.txt certificate\certificate.pfx
-            echo "Signing binary"
-            & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p "${{ secrets.WIN_SIGNING_CERT_PASSWORD }}" .\build\bin\safetyculture-exporter.exe
-            Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
+            Invoke-WebRequest -OutFile eSigner_CKA_1.0.3.zip “https://www.ssl.com/download/ssl-com-esigner-cka-1-0-3”
+            Expand-Archive -Force eSigner_CKA_1.0.3.zip
+            Remove-Item eSigner_CKA_1.0.3.zip
+            Move-Item -Destination "eSigner_CKA_1.0.3.exe" -Path "eSigner_CKA_1.0.3\SSL.COM eSigner_CKA_1.0.3.exe"
+            New-Item -ItemType Directory -Force -Path ${{ env.INSTALL_DIR }}
+            ./eSigner_CKA_1.0.3.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR=”${{ env.INSTALL_DIR }}” | Out-Null
+            ${{ env.INSTALL_DIR }}/eSignerCKATool.exe config -mode “${{ secrets.MODE }}” -user “${{ secrets.USERNAME }}” -pass “${{ secrets.PASSWORD }}” -totp “${{ secrets.TOTP_SECRET }}” -key “${{ env.MASTER_KEY_FILE }}” -r
+            ${{ env.INSTALL_DIR }}/eSignerCKATool.exe unload
+            ${{ env.INSTALL_DIR }}/eSignerCKATool.exe load
+            $CodeSigningCert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
+            echo “THUMBPRINT=$($CodeSigningCert.Thumbprint)” >> $env:GITHUB_ENV
+            & ‘C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe’ sign /debug /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.THUMBPRINT }} .\build\bin\safetyculture-exporter.exe
 
         - name: Build package linux
           if: matrix.os == 'ubuntu-latest'
