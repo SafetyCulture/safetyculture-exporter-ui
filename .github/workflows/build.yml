@@ -67,8 +67,10 @@ jobs:
             $CodeSigningCert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
             echo “THUMBPRINT=$($CodeSigningCert.Thumbprint)” >> $env:GITHUB_ENV
             echo $env:GITHUB_ENV
-            & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.GITHUB_ENV }} "D:\a\safetyculture-exporter-ui\safetyculture-exporter-ui\build\bin\safetyculture-exporter.exe"
-            Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
+            Set-Location "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe"
+            .\signtool.exe sign /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.GITHUB_ENV }} "D:\a\safetyculture-exporter-ui\safetyculture-exporter-ui\build\bin\safetyculture-exporter.exe"
+            Copy-Item -Path D:\a\safetyculture-exporter-ui\safetyculture-exporter-ui\build\bin\safetyculture-exporter.exe -Destination D:\a\safetyculture-exporter-ui\safetyculture-exporter-ui\exporter-windows-x86_64.exe
+            Set-Location "D:\a\safetyculture-exporter-ui\safetyculture-exporter-ui"
 
         - name: Build package linux
           if: matrix.os == 'ubuntu-latest'
