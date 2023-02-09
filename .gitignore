@@ -30,6 +30,8 @@ perf.md
 
 /build/bin
 /build/darwin
+/build/windows
+
 /frontend/dist/
 /frontend/node_modules/
 /export
