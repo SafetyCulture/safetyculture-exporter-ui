@@ -194,11 +194,11 @@ body::-webkit-scrollbar {
     color: #545F70;
 }
 
-.width-18e {
+.width-18em {
     width: 18.75em;
 }
 
-.word-wrap-b {
+.word-wrap-break {
     word-wrap: break-word;
 }
 

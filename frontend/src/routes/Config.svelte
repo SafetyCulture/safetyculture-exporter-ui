@@ -478,7 +478,7 @@
             {#if selectedExportFormat != null && (selectedExportFormat.value === 'csv')}
 			<div class="label">Folder location</div>
 			<div id="folder" class="button-long selector border-weak border-round-8 p-8 align-items-c" on:click={openFolderDialog} on:keypress={openFolderDialog}>
-				<div class="text-weak word-wrap-b width-18e" >{$shadowConfig["Export"]["Path"]}</div>
+				<div class="text-weak word-wrap-break width-18em" >{$shadowConfig["Export"]["Path"]}</div>
 				<img class="{build === 'windows' ? '' : 'cursor-pointer'}" src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
             {/if}
