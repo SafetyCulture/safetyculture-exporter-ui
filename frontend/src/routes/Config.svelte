@@ -397,7 +397,7 @@
 		<div class="db-error" on:click={removeOverlay} on:keydown={removeOverlay}>
 			<div>Error connecting to the database</div>
 			<div>Please ensure the database details are correct</div>
-			<div>Click <a on:click={removeOverlay} on:keydown={removeOverlay}>here</a> to go back</div>
+			<div>Click here to go back</div>
 		</div>
 	</Overlay>
 {/if}
@@ -476,8 +476,8 @@
 			{/if}
 
 			<div class="label">Folder location</div>
-			<div id="folder" class="button-long selector border-weak border-round-8" on:click={openFolderDialog} on:keypress={openFolderDialog}>
-				<div class="text-weak" >{$shadowConfig["Export"]["Path"]}</div>
+			<div id="folder" class="button-long selector border-weak border-round-8 p-8 align-items-c" on:click={openFolderDialog} on:keypress={openFolderDialog}>
+				<div class="text-weak word-wrap-b width-18e" >{$shadowConfig["Export"]["Path"]}</div>
 				<img class="{build === 'windows' ? '' : 'cursor-pointer'}" src="../images/folder.png" alt="folder icon" width="15" height="15">
 			</div>
 			{#if build === 'windows'}
