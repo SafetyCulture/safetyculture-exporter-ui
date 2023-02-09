@@ -163,7 +163,7 @@ func (a *App) CheckApiKey() string {
 
 func checkConn(ctx context.Context) (bool, string) {
 	// Try to connect to google.com:80
-	_, err := net.DialTimeout("tcp", "api.safetyculture.io:80", 1*time.Second)
+	_, err := net.DialTimeout("tcp", "api.safetyculture.io:80", 2*time.Second)
 	if err != nil {
 		runtime.LogErrorf(ctx, "connection error: %s", err.Error())
 		return false, "connection error"
