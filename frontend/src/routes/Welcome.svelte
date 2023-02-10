@@ -64,7 +64,7 @@
 			<div class="h1">Welcome to SafetyCulture Exporter</div>
 		</section>
 		<section class="token-validation">
-			<div class="token-validation-text">Generate an API token from your SafetyCulture <span class="link" on:click={openURL}>user profile</span>.</div>
+			<div class="token-validation-text">Generate an API token from your SafetyCulture <span class="link" on:click={openURL} on:keypress={openURL}>user profile</span>.</div>
 			<ValidatableInput placeholder="Enter API Token here" error={displayValidationError} bind:value={accessToken}/>
 
 			{#if displayBadApiKeyErr}
@@ -97,9 +97,12 @@
 		</section>
 	</section>
 	<section class="welcome-right-side">
-		<div class="right-image">
-			<img src="../images/token-example.png" alt="example generating token">
-		</div>
+        <div class="right-side-bg bg-light border-round-12-left ">
+            <div class="right-image">
+                <img class="border-round-12-left" src="../images/token-example.png" alt="example generating token">
+            </div>
+            <div class="img-caption text-weak">Example API token</div>
+        </div>
 	</section>
 </div>
 
@@ -112,12 +115,8 @@
 
 	.welcome-left-side {
 		width: 50%;
-		padding-left: 30px;
-		padding-top: 50px;
-	}
-
-	.welcome-right-side {
-		width: 50%;
+		padding-left: 24px;
+		padding-top: 48px;
 	}
 
 	#welcome-page-logo {
@@ -156,17 +155,29 @@
 		line-height: 1.5rem;
 	}
 
-	div.right-image {
-		max-width: 100%;
-		max-height: 100%;
-	}
+    .welcome-right-side {
+        width: 50%;
+        padding-top: 48px;
+    }
+
+    .right-side-bg {
+        padding: 50px 0;
+    }
+
+    .right-image {
+        display: flex;
+        flex-direction: row-reverse;
+    }
 
 	.right-image img {
-		padding-top: 90px;
-		padding-right: 20px;
-		height: 100%;
-		width: 100%;
-	}
+		height: 90%;
+		width: 90%;
+    }
+
+    .img-caption {
+        padding-top: 8px;
+        text-align: center;
+    }
 
 	div.error-block {
 		font-size: 0.8rem;
