@@ -25,19 +25,19 @@
         {#if !isNullOrEmptyObject($latestVersion)}
             <span>Current version: {$latestVersion['current']}</span>
             {#if $latestVersion['current'] !== $latestVersion['latest'] && $latestVersion['latest'] !== ''}
-                <span class="latest m-left-16 block-link" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>Latest version available: {$latestVersion['latest']}</span>
+                <span class="accent m-left-16 block-link" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>Latest version available: {$latestVersion['latest']}</span>
             {/if}
         {/if}
     </div>
-    <div class="block-link" on:click={openFolderDialog} on:keypress={openFolderDialog}>Open logs</div>
+    <div class="accent block-link" on:click={openFolderDialog} on:keypress={openFolderDialog}>Open logs</div>
 </div>
 
 <style>
     .bar {
         position: absolute;
-        padding: 5px 10px;
-        background-color: #675DF4;
-        color: whitesmoke;
+        padding: 14px 16px;
+        background-color: #F8F9FC;
+        color: #1D2330;
         display: flex;
         justify-content: space-between;
         height: auto;
@@ -45,11 +45,7 @@
         bottom: 0;
     }
 
-    .latest {
-        color: #81E8F2;
-    }
-
-    .block-link:hover {
-        color: yellow;
+    .accent {
+        color: #4740D4;
     }
 </style>
