@@ -24,7 +24,7 @@
 
 <style>
     .input-error {
-        border-color: #9b3d41!important;
+        border-color: #A8242A!important;
     }
 
     .input-error-block {
@@ -32,21 +32,21 @@
         color: #A02228;
     }
 
-    input-error-title {
+    .input-error-title {
         color: #A02228;
     }
 
     .input-error::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-        color: #9b3d41;
+        color: #A02228;
         opacity: 1; /* Firefox */
     }
 
     .input-error:-ms-input-placeholder { /* Internet Explorer 10-11 */
-        color: #9b3d41;
+        color: #A02228;
     }
 
     .input-error::-ms-input-placeholder { /* Microsoft Edge */
-        color: #9b3d41;
+        color: #A02228;
     }
 
     .form-input {
