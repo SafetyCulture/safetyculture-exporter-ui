@@ -109,7 +109,7 @@
 <div class="table-filter-page">
     <section class="top-nav">
         <div class="nav-left">
-            <div class="h1">Feed Export</div>
+            <div class="h1">Feed export</div>
         </div>
         <div class="nav-right">
             <Button label="Done" type="active-white" onClick={handleDone}/>
@@ -120,7 +120,7 @@
         <div class="table-header text-gray-2">
             <div class="table-row p-horiz-8">
                 <input type="checkbox" class="checkbox-purple" on:click="{toggleBodyCheckboxes}" bind:checked={isChecked}/>
-                <div class="m-left-32">Feed Table</div>
+                <div class="m-left-32">Feed table</div>
             </div>
         </div>
         <div class="table-body text-gray-2 m-top-8">

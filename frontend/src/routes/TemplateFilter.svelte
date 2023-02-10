@@ -78,7 +78,7 @@
 </script>
 
 {#if templatesLoaded === false}
-<Overlay>This might take a while ...</Overlay>
+<Overlay>Loading your templates...</Overlay>
 {/if}
 
 <div class="template-filter-page">
@@ -113,7 +113,7 @@
                     <div class="m-left-32">Template</div>
                 </div>
                 <div class="nav-right">
-                    <div>Last Modified</div>
+                    <div>Last modified</div>
                     <div class="m-left-8"><img src="../images/arrow-down.png" alt="down" width="12" height="12"/></div>
                 </div>
             </div>
