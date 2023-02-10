@@ -9,8 +9,8 @@
     import {BrowserOpenURL} from "../../wailsjs/runtime/runtime.js";
     import {isNullOrEmptyObject} from "../lib/utils.js";
 
-    function openFolderDialog() {
-        OpenDirectory(GetSettingDir)
+    async function openFolderDialog() {
+        OpenDirectory(await GetSettingDir())
     }
 
     function openURL(url) {

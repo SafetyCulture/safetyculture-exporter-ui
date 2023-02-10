@@ -72,21 +72,21 @@
             </div>
             <div class="nav-left inline status-title p-left-16">
                 {#if cancelTriggered}
-                    Cancelled
+                    Export cancelled
                 {:else if exportCompleted}
-                    Completed
+                    Export complete
                 {:else}
-                    In Progress
+                    In progress
                 {/if}
             </div>
         </div>
         <div class="nav-right">
             {#if !exportCompleted}
-                <Button label="Cancel Export" type="active-red" onClick={handleCancel}/>
+                <Button label="Cancel export" type="active-red" onClick={handleCancel}/>
             {:else}
                 {#if !cancelTriggered}
                     {#if exportType  === "csv"}
-                        <Button label="Open Export Folder" type="active-white" onClick={openExportFolder}/>
+                        <Button label="Open export folder" type="active-white" onClick={openExportFolder}/>
                     {/if}
                     <Button label="Close" clazz="m-left-8" type="active-purple" onClick={handleClose}/>
                 {:else}
@@ -98,7 +98,7 @@
 
     <div id="overlay-cancel-export">
         {#if cancelTriggered && exportCompleted === false}
-            <Overlay>This might take a while ...</Overlay>
+            <Overlay>Cancelling export...</Overlay>
         {/if}
     </div>
 

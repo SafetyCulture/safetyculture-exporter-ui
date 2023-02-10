@@ -31,9 +31,9 @@
 	let selectedStatus = $shadowConfig["Export"]["Inspection"]["Completed"]
 
 	const archivedItems = [
-		{value: "true", label: "Archived Only"},
-		{value: "false", label: "Unarchived Only"},
-		{value: "both", label: "Both - archived and unarchived"}
+		{value: "true", label: "Archived only"},
+		{value: "false", label: "Active only"},
+		{value: "both", label: "Both - active and archived"}
 	];
 	let selectedArchived = $shadowConfig["Export"]["Inspection"]["Archived"]
 
@@ -409,7 +409,7 @@
 			<div class="block-link" on:click={handleBackButton} on:keypress={handleBackButton}>
 				<img src="../images/arrow-left.png" alt="back arrow icon" width="15" height="15">
 			</div>
-			<div class="h1 p-left-16">Export Configuration</div>
+			<div class="h1 p-left-16">Export configuration</div>
 		</div>
 		<div class="nav-right">
 			<Button label="Save and close" type="active-white" onClick={handleSaveAndClose}/>
@@ -486,7 +486,7 @@
 				<div class="sub-label m-top-4">To change folder location on Windows, move the executable to the new export folder</div>
 			{/if}
 
-			<div class="label">Export timezone</div>
+			<div class="label">Export time zone</div>
 			<div class="border-weak border-round-8 m-top-4">
 				<Select items={timezoneItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedTimeZone}/>
 			</div>
