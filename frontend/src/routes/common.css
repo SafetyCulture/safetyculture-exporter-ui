@@ -162,6 +162,10 @@ body::-webkit-scrollbar {
     padding-right: 8px;
 }
 
+.p-right-16 {
+    padding-right: 16px;
+}
+
 .p-horiz-8 {
     padding-left: 8px;
     padding-right: 8px;
