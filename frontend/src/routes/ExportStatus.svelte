@@ -57,20 +57,21 @@
 </script>
 
 <div class="status-page">
-    <img class="logo" src="../images/logo.png" alt="SafetyCulture logo"/>
-
     <section class="top-nav">
         <div class="nav-left">
-            <div class=" inline">
+            <div class="h1">Export status</div>
+        </div>
+        <div class="nav-right">
+            <div class="inline">
                 {#if cancelTriggered}
-                    <img id="status-cancelled" src='/images/cancelled.png' alt="export cancelled icon" width="24" height="24">
+                    <img id="status-cancelled" src='/images/cancelled.png' alt="export cancelled icon" width="14" height="14">
                 {:else if exportCompleted}
-                    <img id="status-completed" src='/images/completed.png' alt="export completed icon" width="24" height="24">
+                    <img id="status-completed" src='/images/completed.png' alt="export completed icon" width="14" height="14">
                 {:else}
-                    <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon" width="24" height="24">
+                    <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon" width="14" height="14">
                 {/if}
             </div>
-            <div class="nav-left inline status-title p-left-16">
+            <div class="nav-left inline status-title p-left-8 p-right-16">
                 {#if cancelTriggered}
                     Export cancelled
                 {:else if exportCompleted}
@@ -79,8 +80,7 @@
                     In progress
                 {/if}
             </div>
-        </div>
-        <div class="nav-right">
+
             {#if !exportCompleted}
                 <Button label="Cancel export" type="active-red" onClick={handleCancel}/>
             {:else}
@@ -108,7 +108,7 @@
                 <tr class="text-weak">
                     <th class="status-col-1">Export item</th>
                     <th class="status-col-2">Status</th>
-                    <th class="status-col-3">Progress</th>
+                    <th class="status-col-3">&nbsp</th>
                 </tr>
             </thead>
             <tbody>
@@ -131,13 +131,8 @@
         height: 100%;
     }
 
-    .logo {
-        width: 150px;
-    }
-
     .status-title {
-        font-size: 20px;
-        font-weight: 600;
+        font-size: 14px;
     }
 
     .progress-body {
@@ -145,7 +140,7 @@
         height: calc( 100vh - 200px );
         padding: 20px 16px;
         overflow-y: scroll;
-
+        border-radius: 8px;
     }
 
     .status-table {
