@@ -57,8 +57,6 @@
 </script>
 
 <div class="status-page">
-    <img class="logo" src="../images/logo.png" alt="SafetyCulture logo"/>
-
     <section class="top-nav">
         <div class="nav-left">
             <div class=" inline">
@@ -131,10 +129,6 @@
         height: 100%;
     }
 
-    .logo {
-        width: 150px;
-    }
-
     .status-title {
         font-size: 20px;
         font-weight: 600;
@@ -145,7 +139,7 @@
         height: calc( 100vh - 200px );
         padding: 20px 16px;
         overflow-y: scroll;
-
+        border-radius: 8px;
     }
 
     .status-table {

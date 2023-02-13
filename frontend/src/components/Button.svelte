@@ -44,7 +44,7 @@
     }
 
     .button-red {
-        background: yellowgreen;
+        background: #C62F35;
         color: #FFFFFF;
         border-color: #FFFFFF;
         border-style: solid;
