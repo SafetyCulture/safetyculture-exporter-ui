@@ -68,17 +68,17 @@ jobs:
             echo ${{ env.GITHUB_HEAD_REF }}
             VERSION=${{ github.ref_name }} ./scripts/build-linux.sh
 
-        - name: Build package macos
-          if: matrix.os == 'macos-latest'
-          run: |
-            VERSION=${{ github.ref_name }} ./scripts/build-macos.sh
-
-        - name: Upload artifacts macOS
-          if: matrix.os == 'macos-latest'
-          uses: actions/upload-artifact@v2
-          with:
-            name: exporter-macos
-            path: exporter-darwin-*.zip
+#        - name: Build package macos
+#          if: matrix.os == 'macos-latest'
+#          run: |
+#            VERSION=${{ github.ref_name }} ./scripts/build-macos.sh
+#
+#        - name: Upload artifacts macOS
+#          if: matrix.os == 'macos-latest'
+#          uses: actions/upload-artifact@v2
+#          with:
+#            name: exporter-macos
+#            path: exporter-darwin-*.zip
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -108,10 +108,10 @@ jobs:
         with:
           name: exporter-linux
 
-      - name: Download package macos
-        uses: actions/download-artifact@v2
-        with:
-          name: exporter-macos
+#      - name: Download package macos
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: exporter-macos
 
       - name: Create Release
         id: create_release
