@@ -84,11 +84,6 @@
 <div class="template-filter-page">
     <div class="top-nav">
         <div class="nav-left">
-            {#if templatesLoaded}
-                <img id="status-completed" src='/images/completed.png' alt="export completed icon">
-            {:else}
-                <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon">
-            {/if}
             <div class="h1 p-left-8">Template selection</div>
         </div>
         <div class="nav-right">
