@@ -439,12 +439,7 @@
 			</div>
 			<div class="label">Date range from</div>
 			<div class="m-top-8">
-				<div class="button-long selector border-weak border-round-8 block-link">
-					<DateInput max={new Date()} format="dd-MM-yyyy" bind:value={date} />
-					<div class="template-button-right">
-						<img src="../images/date-picker.svg" alt="right arrow icon">
-					</div>
-				</div>
+				<DateInput max={new Date()} format="dd-MM-yyyy" bind:value={date} />
 			</div>
 			<div class="label">Include completed or incomplete inspections</div>
 			<div class="border-weak border-round-8 m-top-4">
