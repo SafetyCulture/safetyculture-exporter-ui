@@ -17,6 +17,7 @@
 	import Overlay from "../components/Overlay.svelte";
 	import StatusBar from "../components/StatusBar.svelte";
 	import FormPassword from "../components/FormPassword.svelte";
+	import FormNumberInput from "../components/FormNumberInput.svelte";
 
 	let build = ""
 	ReadBuild().then(it => {
@@ -61,7 +62,7 @@
 	};
 
 	let dbHost = '', dbHostShowError = false, dbHostErrMsg = 'Host cannot be empty'
-	let dbPort='', dbPortPlaceholder = "e.g. " + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false, dbPortErrMsg = 'Port invalid or empty'
+	let dbPort='', dbPortPlaceholder = "e.g. " + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false, dbPortErrMsg = 'Port Invalid'
 	let dbUser='', dbUserShowError = false, dbUserErrMsg = 'Username cannot be empty'
 	let dbPassword='', dbPasswordShowError = false, dbPasswordErrMsg = 'Password cannot be empty'
 	let dbName='', dbNameShowError = false, dbNameErrMsg = 'Database name cannot be empty'
@@ -407,7 +408,7 @@
 	<section class="top-nav">
 		<div class="nav-left">
 			<div class="block-link" on:click={handleBackButton} on:keypress={handleBackButton}>
-				<img src="../images/arrow-left.png" alt="back arrow icon" width="15" height="15">
+				<img src="../images/back.svg" alt="back arrow icon">
 			</div>
 			<div class="h1 p-left-16">Export configuration</div>
 		</div>
@@ -426,44 +427,61 @@
 				<div class="button-long selector border-weak border-round-8 block-link" on:click={handleSelectTemplates} on:keypress={handleSelectTemplates}>
 					<div class="templates">{generateTemplateName()}</div>
 					<div class="template-button-right">
-						<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
+						<img src="../images/arrow-right-compact.svg" alt="right arrow icon">
 					</div>
 				</div>
 			<div class="label">Select tables</div>
 			<div class="button-long selector border-weak border-round-8 block-link" on:click={handleTables} on:keypress={handleTables}>
 				<div class="templates">{generateTableName()}</div>
 				<div class="template-button-right">
-					<img class="m-left-8" src="../images/arrow-right-compact.png" alt="right arrow icon" width="4" height="8">
+					<img src="../images/arrow-right-compact.svg" alt="right arrow icon">
 				</div>
 			</div>
 			<div class="label">Date range from</div>
 			<div class="m-top-8">
-				<DateInput max={new Date()} format="dd-MM-yyyy" bind:value={date} />
+				<div class="button-long selector border-weak border-round-8 block-link">
+					<DateInput max={new Date()} format="dd-MM-yyyy" bind:value={date} />
+					<div class="template-button-right">
+						<img src="../images/date-picker.svg" alt="right arrow icon">
+					</div>
+				</div>
 			</div>
 			<div class="label">Include completed or incomplete inspections</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<Select items={statusItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedStatus} />
+				<Select items={statusItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedStatus} >
+					<div slot="chevron-icon">
+						<img src="../images/arrow-down-compact.svg" alt="down arrow icon"/>
+					</div>
+				</Select>
 			</div>
 
 			<div class="label">Include active or archived inspections</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<Select items={archivedItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedArchived}/>
+				<Select items={archivedItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedArchived}>
+					<div slot="chevron-icon">
+						<img src="../images/arrow-down-compact.svg" alt="down arrow icon"/>
+					</div>
+				</Select>
 			</div>
 		</section>
 		<section class="export-details border-round-8">
 			<div class="h3">Export details</div>
 			<div class="label">Export data as:</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<Select items={dataExportFormatItems} clearable={false} showChevron={true} searchable={false} on:change={handleExportFormatUpdate} --border="0px" bind:value={selectedExportFormat} />
+				<Select items={dataExportFormatItems} clearable={false} showChevron={true} searchable={false} on:change={handleExportFormatUpdate} --border="0px" bind:value={selectedExportFormat}>
+					<div slot="chevron-icon">
+						<img src="../images/arrow-down-compact.svg" alt="down arrow icon"/>
+					</div>
+				</Select>
 			</div>
 			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat.value)}
 				<div>
 					<div class="label">Database details:</div>
-					<FormTextInput label="Host address" placeholder="e.g. localhost" error={dbHostShowError} errorMsg={dbHostErrMsg} bind:value={dbHost}/>
-					<FormTextInput label="Host port" placeholder={dbPortPlaceholder} pattern="^([0-9]{1,5})$" maxlength=5 error={dbPortShowError} errorMsg={dbPortErrMsg} bind:value={dbPort}/>
-					<FormTextInput label="Username" placeholder="e.g. db-admin" error={dbUserShowError} errorMsg={dbUserErrMsg} bind:value={dbUser}/>
-					<FormPassword label="Password" placeholder="e.g. s3cur3p@ssw0rd" error={dbPasswordShowError} errorMsg={dbPasswordErrMsg} bind:value={dbPassword}/>
-					<FormTextInput label="Database name" placeholder="e.g. safetyculture-data" error={dbNameShowError} errorMsg={dbNameErrMsg} bind:value={dbName}/>
+					<FormTextInput label="Host address" error={dbHostShowError} errorMsg={dbHostErrMsg} bind:value={dbHost}/>
+					<FormNumberInput label="Host port" placeholder={dbPortPlaceholder} maxlength=5 error={dbPortShowError} errorMsg={dbPortErrMsg} bind:value={dbPort} />
+					<FormTextInput label="Username" error={dbUserShowError} errorMsg={dbUserErrMsg} bind:value={dbUser}/>
+					<FormPassword label="Password" error={dbPasswordShowError} errorMsg={dbPasswordErrMsg} bind:value={dbPassword}/>
+					<FormTextInput label="Database name" error={dbNameShowError} errorMsg={dbNameErrMsg} bind:value={dbName}/>
 					<hr>
 				</div>
 			{/if}
@@ -479,7 +497,7 @@
 			<div class="label">Folder location</div>
 			<div id="folder" class="button-long selector border-weak border-round-8 p-8 align-items-c" on:click={openFolderDialog} on:keypress={openFolderDialog}>
 				<div class="text-weak word-wrap-break width-18em" >{$shadowConfig["Export"]["Path"]}</div>
-				<img class="{build === 'windows' ? '' : 'cursor-pointer'}" src="../images/folder.png" alt="folder icon" width="15" height="15">
+				<img class="{build === 'windows' ? '' : 'cursor-pointer'}" src="../images/folder.svg" alt="folder icon">
 			</div>
             {/if}
 			{#if build === 'windows'}
@@ -488,7 +506,11 @@
 
 			<div class="label">Export time zone</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<Select items={timezoneItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedTimeZone}/>
+				<Select items={timezoneItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedTimeZone}>
+					<div slot="chevron-icon">
+						<img src="../images/arrow-down-compact.svg" alt="down arrow icon"/>
+					</div>
+				</Select>
 			</div>
 			<div class="label">Include:</div>
 			<input type="checkbox" id="media" name="media" bind:checked={$shadowConfig["Export"]["Media"]}>

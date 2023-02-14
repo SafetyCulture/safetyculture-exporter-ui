@@ -129,7 +129,7 @@
                 {#if left}
                 <div class="table-cell">
                     <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["Tables"]} value="{left.id}"/>
-                    <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
+                    <img class="m-left-32" src="../images/template-icon.svg" alt="template" width="28" height="28"/>
                     <div class="m-left-8">{trim(left.name)}</div>
                 </div>
                 {/if}
@@ -137,7 +137,7 @@
                 {#if right}
                 <div class="table-cell">
                     <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["Tables"]} value="{right.id}"/>
-                    <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
+                    <img class="m-left-32" src="../images/template-icon.svg" alt="template" width="28" height="28"/>
                     <div class="m-left-8">{trim(right.name)}</div>
                 </div>
                 {/if}
