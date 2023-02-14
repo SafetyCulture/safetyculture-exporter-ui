@@ -86,7 +86,7 @@ jobs:
           uses: actions/upload-artifact@v2
           with:
             name: exporter-linux
-            path: exporter-linux-amd64.tar.gz
+            path: exporter-linux-amd64
 
         - name: Upload artifacts windows
           if: matrix.os == 'windows-latest'
@@ -120,5 +120,5 @@ jobs:
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
 #          artifacts: "exporter*.zip,exporter*.tar.gz,exporter-windows-x86_64.exe"
-          artifacts: "exporter*.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "exporter-linux-amd64,exporter-windows-x86_64.exe"
           allowUpdates: true
