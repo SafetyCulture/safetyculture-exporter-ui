@@ -15,7 +15,6 @@ jobs:
           go-version: [1.18]
           node-version: [16]
           os: [windows-latest, ubuntu-latest, macos-latest]
-#          os: [windows-latest, ubuntu-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -119,6 +118,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "exporter*.zip,exporter*.tar.gz,exporter-windows-x86_64.exe"
-#          artifacts: "exporter-linux-amd64,exporter-windows-x86_64.exe"
+          artifacts: "exporter*.zip,exporter-linux-amd64,exporter-windows-x86_64.exe"
           allowUpdates: true
