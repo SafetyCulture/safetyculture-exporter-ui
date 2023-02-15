@@ -60,7 +60,7 @@
 <div class="welcome-page">
 	<section class="welcome-left-side">
 		<section class="welcome-header">
-			<img id="welcome-page-logo" src="../images/logo.png" alt="SafetyCulture logo"/>
+			<img id="welcome-page-logo" src="../images/logo.svg" alt="SafetyCulture logo"/>
 			<div class="h1">Welcome to SafetyCulture Exporter</div>
 		</section>
 		<section class="token-validation">
@@ -87,7 +87,7 @@
 		<section class="storage-info">
 			<div class="note border-round-8">
 				<div>
-					<img src="../images/round-exclamation-mark.png" alt="alert icon" width="24" height="24">
+					<img src="../images/warning.svg" alt="alert icon" width="24" height="24">
 				</div>
 				<div>
 					<div class="note-title">Before you continue</div>
@@ -99,7 +99,7 @@
 	<section class="welcome-right-side">
         <div class="right-side-bg bg-light border-round-12-left ">
             <div class="right-image">
-                <img class="border-round-12-left" src="../images/token-example.png" alt="example generating token">
+                <img class="border-round-12-left" src="../images/token.svg" alt="example generating token">
             </div>
             <div class="img-caption text-weak">Example API token</div>
         </div>

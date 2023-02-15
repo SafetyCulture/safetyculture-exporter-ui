@@ -42,7 +42,7 @@
     }
 
     .error {
-        background-color: #c2586c;
-        color: #b50d0d;
+        background-color: #A9282E;
+        color: #FFF0F1;
     }
 </style>

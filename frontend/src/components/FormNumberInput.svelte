@@ -1,15 +1,16 @@
 <script>
-    import ValidatableInput from "./ValidatableInput.svelte";
+    import ValidatableNumberInput from "./ValidatableNumberInput.svelte";
 
     export let label = ''
     export let placeholder = ''
     export let error = false
     export let errorMsg = ''
     export let value = '';
+    export let maxlength;
 </script>
 
 <div class="form-label">{label}</div>
-<ValidatableInput placeholder={placeholder} error={error} errorMsg={errorMsg} bind:value={value}/>
+<ValidatableNumberInput placeholder={placeholder} error={error} errorMsg={errorMsg} maxlength={maxlength} bind:value={value}/>
 
 <style>
     .form-label {

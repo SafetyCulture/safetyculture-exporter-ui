@@ -64,11 +64,11 @@
         <div class="nav-right">
             <div class="inline">
                 {#if cancelTriggered}
-                    <img id="status-cancelled" src='/images/cancelled.png' alt="export cancelled icon" width="14" height="14">
+                    <img id="status-cancelled" src='/images/warning-red.svg' alt="export cancelled icon" width="14" height="14">
                 {:else if exportCompleted}
-                    <img id="status-completed" src='/images/completed.png' alt="export completed icon" width="14" height="14">
+                    <img id="status-completed" src='/images/complete.svg' alt="export completed icon" width="14" height="14">
                 {:else}
-                    <img id="status-in-progress" src='/images/in-progress.png' alt="export in progress icon" width="14" height="14">
+                    <img id="status-in-progress" src='/images/in-progress.svg' alt="export in progress icon" width="14" height="14">
                 {/if}
             </div>
             <div class="nav-left inline status-title p-left-8 p-right-16">

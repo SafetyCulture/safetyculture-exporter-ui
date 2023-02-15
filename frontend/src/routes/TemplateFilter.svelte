@@ -108,8 +108,8 @@
                     <div class="m-left-32">Template</div>
                 </div>
                 <div class="nav-right">
-                    <div>Last modified</div>
-                    <div class="m-left-8"><img src="../images/arrow-down.png" alt="down" width="12" height="12"/></div>
+                    <div class="m-right-8">Last modified</div>
+                    <img src="../images/arrow-down.svg" alt="down"/>
                 </div>
             </div>
         </div>
@@ -118,7 +118,7 @@
         <div class="table-row flex-spaced p-horiz-8 m-right-8" class:hide={searchFilter.length >= 2 && !name.toLowerCase().includes(searchFilter.toLowerCase())}>
             <div class="nav-left">
                 <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
-                <img class="m-left-32" src="../images/template-icon.png" alt="template" width="28" height="28"/>
+                <img class="m-left-32" src="../images/template-icon.svg" alt="template" width="28" height="28"/>
                 <div class="m-left-8">{trim(name)}</div>
             </div>
             <div class="nav-right">

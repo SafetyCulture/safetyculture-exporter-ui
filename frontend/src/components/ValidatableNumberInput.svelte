@@ -3,13 +3,20 @@
     export let error = false
     export let errorMsg = ''
     export let value = '';
+    export let maxlength;
 </script>
 
 <input
         class="form-input" class:input-error={error}
         type="text"
         placeholder={placeholder}
+        pattern="^([0-9]{1,5})$"
+        maxlength={maxlength}
         bind:value={value}
+        on:input={e => {
+            const newVal = e.target.value.replace(/[^0-9]/g, '');
+            value = newVal;
+        }}
 />
 
 {#if error}

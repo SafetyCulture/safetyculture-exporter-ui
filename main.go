@@ -32,8 +32,8 @@ func main() {
 	// Create application with options
 	err = wails.Run(&options.App{
 		Title:         "SafetyCulture Exporter",
-		Width:         1024,
-		Height:        768,
+		Width:         1080,
+		Height:        780,
 		DisableResize: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
