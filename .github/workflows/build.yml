@@ -120,3 +120,4 @@ jobs:
           token: "${{ secrets.GITHUB_TOKEN }}"
           artifacts: "exporter*.zip,exporter-linux-amd64,exporter-windows-x86_64.exe"
           allowUpdates: true
+          prerelease: true
