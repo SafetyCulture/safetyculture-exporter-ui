@@ -111,12 +111,17 @@ func (a *App) ExportCSV() {
 	a.exporter.RunCSV()
 }
 
-func (a *App) CheckDBConnection() error {
-	return a.exporter.CheckDBConnection()
-}
-
 func (a *App) ExportSQL() error {
 	return a.exporter.RunSQL()
+}
+
+func (a *App) ExportReports() error {
+	return nil
+	//return a.exporter.RunInspectionReports()
+}
+
+func (a *App) CheckDBConnection() error {
+	return a.exporter.CheckDBConnection()
 }
 
 func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
@@ -207,7 +212,6 @@ func (a *App) GetUserHomeDirectory() string {
 }
 
 func (a *App) ReadExportStatus() {
-
 	for {
 		exportStatus := a.exporter.GetExportStatus()
 

@@ -9,6 +9,8 @@ export function CheckDBConnection():Promise<void>;
 
 export function ExportCSV():Promise<void>;
 
+export function ExportReports():Promise<void>;
+
 export function ExportSQL():Promise<void>;
 
 export function GetSettingDir():Promise<string>;

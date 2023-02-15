@@ -5,8 +5,7 @@
 	import timezone from 'dayjs/plugin/timezone';
 	import Select from 'svelte-select';
 	import { DateInput } from 'date-picker-svelte'
-	import {
-		SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ReadBuild,CheckDBConnection
+	import { SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ExportReports, ReadBuild,CheckDBConnection
 	} from "../../wailsjs/go/main/App.js"
 	import {latestVersion, shadowConfig} from '../lib/store.js';
 	import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
@@ -43,7 +42,7 @@
 		{value: "mysql", label: "MySQL"},
 		{value: "postgres", label: "Postgres"},
 		{value: "sqlserver", label: "SQL Server"},
-		// {value: "reports", label: "Reports"},
+		{value: "reports", label: "Reports"},
 	];
 
 	const POSTGRES_DIALECT = 'postgres';
@@ -326,7 +325,8 @@
 					})
 					break
 				case 'reports':
-					console.debug('NOT SUPPORTED')
+					ExportReports()
+					push("/export/status")
 					break
 			}
 		}).catch(e => {

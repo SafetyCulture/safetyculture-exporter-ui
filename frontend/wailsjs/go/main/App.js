@@ -14,6 +14,10 @@ export function ExportCSV() {
   return window['go']['main']['App']['ExportCSV']();
 }
 
+export function ExportReports() {
+  return window['go']['main']['App']['ExportReports']();
+}
+
 export function ExportSQL() {
   return window['go']['main']['App']['ExportSQL']();
 }
