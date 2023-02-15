@@ -5,8 +5,6 @@ import {main} from '../models';
 
 export function CancelExport():Promise<void>;
 
-export function CheckApiKey():Promise<string>;
-
 export function CheckDBConnection():Promise<void>;
 
 export function ExportCSV():Promise<void>;
@@ -21,8 +19,6 @@ export function GetTemplates():Promise<Array<api.TemplateResponseItem>>;
 
 export function GetUserHomeDirectory():Promise<string>;
 
-export function Greet(arg1:string):Promise<string>;
-
 export function OpenDirectory(arg1:string):Promise<void>;
 
 export function ReadBuild():Promise<string>;
@@ -34,7 +30,5 @@ export function ReadVersion():Promise<main.VersionResponse>;
 export function SaveSettings(arg1:api.ExporterConfiguration):Promise<void>;
 
 export function SelectDirectory(arg1:string):Promise<string>;
-
-export function SelectSettingsDirectory():Promise<void>;
 
 export function ValidateApiKey(arg1:string):Promise<string>;
