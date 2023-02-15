@@ -7,12 +7,12 @@
 	import { DateInput } from 'date-picker-svelte'
 	import { SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ExportReports, ReadBuild,CheckDBConnection
 	} from "../../wailsjs/go/main/App.js"
-	import {latestVersion, shadowConfig} from '../lib/store.js';
+	import {latestVersion, shadowConfig, exportConfig} from '../lib/store.js';
+	import {allTables, isNullOrEmptyObject} from "../lib/utils.js";
 	import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
 	import FormTextInput from "../components/FormTextInput.svelte";
 	import Button from "../components/Button.svelte";
-	import {isNullOrEmptyObject} from "../lib/utils.js";
 	import Overlay from "../components/Overlay.svelte";
 	import StatusBar from "../components/StatusBar.svelte";
 	import FormPassword from "../components/FormPassword.svelte";
@@ -309,6 +309,7 @@
 		saveConfiguration().then(it => {
 			switch (selectedExportFormat.value) {
 				case 'csv':
+					$exportConfig['items'] = getFeedsForExport()
 					ExportCSV()
 					push("/export/status")
 					break
@@ -316,6 +317,7 @@
 				case 'postgres':
 				case 'sqlserver':
 					CheckDBConnection().then(() => {
+						$exportConfig['items'] = getFeedsForExport()
 						showBanner = false
 						ExportSQL()
 						push("/export/status")
@@ -325,6 +327,7 @@
 					})
 					break
 				case 'reports':
+					$exportConfig['items'] = ['reports']
 					ExportReports()
 					push("/export/status")
 					break
@@ -333,6 +336,20 @@
 			console.debug('saveConfiguration err')
 			console.debug(e)
 		})
+	}
+
+	function getFeedsForExport() {
+		let feedsToExport = []
+		if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
+			feedsToExport = Array.from($shadowConfig["Export"]["Tables"])
+		}
+		if (feedsToExport.length === 0) {
+			feedsToExport = Array.from(allTables)
+		}
+		if ($shadowConfig["Export"]["Media"] === true && !feedsToExport.includes("media")) {
+			feedsToExport.push("media")
+		}
+		return feedsToExport
 	}
 
 	function handleSaveAndClose() {

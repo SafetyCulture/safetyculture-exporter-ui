@@ -2,26 +2,15 @@
     import './common.css';
     import {CancelExport, ReadExportStatus, OpenDirectory} from "../../wailsjs/go/main/App.js"
     import Status from "./../components/Export/Status.svelte";
-    import {shadowConfig} from "../lib/store.js";
+    import {shadowConfig, exportConfig} from "../lib/store.js";
     import {onMount} from "svelte";
     import {EventsOn, Quit} from "../../wailsjs/runtime/runtime.js";
-    import {allTables} from "../lib/utils.js";
     import Button from "../components/Button.svelte";
     import {push} from "svelte-spa-router";
     import Overlay from "../components/Overlay.svelte";
     import StatusBar from "../components/StatusBar.svelte";
 
-    let feedsToExport = []
-    if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
-        feedsToExport = Array.from($shadowConfig["Export"]["Tables"])
-    }
-    if (feedsToExport.length === 0) {
-        feedsToExport = Array.from(allTables)
-    }
-    if ($shadowConfig["Export"]["Media"] === true && !feedsToExport.includes("media")) {
-        feedsToExport.push("media")
-    }
-
+    let feedsToExport = $exportConfig['items']
     let exportType = $shadowConfig["Session"]["ExportType"]
 
     let cancelTriggered = false

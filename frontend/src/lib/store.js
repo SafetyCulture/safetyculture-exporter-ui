@@ -45,8 +45,24 @@ latestVersion.subscribe(value => {
     localStorage.setItem("public-version", JSON.stringify(value))
 })
 
+// export status store
+let storedExportConfig = []
+try {
+    storedExportConfig = JSON.parse(localStorage.getItem("export-config"))
+} catch (e) {
+    storedExportConfig = {}
+}
+export const exportConfig = writable(storedExportConfig)
+exportConfig.subscribe(value => {
+    if (value === null) {
+        value = {}
+    }
+    localStorage.setItem("export-config", JSON.stringify(value))
+})
+
 export function emptyStores() {
     templateCache.set([])
     shadowConfig.set({})
     latestVersion.set({})
+    exportConfig.set({})
 }
