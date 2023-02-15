@@ -14,8 +14,8 @@ jobs:
         matrix:
           go-version: [1.18]
           node-version: [16]
-#          os: [windows-latest, ubuntu-latest, macos-latest]
-          os: [windows-latest, ubuntu-latest]
+          os: [windows-latest, ubuntu-latest, macos-latest]
+#          os: [windows-latest, ubuntu-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -69,17 +69,17 @@ jobs:
             echo ${{ env.GITHUB_HEAD_REF }}
             VERSION=${{ github.ref_name }} ./scripts/build-linux.sh
 
-#        - name: Build package macos
-#          if: matrix.os == 'macos-latest'
-#          run: |
-#            VERSION=${{ github.ref_name }} ./scripts/build-macos.sh
-#
-#        - name: Upload artifacts macOS
-#          if: matrix.os == 'macos-latest'
-#          uses: actions/upload-artifact@v2
-#          with:
-#            name: exporter-macos
-#            path: exporter-darwin-*.zip
+        - name: Build package macos
+          if: matrix.os == 'macos-latest'
+          run: |
+            VERSION=${{ github.ref_name }} ./scripts/build-macos.sh
+
+        - name: Upload artifacts macOS
+          if: matrix.os == 'macos-latest'
+          uses: actions/upload-artifact@v2
+          with:
+            name: exporter-macos
+            path: exporter-darwin-*.zip
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -109,16 +109,16 @@ jobs:
         with:
           name: exporter-linux
 
-#      - name: Download package macos
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: exporter-macos
+      - name: Download package macos
+        uses: actions/download-artifact@v2
+        with:
+          name: exporter-macos
 
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-#          artifacts: "exporter*.zip,exporter*.tar.gz,exporter-windows-x86_64.exe"
-          artifacts: "exporter-linux-amd64,exporter-windows-x86_64.exe"
+          artifacts: "exporter*.zip,exporter*.tar.gz,exporter-windows-x86_64.exe"
+#          artifacts: "exporter-linux-amd64,exporter-windows-x86_64.exe"
           allowUpdates: true
