@@ -118,7 +118,7 @@
         <div class="table-row flex-spaced p-horiz-8 m-right-8" class:hide={searchFilter.length >= 2 && !name.toLowerCase().includes(searchFilter.toLowerCase())}>
             <div class="nav-left">
                 <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
-                <img class="m-left-32" src="../images/template-icon.svg" alt="template" width="28" height="28"/>
+                <img class="m-left-32" src="../images/template-icon.svg" alt="template"/>
                 <div class="m-left-8">{trim(name)}</div>
             </div>
             <div class="nav-right">

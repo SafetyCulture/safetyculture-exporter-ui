@@ -107,58 +107,24 @@ func (a *App) SelectDirectory(currentDir string) string {
 	return directoryDialog
 }
 
-func (a *App) SelectSettingsDirectory() {
-	settingsDir, err := GetSettingDirectoryPath()
-	if err != nil {
-		runtime.LogErrorf(a.ctx, "can't open directory dialog, %v", err)
-		return
-	}
-
-	_, err = runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
-		DefaultDirectory: settingsDir,
-		Filters: []runtime.FileFilter{
-			{
-				DisplayName: "*.log",
-				Pattern:     "*.log",
-			},
-		},
-	})
-
-	if err != nil {
-		runtime.LogErrorf(a.ctx, "can't open directory dialog, %v", err)
-		return
-	}
-}
-
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
-}
-
 func (a *App) ExportCSV() {
 	a.exporter.RunCSV()
-}
-
-func (a *App) CheckDBConnection() error {
-	return a.exporter.CheckDBConnection()
 }
 
 func (a *App) ExportSQL() error {
 	return a.exporter.RunSQL()
 }
 
-func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
-	return a.exporter.GetTemplateList()
+func (a *App) ExportReports() error {
+	return a.exporter.RunInspectionReports()
 }
 
-// CheckApiKey validates the api key from the config file if it exists
-func (a *App) CheckApiKey() string {
-	token := a.cm.Configuration.AccessToken
-	if len(token) == 0 {
-		return "token can't be blank"
-	}
+func (a *App) CheckDBConnection() error {
+	return a.exporter.CheckDBConnection()
+}
 
-	return a.ValidateApiKey(token)
+func (a *App) GetTemplates() []exporterAPI.TemplateResponseItem {
+	return a.exporter.GetTemplateList()
 }
 
 func checkConn(ctx context.Context) (bool, string) {
@@ -245,11 +211,11 @@ func (a *App) GetUserHomeDirectory() string {
 }
 
 func (a *App) ReadExportStatus() {
-
 	for {
 		exportStatus := a.exporter.GetExportStatus()
 
 		for _, item := range exportStatus.Feeds {
+			fmt.Printf("> %s\n - %s - %d", "update-"+item.FeedName, item.FeedName, item.Counter)
 			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, item)
 		}
 

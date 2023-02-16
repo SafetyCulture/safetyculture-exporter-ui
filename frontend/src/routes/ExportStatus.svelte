@@ -2,26 +2,15 @@
     import './common.css';
     import {CancelExport, ReadExportStatus, OpenDirectory} from "../../wailsjs/go/main/App.js"
     import Status from "./../components/Export/Status.svelte";
-    import {shadowConfig} from "../lib/store.js";
+    import {shadowConfig, exportConfig} from "../lib/store.js";
     import {onMount} from "svelte";
     import {EventsOn, Quit} from "../../wailsjs/runtime/runtime.js";
-    import {allTables} from "../lib/utils.js";
     import Button from "../components/Button.svelte";
     import {push} from "svelte-spa-router";
     import Overlay from "../components/Overlay.svelte";
     import StatusBar from "../components/StatusBar.svelte";
 
-    let feedsToExport = []
-    if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
-        feedsToExport = Array.from($shadowConfig["Export"]["Tables"])
-    }
-    if (feedsToExport.length === 0) {
-        feedsToExport = Array.from(allTables)
-    }
-    if ($shadowConfig["Export"]["Media"] === true && !feedsToExport.includes("media")) {
-        feedsToExport.push("media")
-    }
-
+    let feedsToExport = $exportConfig['items']
     let exportType = $shadowConfig["Session"]["ExportType"]
 
     let cancelTriggered = false
@@ -64,11 +53,11 @@
         <div class="nav-right">
             <div class="inline">
                 {#if cancelTriggered}
-                    <img id="status-cancelled" src='/images/warning-red.svg' alt="export cancelled icon" width="14" height="14">
+                    <img id="status-cancelled" src='/images/warning-red.svg' alt="export cancelled icon">
                 {:else if exportCompleted}
-                    <img id="status-completed" src='/images/complete.svg' alt="export completed icon" width="14" height="14">
+                    <img id="status-completed" src='/images/complete.svg' alt="export completed icon">
                 {:else}
-                    <img id="status-in-progress" src='/images/in-progress.svg' alt="export in progress icon" width="14" height="14">
+                    <img id="status-in-progress" src='/images/in-progress.svg' alt="export in progress icon">
                 {/if}
             </div>
             <div class="nav-left inline status-title p-left-8 p-right-16">
@@ -85,7 +74,7 @@
                 <Button label="Cancel export" type="active-red" onClick={handleCancel}/>
             {:else}
                 {#if !cancelTriggered}
-                    {#if exportType  === "csv"}
+                    {#if exportType  === "csv" || exportType === "reports"}
                         <Button label="Open export folder" type="active-white" onClick={openExportFolder}/>
                     {/if}
                     <Button label="Close" clazz="m-left-8" type="active-purple" onClick={handleClose}/>
