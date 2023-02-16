@@ -166,8 +166,28 @@ body::-webkit-scrollbar {
     padding-right: 16px;
 }
 
+.p-top-8 {
+    padding-top: 8px;
+}
+
+.p-top-16 {
+    padding-top: 16px;
+}
+
+.p-top-32 {
+    padding-top: 32px;
+}
+
 .p-top-64 {
     padding-top: 64px;
+}
+
+.p-bottom-32 {
+    padding-bottom: 32px;
+}
+
+.p-bottom-48 {
+    padding-bottom: 48px;
 }
 
 .p-horiz-8 {

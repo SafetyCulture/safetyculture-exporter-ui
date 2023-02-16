@@ -79,10 +79,10 @@
 
 {#if templatesLoaded === false}
 <Overlay>
-    <div class="p-top-64">
-        <img src="../images/loading.png" alt="loading"/>
+    <div class="p-top-32">
+        <img src="../images/loading.gif" alt="loading"/>
     </div>
-    <div class="p-vert-32 loading-message">Please wait while we processing your request ...</div>
+    <div class="p-top-8 p-bottom-48 loading-message">Please wait while we processing your request ...</div>
 </Overlay>
 {/if}
 
