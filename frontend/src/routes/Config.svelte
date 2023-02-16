@@ -505,7 +505,7 @@
 				</div>
 			{/if}
 
-            {#if selectedExportFormat != null && (selectedExportFormat.value === 'csv')}
+            {#if selectedExportFormat != null && (selectedExportFormat.value === 'csv' || selectedExportFormat.value === 'reports')}
 			<div class="label">Folder location</div>
 			<div id="folder" class="button-long selector border-weak border-round-8 p-8 align-items-c" on:click={openFolderDialog} on:keypress={openFolderDialog}>
 				<div class="text-weak word-wrap-break width-18em" >{$shadowConfig["Export"]["Path"]}</div>
