@@ -215,7 +215,6 @@ func (a *App) ReadExportStatus() {
 		exportStatus := a.exporter.GetExportStatus()
 
 		for _, item := range exportStatus.Feeds {
-			fmt.Printf("> %s\n - %s - %d", "update-"+item.FeedName, item.FeedName, item.Counter)
 			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, item)
 		}
 
