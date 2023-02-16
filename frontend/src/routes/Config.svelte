@@ -327,6 +327,7 @@
 					break
 				case 'reports':
 					console.debug('NOT SUPPORTED')
+					showBanner = false
 					break
 			}
 		}).catch(e => {
