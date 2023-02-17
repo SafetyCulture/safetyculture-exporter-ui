@@ -79,6 +79,9 @@
                     {/if}
                     <Button label="Close" clazz="m-left-8" type="active-purple" onClick={handleClose}/>
                 {:else}
+                    {#if exportType === "reports"}
+                        <Button label="Open export folder" type="active-white" onClick={openExportFolder}/>
+                    {/if}
                     <Button label="Go Back" type="active-purple" onClick={goBack}/>
                 {/if}
             {/if}
