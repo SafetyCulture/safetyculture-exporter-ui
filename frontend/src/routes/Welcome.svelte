@@ -87,7 +87,7 @@
 		<section class="storage-info">
 			<div class="note border-round-8">
 				<div>
-					<img src="../images/warning.svg" alt="alert icon" width="24" height="24">
+					<img src="../images/warning.svg" alt="alert icon">
 				</div>
 				<div>
 					<div class="note-title">Before you continue</div>

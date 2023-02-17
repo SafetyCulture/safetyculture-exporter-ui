@@ -53,11 +53,11 @@
         <div class="nav-right">
             <div class="inline">
                 {#if cancelTriggered}
-                    <img id="status-cancelled" src='/images/warning-red.svg' alt="export cancelled icon" width="14" height="14">
+                    <img id="status-cancelled" src='/images/warning-red.svg' alt="export cancelled icon">
                 {:else if exportCompleted}
-                    <img id="status-completed" src='/images/complete.svg' alt="export completed icon" width="14" height="14">
+                    <img id="status-completed" src='/images/complete.svg' alt="export completed icon">
                 {:else}
-                    <img id="status-in-progress" src='/images/in-progress.svg' alt="export in progress icon" width="14" height="14">
+                    <img id="status-in-progress" src='/images/in-progress.svg' alt="export in progress icon">
                 {/if}
             </div>
             <div class="nav-left inline status-title p-left-8 p-right-16">
@@ -74,11 +74,14 @@
                 <Button label="Cancel export" type="active-red" onClick={handleCancel}/>
             {:else}
                 {#if !cancelTriggered}
-                    {#if exportType  === "csv"}
+                    {#if exportType  === "csv" || exportType === "reports"}
                         <Button label="Open export folder" type="active-white" onClick={openExportFolder}/>
                     {/if}
                     <Button label="Close" clazz="m-left-8" type="active-purple" onClick={handleClose}/>
                 {:else}
+                    {#if exportType === "reports"}
+                        <Button label="Open export folder" type="active-white" onClick={openExportFolder}/>
+                    {/if}
                     <Button label="Go Back" type="active-purple" onClick={goBack}/>
                 {/if}
             {/if}

@@ -116,8 +116,7 @@ func (a *App) ExportSQL() error {
 }
 
 func (a *App) ExportReports() error {
-	return nil
-	//return a.exporter.RunInspectionReports()
+	return a.exporter.RunInspectionReports()
 }
 
 func (a *App) CheckDBConnection() error {
@@ -213,11 +212,9 @@ func (a *App) GetUserHomeDirectory() string {
 
 func (a *App) ReadExportStatus() {
 	for {
-		//fmt.Println(" ")
 		exportStatus := a.exporter.GetExportStatus()
 
 		for _, item := range exportStatus.Feeds {
-			//fmt.Printf("> %s\n - %s - %d", "update-"+item.FeedName, item.FeedName, item.Counter)
 			runtime.EventsEmit(a.ctx, "update-"+item.FeedName, item)
 		}
 
