@@ -1,14 +1,14 @@
 <script>
 </script>
 
-<div class="backfill">
+<div class="back-fill">
     <div class="overlay">
         <slot></slot>
     </div>
 </div>
 
 <style>
-    .backfill {
+    .back-fill {
         background-color: rgba(0, 0, 0, 0.75);
         position: fixed;
         top: 0;
@@ -27,9 +27,9 @@
     .overlay {
         position: absolute;
         font-size: 1.5rem;
-        background-color: rgb(236, 237, 254);
+        background-color: #FFFFFF;
         border: 1px solid rgb(71, 64, 212);
-        color: rgb(71, 64, 212);
         padding: 10px 20px;
+        border-radius: 8px;
     }
 </style>
