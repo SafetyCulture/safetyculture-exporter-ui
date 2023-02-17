@@ -383,7 +383,9 @@
 	}
 
 	function openURL(url) {
-		BrowserOpenURL(url)
+		if (url !== '') {
+			BrowserOpenURL(url)
+		}
 	}
 
 	function removeOverlay() {
@@ -399,7 +401,9 @@
 		<div class="download-alert" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
 			<div>This version is not longer supported</div>
 			<div>Latest version is {$latestVersion['latest']}</div>
-			<div>Please click here to download it</div>
+			{#if $latestVersion['download_url'] !== ''}
+				<div>Please click here to download it</div>
+			{/if}
 		</div>
 	</Overlay>
 {/if}
@@ -562,6 +566,7 @@
 	}
 
 	.download-alert {
+		font-size: 1.2rem;
 		text-align: center;
 		cursor: pointer;
 	}

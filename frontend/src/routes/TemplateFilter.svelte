@@ -78,7 +78,12 @@
 </script>
 
 {#if templatesLoaded === false}
-<Overlay>Loading your templates...</Overlay>
+<Overlay>
+    <div class="p-top-32">
+        <img src="../images/loading.gif" alt="loading"/>
+    </div>
+    <div class="p-top-8 p-bottom-48 loading-message">Please wait while we processing your request ...</div>
+</Overlay>
 {/if}
 
 <div class="template-filter-page">
@@ -133,6 +138,11 @@
 <StatusBar/>
 
 <style>
+    .loading-message {
+        text-align: center;
+        font-size: 1.2rem;
+    }
+
     .hide {
         display: none!important;
     }
