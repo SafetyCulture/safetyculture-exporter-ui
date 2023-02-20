@@ -26,8 +26,7 @@
 
     function handleCancel() {
         cancelTriggered = true
-        CancelExport().then(() => {
-        })
+        CancelExport()
     }
 
     function handleClose() {
