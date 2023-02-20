@@ -68,7 +68,8 @@
     }
 
     .button-disabled {
-        background-color: gray;
+        background-color: #F8F9FC;
+        color: #97A3B5;
         cursor: wait;
     }
 </style>
