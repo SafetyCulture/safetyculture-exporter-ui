@@ -3,7 +3,8 @@
     export let onClick
     export let clazz = '';
     export let error = false
-    export let type = 'active'
+    export let type = 'active-purple'
+    export let active = true;
 </script>
 
 
@@ -12,6 +13,8 @@
         class:button-purple={type === 'active-purple'}
         class:button-white={type === 'active-white'}
         class:button-red={type === 'active-red'}
+        class:button-disabled={active === false}
+        class:button-active={active === true}
         on:click={onClick}
 >{label}</button>
 
@@ -23,10 +26,6 @@
         font-weight: 500;
         font-size: 1rem;
         line-height: 1.5rem;
-    }
-
-    .button:hover {
-        cursor: pointer;
     }
 
     .button-white {
@@ -55,5 +54,14 @@
         color: #FFFFFF;
         border-color: #FFFFFF;
         border-style: solid;
+    }
+
+    .button-active:hover {
+        cursor: pointer;
+    }
+
+    .button-disabled {
+        background-color: gray;
+        cursor: wait;
     }
 </style>
