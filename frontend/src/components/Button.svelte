@@ -5,6 +5,13 @@
     export let error = false
     export let type = 'active-purple'
     export let active = true;
+
+    function actionFn() {
+        if (active === false) {
+            return
+        }
+        onClick();
+    }
 </script>
 
 
@@ -15,7 +22,7 @@
         class:button-red={type === 'active-red'}
         class:button-disabled={active === false}
         class:button-active={active === true}
-        on:click={onClick}
+        on:click={actionFn}
 >{label}</button>
 
 <style>

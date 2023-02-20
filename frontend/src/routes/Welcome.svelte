@@ -24,9 +24,6 @@
 	}
 
 	function validate() {
-		if (buttonActive === false) {
-			return;
-		}
 		tries++
 		isValid = false
 		if (accessToken.length === 0) {
