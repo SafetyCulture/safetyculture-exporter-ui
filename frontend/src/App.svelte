@@ -5,7 +5,7 @@
     import Config from "./routes/Config.svelte";
     import Page404 from "./routes/Page404.svelte";
     import TemplateFilter from "./routes/TemplateFilter.svelte";
-    import FeedFilter from "./routes/FeedFilter.svelte";
+    import DataSetFilter from "./routes/DataSetFilter.svelte";
     import ExportStatus from "./routes/ExportStatus.svelte";
 </script>
 
@@ -15,7 +15,7 @@
 	'/welcome': Welcome,
 	'/config': Config,
 	'/config/templates': TemplateFilter,
-	'/config/tables': FeedFilter,
+	'/config/datasets': DataSetFilter,
 	'/export/status': ExportStatus,
 	'*': Page404
 }} />
