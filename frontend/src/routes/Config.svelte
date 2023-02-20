@@ -125,12 +125,12 @@
 		}
 	}
 
-	function generateTableName() {
+	function generateDataSetName() {
 		let num = $shadowConfig["Export"]["Tables"].length
 		switch (num) {
-			case 0: return "All tables selected"
-			case 1: return "1 table selected"
-			default: return num + " tables selected"
+			case 0: return "All data sets selected"
+			case 1: return "1 data set selected"
+			default: return num + " data sets selected"
 		}
 	}
 
@@ -351,7 +351,7 @@
 	}
 
 	function handleTables() {
-		push("/config/tables")
+		push("/config/datasets")
 	}
 
 	function openFolderDialog() {
@@ -435,14 +435,14 @@
 						<img src="../images/arrow-right-compact.svg" alt="right arrow icon">
 					</div>
 				</div>
-			<div class="label">Select tables</div>
+			<div class="label">Select data sets</div>
 			<div class="button-long selector border-weak border-round-8 block-link" on:click={handleTables} on:keypress={handleTables}>
-				<div class="templates">{generateTableName()}</div>
+				<div class="templates">{generateDataSetName()}</div>
 				<div class="template-button-right">
 					<img src="../images/arrow-right-compact.svg" alt="right arrow icon">
 				</div>
 			</div>
-			<div class="label">Date range from</div>
+			<div class="label">Date range from (UTC)</div>
 			<div class="m-top-8">
 				<DateInput max={new Date()} format="dd-MM-yyyy" bind:value={date} />
 			</div>
@@ -514,7 +514,7 @@
 			</div>
 			<div class="label">Include:</div>
 			<input type="checkbox" id="media" name="media" bind:checked={$shadowConfig["Export"]["Media"]}>
-			<label class="text-size-medium" for="media">Media</label>
+			<label class="text-size-medium" for="media">Inspection Media</label>
 		</section>
 	</div>
 </div>
