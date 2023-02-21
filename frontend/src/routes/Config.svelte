@@ -327,7 +327,7 @@
 					})
 					break
 				case 'reports':
-					$exportConfig['items'] = ['reports']
+					$exportConfig['items'] = ['inspections','reports']
 					ExportReports()
 					push("/export/status")
 					break
