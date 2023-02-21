@@ -530,7 +530,7 @@
 			</div>
 			<div class="label">Include:</div>
 			<input type="checkbox" id="media" name="media" bind:checked={$shadowConfig["Export"]["Media"]}>
-			<label class="text-size-medium" for="media">Inspection Media</label>
+			<label class="text-size-medium" for="media">Inspection media</label>
 		</section>
 	</div>
 </div>
