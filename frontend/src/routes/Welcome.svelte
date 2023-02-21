@@ -16,6 +16,7 @@
 	let displayConnectionErr = false
 	let displayValidationError = false
 	let tries = 1
+	let buttonActive = true
 	let accessToken = $shadowConfig["AccessToken"]
 
 	function openURL() {
@@ -40,6 +41,7 @@
 			}
 		}
 
+		buttonActive = false
 		ValidateApiKey(accessToken).then((result) => {
 			if (result !== "") {
 				buttonLabel = "Try again"
@@ -54,6 +56,8 @@
 				$shadowConfig["AccessToken"] = accessToken
 				push("/config")
 			}
+		}).finally(() => {
+			buttonActive = true
 		})
 	}
 </script>
@@ -81,7 +85,7 @@
 				</div>
 			{/if}
 
-			<Button label={buttonLabel} type="active-purple" error={displayValidationError} clazz="m-top-8" onClick={validate}/>
+			<Button label={buttonLabel} type="active-purple" active={buttonActive} error={displayValidationError} clazz="m-top-8" onClick={validate}/>
 		</section>
 
 		<section class="storage-info">
