@@ -107,8 +107,8 @@ func (a *App) SelectDirectory(currentDir string) string {
 	return directoryDialog
 }
 
-func (a *App) ExportCSV() {
-	a.exporter.RunCSV()
+func (a *App) ExportCSV() error {
+	return a.exporter.RunCSV()
 }
 
 func (a *App) ExportSQL() error {

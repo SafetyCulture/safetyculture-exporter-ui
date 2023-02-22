@@ -16,7 +16,6 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.idea
-*.out
 .DS_Store
 dist/
 

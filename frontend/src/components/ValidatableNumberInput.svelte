@@ -14,8 +14,7 @@
         maxlength={maxlength}
         bind:value={value}
         on:input={e => {
-            const newVal = e.target.value.replace(/[^0-9]/g, '');
-            value = newVal;
+            value = e.target.value.replace(/[^0-9]/g, '');
         }}
 />
 
