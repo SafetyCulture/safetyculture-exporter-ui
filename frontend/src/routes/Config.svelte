@@ -137,6 +137,9 @@
 		selectedExportFormat = event.detail.value;
 		if (['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)) {
 			dbPortPlaceholder = "e.g. " + getDefaultSQLPort(selectedExportFormat)
+			if (dbPort === '') {
+				dbPort = getDefaultSQLPort(selectedExportFormat)
+			}
 		}
 	}
 
