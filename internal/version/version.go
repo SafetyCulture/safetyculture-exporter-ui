@@ -24,7 +24,7 @@ func GetIntegrationID() string {
 func ShouldUpdate(current string, new string) bool {
 	currentVer, err := vv.NewSemver(current)
 	if err != nil {
-		return false
+		return new != current
 	}
 
 	newVer, err := vv.NewVersion(new)
@@ -49,6 +49,11 @@ func ShouldUpdate(current string, new string) bool {
 	// error case when current major version is newer than the one available for download (unlikely)
 	if maj < 0 {
 		return false
+	}
+
+	// current is prerelease
+	if len(currentVer.Prerelease()) > 0 && (maj >= 0 || min >= 0) {
+		return true
 	}
 
 	// if there is a major version difference, we force the update
