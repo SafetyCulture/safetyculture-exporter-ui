@@ -43,10 +43,6 @@ body::-webkit-scrollbar {
     cursor: pointer;
 }
 
-.text-size-small {
-    font-size: 0.8rem;
-}
-
 .text-size-medium {
     font-size: 0.9rem;
 }
@@ -122,10 +118,6 @@ body::-webkit-scrollbar {
     margin-right: 8px;
 }
 
-.m-right-16 {
-    margin-right: 16px;
-}
-
 .m-top-4 {
     margin-top: 4px;
 }
@@ -136,14 +128,6 @@ body::-webkit-scrollbar {
 
 .m-top-16 {
     margin-top: 16px;
-}
-
-.m-top-32 {
-    margin-top: 32px;
-}
-
-.p-48 {
-    padding: 48px;
 }
 
 .p-8 {
@@ -158,10 +142,6 @@ body::-webkit-scrollbar {
     padding-left: 16px;
 }
 
-.p-right-8 {
-    padding-right: 8px;
-}
-
 .p-right-16 {
     padding-right: 16px;
 }
@@ -170,20 +150,8 @@ body::-webkit-scrollbar {
     padding-top: 8px;
 }
 
-.p-top-16 {
-    padding-top: 16px;
-}
-
 .p-top-32 {
     padding-top: 32px;
-}
-
-.p-top-64 {
-    padding-top: 64px;
-}
-
-.p-bottom-32 {
-    padding-bottom: 32px;
 }
 
 .p-bottom-48 {
@@ -193,16 +161,6 @@ body::-webkit-scrollbar {
 .p-horiz-8 {
     padding-left: 8px;
     padding-right: 8px;
-}
-
-.p-vert-8 {
-    padding-top: 8px;
-    padding-bottom: 8px;
-}
-
-.p-vert-32 {
-    padding-top: 32px;
-    padding-bottom: 32px;
 }
 
 .width-18em {
@@ -220,10 +178,6 @@ body::-webkit-scrollbar {
 
 .border-round-8 {
     border-radius: 8px;
-}
-
-.border-round-12 {
-    border-radius: 12px;
 }
 
 .border-round-12-left {
@@ -257,12 +211,6 @@ body::-webkit-scrollbar {
 .nav-right {
     display: flex;
     align-items: center;
-}
-
-.status-table-td {
-    padding: 10px 10px 10px 10px;
-    letter-spacing: 0.1rem;
-    font-weight: 500;
 }
 
 .status-col-1 {

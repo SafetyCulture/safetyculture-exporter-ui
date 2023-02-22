@@ -1,7 +1,7 @@
 import {writable} from 'svelte/store';
 
 // shadowConfig will contain YAML configuration shadowed
-let storedShadowConfig = {}
+let storedShadowConfig
 try {
     storedShadowConfig = JSON.parse(localStorage.getItem("cfg"))
 } catch (e) {
@@ -16,7 +16,7 @@ shadowConfig.subscribe(value => {
 });
 
 // template store
-let storedTemplateCache = []
+let storedTemplateCache
 try {
     storedTemplateCache = JSON.parse(localStorage.getItem("templates"))
 } catch (e) {
@@ -31,7 +31,7 @@ templateCache.subscribe(value => {
 })
 
 // latest version
-let storedLatestVersion = {}
+let storedLatestVersion
 try {
     storedLatestVersion = JSON.parse(localStorage.getItem("public-version"))
 } catch (e) {
@@ -46,7 +46,7 @@ latestVersion.subscribe(value => {
 })
 
 // export status store
-let storedExportConfig = []
+let storedExportConfig
 try {
     storedExportConfig = JSON.parse(localStorage.getItem("export-config"))
 } catch (e) {
