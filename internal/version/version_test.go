@@ -47,6 +47,24 @@ func TestShouldUpdate(t *testing.T) {
 			shouldUpdate: true,
 		},
 		{
+			name:         "Prerelease Current #3",
+			current:      "v1.0.0-alpha.1",
+			new:          "v1.0.1",
+			shouldUpdate: true,
+		},
+		{
+			name:         "Prerelease Current #4",
+			current:      "v2.2.0-alpha.1",
+			new:          "v2.0.0",
+			shouldUpdate: false,
+		},
+		{
+			name:         "Prerelease Current #5",
+			current:      "v2.2.1-alpha.1",
+			new:          "v2.2.0",
+			shouldUpdate: false,
+		},
+		{
 			name:         "Same Major Two Minor",
 			current:      "v1.0.0",
 			new:          "v1.2.3",

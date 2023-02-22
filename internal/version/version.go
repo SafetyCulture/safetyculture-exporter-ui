@@ -22,11 +22,18 @@ func GetIntegrationID() string {
 // ShouldUpdate compares 2 versions (semver)
 // return true if there is a major or 2 minor differences
 func ShouldUpdate(current string, new string) bool {
+	// if new version is malformed, should not update
 	newVer, err := vv.NewVersion(new)
 	if err != nil {
 		return false
 	}
 
+	// don't update for new pre-releases
+	if len(newVer.Prerelease()) > 0 {
+		return false
+	}
+
+	// if current version is malformed, should update if the new version is different
 	currentVer, err := vv.NewSemver(current)
 	if err != nil {
 		return new != current
@@ -37,23 +44,27 @@ func ShouldUpdate(current string, new string) bool {
 		return false
 	}
 
-	// don't force updates for pre-releases
-	if len(newVer.Prerelease()) > 0 {
-		return false
-	}
-
 	// calculate diff in versions
 	maj := newVer.Segments()[0] - currentVer.Segments()[0]
 	min := newVer.Segments()[1] - currentVer.Segments()[1]
+	patch := newVer.Segments()[2] - currentVer.Segments()[2]
+
+	// current is prerelease, we will update only if there is a bigger version
+	if len(currentVer.Prerelease()) > 0 {
+		if isEqual(maj, min, patch) {
+			return true
+		}
+		return isBigger(maj, min, patch)
+	}
+
+	// if they are equal don't update
+	if isEqual(maj, min, patch) {
+		return false
+	}
 
 	// error case when current major version is newer than the one available for download (unlikely)
 	if maj < 0 {
 		return false
-	}
-
-	// current is prerelease
-	if len(currentVer.Prerelease()) > 0 && (maj >= 0 || min >= 0) {
-		return true
 	}
 
 	// if there is a major version difference, we force the update
@@ -67,4 +78,30 @@ func ShouldUpdate(current string, new string) bool {
 	}
 
 	return false
+}
+
+func isBigger(maj, min, patch int) bool {
+	switch {
+	case maj > 0:
+		return true
+	case maj < 0:
+		return false
+
+	case min > 0:
+		return true
+	case min < 0:
+		return false
+
+	case patch > 0:
+		return true
+	case patch < 0:
+		return false
+
+	default:
+		return false
+	}
+}
+
+func isEqual(maj, min, patch int) bool {
+	return maj == 0 && min == 0 && patch == 0
 }
