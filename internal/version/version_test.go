@@ -88,6 +88,12 @@ func TestShouldUpdate(t *testing.T) {
 			new:          "v.1.2.3",
 			shouldUpdate: false,
 		},
+		{
+			name:         "Bad format #3",
+			current:      "v.1.0.0",
+			new:          "v.1.2.3",
+			shouldUpdate: false,
+		},
 	}
 
 	for _, tt := range tests {
