@@ -5,15 +5,14 @@
 	import timezone from 'dayjs/plugin/timezone';
 	import Select from 'svelte-select';
 	import { DateInput } from 'date-picker-svelte'
-	import {
-		SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ReadBuild,CheckDBConnection
+	import { SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ExportReports, ReadBuild,CheckDBConnection
 	} from "../../wailsjs/go/main/App.js"
-	import {latestVersion, shadowConfig} from '../lib/store.js';
+	import {latestVersion, shadowConfig, exportConfig} from '../lib/store.js';
+	import {allTables, isNullOrEmptyObject} from "../lib/utils.js";
 	import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
 	import FormTextInput from "../components/FormTextInput.svelte";
 	import Button from "../components/Button.svelte";
-	import {isNullOrEmptyObject} from "../lib/utils.js";
 	import Overlay from "../components/Overlay.svelte";
 	import StatusBar from "../components/StatusBar.svelte";
 	import FormPassword from "../components/FormPassword.svelte";
@@ -43,7 +42,7 @@
 		{value: "mysql", label: "MySQL"},
 		{value: "postgres", label: "Postgres"},
 		{value: "sqlserver", label: "SQL Server"},
-		// {value: "reports", label: "Reports"},
+		{value: "reports", label: "Reports"},
 	];
 
 	const POSTGRES_DIALECT = 'postgres';
@@ -310,6 +309,7 @@
 		saveConfiguration().then(it => {
 			switch (selectedExportFormat.value) {
 				case 'csv':
+					$exportConfig['items'] = getFeedsForExport()
 					ExportCSV()
 					push("/export/status")
 					break
@@ -317,6 +317,7 @@
 				case 'postgres':
 				case 'sqlserver':
 					CheckDBConnection().then(() => {
+						$exportConfig['items'] = getFeedsForExport()
 						showBanner = false
 						ExportSQL()
 						push("/export/status")
@@ -326,14 +327,29 @@
 					})
 					break
 				case 'reports':
-					console.debug('NOT SUPPORTED')
-					showBanner = false
+					$exportConfig['items'] = ['inspections','reports']
+					ExportReports()
+					push("/export/status")
 					break
 			}
 		}).catch(e => {
 			console.debug('saveConfiguration err')
 			console.debug(e)
 		})
+	}
+
+	function getFeedsForExport() {
+		let feedsToExport = []
+		if ($shadowConfig["Export"]["Tables"] !== null && $shadowConfig["Export"]["Tables"].length > 0) {
+			feedsToExport = Array.from($shadowConfig["Export"]["Tables"])
+		}
+		if (feedsToExport.length === 0) {
+			feedsToExport = Array.from(allTables)
+		}
+		if ($shadowConfig["Export"]["Media"] === true && !feedsToExport.includes("media")) {
+			feedsToExport.push("media")
+		}
+		return feedsToExport
 	}
 
 	function handleSaveAndClose() {
@@ -493,7 +509,7 @@
 				</div>
 			{/if}
 
-            {#if selectedExportFormat != null && (selectedExportFormat.value === 'csv')}
+            {#if selectedExportFormat != null}
 			<div class="label">Folder location</div>
 			<div id="folder" class="button-long selector border-weak border-round-8 p-8 align-items-c" on:click={openFolderDialog} on:keypress={openFolderDialog}>
 				<div class="text-weak word-wrap-break width-18em" >{$shadowConfig["Export"]["Path"]}</div>
@@ -514,7 +530,7 @@
 			</div>
 			<div class="label">Include:</div>
 			<input type="checkbox" id="media" name="media" bind:checked={$shadowConfig["Export"]["Media"]}>
-			<label class="text-size-medium" for="media">Inspection Media</label>
+			<label class="text-size-medium" for="media">Inspection media</label>
 		</section>
 	</div>
 </div>

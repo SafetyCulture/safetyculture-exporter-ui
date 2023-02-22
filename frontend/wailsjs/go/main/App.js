@@ -6,16 +6,16 @@ export function CancelExport() {
   return window['go']['main']['App']['CancelExport']();
 }
 
-export function CheckApiKey() {
-  return window['go']['main']['App']['CheckApiKey']();
-}
-
 export function CheckDBConnection() {
   return window['go']['main']['App']['CheckDBConnection']();
 }
 
 export function ExportCSV() {
   return window['go']['main']['App']['ExportCSV']();
+}
+
+export function ExportReports() {
+  return window['go']['main']['App']['ExportReports']();
 }
 
 export function ExportSQL() {
@@ -36,10 +36,6 @@ export function GetTemplates() {
 
 export function GetUserHomeDirectory() {
   return window['go']['main']['App']['GetUserHomeDirectory']();
-}
-
-export function Greet(arg1) {
-  return window['go']['main']['App']['Greet'](arg1);
 }
 
 export function OpenDirectory(arg1) {
@@ -64,10 +60,6 @@ export function SaveSettings(arg1) {
 
 export function SelectDirectory(arg1) {
   return window['go']['main']['App']['SelectDirectory'](arg1);
-}
-
-export function SelectSettingsDirectory() {
-  return window['go']['main']['App']['SelectSettingsDirectory']();
 }
 
 export function ValidateApiKey(arg1) {
