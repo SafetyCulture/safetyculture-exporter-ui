@@ -22,14 +22,14 @@ func GetIntegrationID() string {
 // ShouldUpdate compares 2 versions (semver)
 // return true if there is a major or 2 minor differences
 func ShouldUpdate(current string, new string) bool {
-	currentVer, err := vv.NewSemver(current)
-	if err != nil {
-		return new != current
-	}
-
 	newVer, err := vv.NewVersion(new)
 	if err != nil {
 		return false
+	}
+
+	currentVer, err := vv.NewSemver(current)
+	if err != nil {
+		return new != current
 	}
 
 	// validate
