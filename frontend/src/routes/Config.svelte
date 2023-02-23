@@ -17,6 +17,7 @@
 	import StatusBar from "../components/StatusBar.svelte";
 	import FormPassword from "../components/FormPassword.svelte";
 	import FormNumberInput from "../components/FormNumberInput.svelte";
+	import ButtonSelector from "../components/ButtonSelector.svelte";
 
 	let build = ""
 	ReadBuild().then(it => {
@@ -61,10 +62,10 @@
 	};
 
 	let dbHost = '', dbHostShowError = false, dbHostErrMsg = 'Host cannot be empty'
-	let dbPort='', dbPortPlaceholder = "e.g. " + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false, dbPortErrMsg = 'Port Invalid'
+	let dbPort = '', dbPortPlaceholder = "e.g. " + getDefaultSQLPort($shadowConfig['Db']['Dialect']), dbPortShowError = false, dbPortErrMsg = 'Please enter a valid port number'
 	let dbUser='', dbUserShowError = false, dbUserErrMsg = 'Username cannot be empty'
 	let dbPassword='', dbPasswordShowError = false, dbPasswordErrMsg = 'Password cannot be empty'
-	let dbName='', dbNameShowError = false, dbNameErrMsg = 'Database name cannot be empty'
+	let dbName='', dbNameShowError = false, dbNameErrMsg = 'Name cannot be empty'
 	let formError = false
 	let dbError = false
 	let showBanner = false
@@ -137,9 +138,7 @@
 		selectedExportFormat = event.detail.value;
 		if (['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)) {
 			dbPortPlaceholder = "e.g. " + getDefaultSQLPort(selectedExportFormat)
-			if (dbPort === '') {
-				dbPort = getDefaultSQLPort(selectedExportFormat)
-			}
+			dbPort = getDefaultSQLPort(selectedExportFormat)
 		}
 	}
 
@@ -159,7 +158,6 @@
 
 	function parseDbConnectionString() {
 		const url = $shadowConfig["Db"]["ConnectionString"];
-
 		function mapFields(dbStringMatch) {
 			dbUser = dbStringMatch[1];
 			dbPassword = dbStringMatch[2];
@@ -189,6 +187,11 @@
 		if (dbStringMatch) {
 			mapFields(dbStringMatch);
 			return;
+		}
+
+		// fail-over
+		if (dbPort === '') {
+			dbPort = getDefaultSQLPort($shadowConfig['Db']['Dialect'])
 		}
 	}
 
@@ -240,7 +243,7 @@
 			case 'sqlserver':
 				return '1433'
 			default:
-				return '1234'
+				return ''
 		}
 	}
 
@@ -447,20 +450,9 @@
 				<div class="h3">Filters</div>
 				<div class="text-weak m-top-8">Select which sets of data you want to export from your organization.</div>
 			</div>
-			<div class="label">Select templates</div>
-				<div class="button-long selector border-weak border-round-8 block-link" on:click={handleSelectTemplates} on:keypress={handleSelectTemplates}>
-					<div class="templates">{generateTemplateName()}</div>
-					<div class="template-button-right">
-						<img src="../images/arrow-right-compact.svg" alt="right arrow icon">
-					</div>
-				</div>
-			<div class="label">Select data sets</div>
-			<div class="button-long selector border-weak border-round-8 block-link" on:click={handleTables} on:keypress={handleTables}>
-				<div class="templates">{generateDataSetName()}</div>
-				<div class="template-button-right">
-					<img src="../images/arrow-right-compact.svg" alt="right arrow icon">
-				</div>
-			</div>
+			<ButtonSelector label="Select templates" title={generateTemplateName()} onClick={handleSelectTemplates}/>
+			<ButtonSelector label="Select data sets" title={generateDataSetName()} onClick={handleTables}/>
+
 			<div class="label">Date range from (UTC)</div>
 			<div class="m-top-8">
 				<DateInput max={new Date()} format="dd-MM-yyyy" bind:value={date} />
@@ -553,11 +545,6 @@
 
 	.filters {
 		width: 55%;
-	}
-
-	.template-button-right {
-		display: flex;
-		align-items: center;
 	}
 
 	.export-details {
