@@ -17,7 +17,7 @@
 	import FormPassword from "../components/FormPassword.svelte";
 	import FormNumberInput from "../components/FormNumberInput.svelte";
 	import ButtonSelector from "../components/ButtonSelector.svelte";
-	import DatePicker from "../components/DatePicker/DatePicker.svelte";
+	import {DateInput} from "../components/date-picker-svelte/index.js";
 
 
 	let build = ""
@@ -366,7 +366,7 @@
 
 	function handleSaveAndClose() {
 		saveConfiguration().then(it => {
-			Quit()
+			// Quit()
 		})
 	}
 
@@ -407,9 +407,6 @@
 
 	parseDbConnectionString();
 </script>
-
-{date}
-{stringDate}
 
 {#if !isNullOrEmptyObject($latestVersion) && $latestVersion["should_update"] === true && $latestVersion['current'] !== 'v0.0.0-dev'}
 	<Overlay>
@@ -464,12 +461,7 @@
 
 			<div class="label">Date range from (UTC)</div>
 			<div class="border-weak border-round-8 m-top-4">
-			<DatePicker
-					range={false}
-					placeholder={stringDate}
-					format='DD MM YYYY'
-					bind={stringDate}
-			/>
+				<DateInput max={new Date()} format="dd-MM-yyyy" closeOnSelection={true} bind:value={date} />
 			</div>
 			<div class="label">Include completed or incomplete inspections</div>
 			<div class="border-weak border-round-8 m-top-4">
