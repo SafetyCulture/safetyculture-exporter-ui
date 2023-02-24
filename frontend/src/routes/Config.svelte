@@ -19,7 +19,6 @@
 	import ButtonSelector from "../components/ButtonSelector.svelte";
 	import {DateInput} from "../components/date-picker-svelte/index.js";
 
-
 	let build = ""
 	ReadBuild().then(it => {
 		build = it
@@ -406,6 +405,8 @@
 	}
 
 	parseDbConnectionString();
+
+	let dateInstance;
 </script>
 
 {#if !isNullOrEmptyObject($latestVersion) && $latestVersion["should_update"] === true && $latestVersion['current'] !== 'v0.0.0-dev'}
@@ -459,9 +460,9 @@
 			<ButtonSelector label="Select templates" title={generateTemplateName()} onClick={handleSelectTemplates}/>
 			<ButtonSelector label="Select data sets" title={generateDataSetName()} onClick={handleTables}/>
 
-			<div class="label">Date range from (UTC)</div>
+			<div class="label"  on:click={e => dateInstance.showPopup()}>Date range from (UTC)</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<DateInput max={new Date()} format="dd-MM-yyyy" closeOnSelection={true} bind:value={date} />
+				<DateInput max={new Date()} format="dd-MM-yyyy" closeOnSelection={true} bind:value={date} bind:this={dateInstance}/>
 			</div>
 			<div class="label">Include completed or incomplete inspections</div>
 			<div class="border-weak border-round-8 m-top-4">

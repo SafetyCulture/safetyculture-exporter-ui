@@ -117,19 +117,23 @@ function keydown(e) {
         e.preventDefault();
     }
 }
+
 function onSelect(e) {
+  console.log("ONSELECT")
     dispatch('select', e.detail);
     if (closeOnSelection) {
         visible = false;
     }
 }
 
-function onShazaam(e) {
-  console.log("ON SHAZAAM WAS RECEIVED")
+export function showPopup(){
+  console.log('SETTING VISIBLE')
+  visible = true;
 }
+
 </script>
 
-<div class="date-time-field" on:focusout={onFocusOut} on:keydown={keydown} on:shazaam={onShazaam}>
+<div class="date-time-field" on:focusout={onFocusOut} on:keydown={keydown}>
   <input class="input-calendar" readonly type="text"
     class:invalid={!valid}
     bind:value={text}
