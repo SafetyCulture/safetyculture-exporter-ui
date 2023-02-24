@@ -365,7 +365,7 @@
 
 	function handleSaveAndClose() {
 		saveConfiguration().then(it => {
-			// Quit()
+			Quit()
 		})
 	}
 
@@ -460,9 +460,9 @@
 			<ButtonSelector label="Select templates" title={generateTemplateName()} onClick={handleSelectTemplates}/>
 			<ButtonSelector label="Select data sets" title={generateDataSetName()} onClick={handleTables}/>
 
-			<div class="label"  on:click={e => dateInstance.showPopup()}>Date range from (UTC)</div>
+			<div class="label">Date range from (UTC)</div>
 			<div class="border-weak border-round-8 m-top-4">
-				<DateInput max={new Date()} format="dd-MM-yyyy" closeOnSelection={true} bind:value={date} bind:this={dateInstance}/>
+				<DateInput max={new Date()} format="dd-MM-yyyy" closeOnSelection={true} bind:value={date}/>
 			</div>
 			<div class="label">Include completed or incomplete inspections</div>
 			<div class="border-weak border-round-8 m-top-4">

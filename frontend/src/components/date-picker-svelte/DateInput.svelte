@@ -119,18 +119,11 @@ function keydown(e) {
 }
 
 function onSelect(e) {
-  console.log("ONSELECT")
     dispatch('select', e.detail);
     if (closeOnSelection) {
-        visible = false;
+      visible = false;
     }
 }
-
-export function showPopup(){
-  console.log('SETTING VISIBLE')
-  visible = true;
-}
-
 </script>
 
 <div class="date-time-field" on:focusout={onFocusOut} on:keydown={keydown}>
