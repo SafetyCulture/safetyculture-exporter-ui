@@ -4,7 +4,6 @@
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
 	import Select from 'svelte-select';
-	import { DateInput } from 'date-picker-svelte'
 	import { SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ExportReports, ReadBuild,CheckDBConnection
 	} from "../../wailsjs/go/main/App.js"
 	import {latestVersion, shadowConfig, exportConfig} from '../lib/store.js';
@@ -18,6 +17,8 @@
 	import FormPassword from "../components/FormPassword.svelte";
 	import FormNumberInput from "../components/FormNumberInput.svelte";
 	import ButtonSelector from "../components/ButtonSelector.svelte";
+	import DatePicker from "../components/DatePicker/DatePicker.svelte";
+
 
 	let build = ""
 	ReadBuild().then(it => {
@@ -115,6 +116,7 @@
 	dayjs.extend(timezone);
 	const minDate = dayjs().add(-1, 'year').toDate()
 	let date = convertStringToDate($shadowConfig["Export"]["ModifiedAfter"], selectedTimeZone);
+	let stringDate = convertDateToDDMMYYYY(date, selectedTimeZone.value)
 
 	function generateTemplateName() {
 		let num = $shadowConfig["Export"]["TemplateIds"].length
@@ -224,6 +226,10 @@
 
 	function convertDateToString(dt, tz) {
 		return dayjs(dt).tz(tz).format()
+	}
+
+	function convertDateToDDMMYYYY(dt, tz) {
+		return dayjs(dt).tz(tz).format('DD MM YYYY')
 	}
 
 	function convertStringToDate(input, tz) {
@@ -402,6 +408,9 @@
 	parseDbConnectionString();
 </script>
 
+{date}
+{stringDate}
+
 {#if !isNullOrEmptyObject($latestVersion) && $latestVersion["should_update"] === true && $latestVersion['current'] !== 'v0.0.0-dev'}
 	<Overlay>
 		<div class="download-alert" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
@@ -454,8 +463,13 @@
 			<ButtonSelector label="Select data sets" title={generateDataSetName()} onClick={handleTables}/>
 
 			<div class="label">Date range from (UTC)</div>
-			<div class="m-top-8">
-				<DateInput max={new Date()} format="dd-MM-yyyy" bind:value={date} />
+			<div class="border-weak border-round-8 m-top-4">
+			<DatePicker
+					range={false}
+					placeholder={stringDate}
+					format='DD MM YYYY'
+					bind={stringDate}
+			/>
 			</div>
 			<div class="label">Include completed or incomplete inspections</div>
 			<div class="border-weak border-round-8 m-top-4">
