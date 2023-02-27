@@ -1,17 +1,19 @@
 .h1 {
-    font-weight: 600;
+    font-family: NotoSansSemiBold, sans-serif;
+    font-weight: 700;
     font-size: 2rem;
     margin-top: 16px;
     margin-bottom: 16px;
 }
 
 .h2 {
+    font-family: NotoSansSemiBold, sans-serif;
     font-weight: 400;
     font-size: 1.5rem;
 }
 
 .h3 {
-    font-weight: 400;
+    font-weight: 600;
     font-size: 1rem;
 }
 

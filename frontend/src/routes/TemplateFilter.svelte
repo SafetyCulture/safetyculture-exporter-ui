@@ -202,7 +202,7 @@
     }
 
     .template-empty-search .search-term {
-        font-weight: bold;
+        font-family: NotoSansSemiBold, sans-serif;
     }
 
     .table-header {
