@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"fmt"
+	"time"
 
 	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/version"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
@@ -54,7 +55,7 @@ func main() {
 			WindowIsTranslucent:  false,
 			About: &mac.AboutInfo{
 				Title:   "SafetyCulture Exporter",
-				Message: fmt.Sprintf("Version %v\n\nCopyright \u00a9 2023\nSafetyCulture Pty Ltd.\n\nTerms: https://safetyculture.com/legal/terms-and-conditions\nPrivacy: https://safetyculture.com/legal/privacy-policy\n\nSupport: https://help.safetyculture.com/", version.GetVersion()),
+				Message: fmt.Sprintf("Version %v\n\nCopyright \u00a9 %v\nSafetyCulture Pty Ltd.\n\nTerms: https://safetyculture.com/legal/terms-and-conditions\nPrivacy: https://safetyculture.com/legal/privacy-policy\n\nSupport: https://help.safetyculture.com/", version.GetVersion(), time.Now().Year()),
 				Icon:    icon,
 			},
 		},
