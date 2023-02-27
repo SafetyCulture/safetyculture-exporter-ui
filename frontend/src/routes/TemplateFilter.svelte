@@ -10,8 +10,6 @@
     import StatusBar from "../components/StatusBar.svelte";
 
     let searchFilter = ""
-    let showEmptyFilter = false
-
     let isChecked = false
     let templatesLoaded = false
 
@@ -36,17 +34,9 @@
         }
     }
 
-     function updateFilter() {
-        if (searchFilter.length < 2) {
-            showEmptyFilter = false
-        }
-
-         showEmptyFilter = $templateCache
-             .filter(v => v.name.toLowerCase().includes(searchFilter.toLowerCase()))
-             .length === 0
-    }
-
-    $: searchFilter, updateFilter()
+    $: showEmptyFilter = searchFilter.length >= 2 && $templateCache
+        .filter(v => v.name.toLowerCase().includes(searchFilter.toLowerCase()))
+        .length === 0
 
     function checkAllSelected() {
         if($shadowConfig["Export"]["TemplateIds"].length === 0) {
