@@ -507,7 +507,11 @@
 			{#if selectedExportFormat != null && selectedExportFormat.value === 'reports' }
 				<div class="label">Report format</div>
 				<div class="border-weak border-round-8 m-top-4">
-					<Select items={reportFormatItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedReportFormat}/>
+					<Select items={reportFormatItems} clearable={false} showChevron={true} searchable={false} --border="0px" bind:value={selectedReportFormat}>
+						<div slot="chevron-icon">
+							<img src="../images/arrow-down-compact.svg" alt="down arrow icon"/>
+						</div>
+					</Select>
 				</div>
 			{/if}
 
