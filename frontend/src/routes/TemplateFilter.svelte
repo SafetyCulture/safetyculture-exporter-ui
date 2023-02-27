@@ -12,6 +12,7 @@
     let searchFilter = ""
     let isChecked = false
     let templatesLoaded = false
+    let showEmptyFilter = true
 
     if (Array.isArray($templateCache)) {
         if ($templateCache.length === 0) {
@@ -89,7 +90,7 @@
 <div class="template-filter-page">
     <div class="top-nav">
         <div class="nav-left">
-            <div class="h1 p-left-8">Template selection</div>
+            <div class="h1">Template selection</div>
         </div>
         <div class="nav-right">
             <Button label="Done" type="active-white" onClick={handleDone}/>
@@ -105,34 +106,51 @@
         </div>
     </div>
 
-    <div class="templates-body m-top-16">
-        <div class="table-header text-gray-2" >
-            <div class="table-row flex-spaced p-horiz-8">
-                <div class="nav-left">
-                    <input type="checkbox" class="checkbox-purple" on:click="{toggleBodyCheckboxes}" bind:checked={isChecked}/>
-                    <div class="m-left-32">Template</div>
+    {#if showEmptyFilter === true}
+        <div class="template-empty-search m-top-16">
+            <div class="template-empty-search-body">
+                <img src="../images/empty_page.svg" alt="empty page"/>
+                <div class="p-top-48">
+                    <div>Your search - <span class="search-term">{searchFilter}</span> - did not match any template names.</div>
+                    <div class="p-top-8">
+                        Suggestions:<br/>
+                        &#x2022; Make sure all the words are spelled correctly.<br/>
+                        &#x2022; Try different keywords.<br/>
+                    </div>
                 </div>
-                <div class="nav-right">
-                    <div class="m-right-8">Last modified</div>
-                    <img src="../images/arrow-down.svg" alt="down"/>
+            </div>
+        </div>
+    {:else}
+        <div class="templates-body m-top-16">
+            <div class="table-header text-gray-2" >
+                <div class="table-row flex-spaced p-horiz-8">
+                    <div class="nav-left">
+                        <input type="checkbox" class="checkbox-purple" on:click="{toggleBodyCheckboxes}" bind:checked={isChecked}/>
+                        <div class="m-left-32">Template</div>
+                    </div>
+                    <div class="nav-right">
+                        <div class="m-right-8">Last modified</div>
+                        <img src="../images/arrow-down.svg" alt="down"/>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="table-body text-gray-2 m-top-8">
-        {#each $templateCache as { id, name, modified_at }, i}
-        <div class="table-row flex-spaced p-horiz-8 m-right-8" class:hide={searchFilter.length >= 2 && !name.toLowerCase().includes(searchFilter.toLowerCase())}>
-            <div class="nav-left">
-                <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
-                <img class="m-left-32" src="../images/template-icon.svg" alt="template"/>
-                <div class="m-left-8">{trim(name)}</div>
+            <div class="table-body text-gray-2 m-top-8">
+                {#each $templateCache as { id, name, modified_at }, i}
+                    <div class="table-row flex-spaced p-horiz-8 m-right-8" class:hide={searchFilter.length >= 2 && !name.toLowerCase().includes(searchFilter.toLowerCase())}>
+                        <div class="nav-left">
+                            <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
+                            <img class="m-left-32" src="../images/template-icon.svg" alt="template"/>
+                            <div class="m-left-8">{trim(name)}</div>
+                        </div>
+                        <div class="nav-right">
+                            <div>{modified_at}</div>
+                        </div>
+                    </div>
+                {/each}
             </div>
-            <div class="nav-right">
-                <div>{modified_at}</div>
-            </div>
         </div>
-        {/each}
-        </div>
-    </div>
+    {/if}
+
 </div>
 
 <StatusBar/>
@@ -155,6 +173,27 @@
 
     .templates-body {
         overflow: hidden;
+    }
+
+    .template-empty-search {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 60vh;
+    }
+
+    .template-empty-search-body {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.5;
+    }
+
+    .template-empty-search img {
+        margin: auto;
+    }
+
+    .template-empty-search .search-term {
+        font-weight: bold;
     }
 
     .table-header {
