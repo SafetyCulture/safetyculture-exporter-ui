@@ -8,6 +8,7 @@
     import Button from "../components/Button.svelte";
     import Overlay from "../components/Overlay.svelte";
     import StatusBar from "../components/StatusBar.svelte";
+    import ExtendedTextInput from "../components/ExtendedTextInput.svelte";
 
     let searchFilter = ""
     let isChecked = false
@@ -111,7 +112,7 @@
             <div class="h2">Select templates</div>
         </div>
         <div class="nav-right">
-            <input class="input search" placeholder="Search" bind:value={searchFilter}/>
+            <ExtendedTextInput placeholder="Search" bind:value={searchFilter}/>
         </div>
     </div>
 

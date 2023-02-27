@@ -49,15 +49,6 @@
     line-height: 1rem;
 }
 
-.input {
-    width: 100%;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: 1px solid #BFC5D4;
-    font-size: 1rem;
-    line-height: 1.5rem;
-}
-
 .label {
     margin-top: 15px;
     font-weight: 500;
@@ -119,6 +110,10 @@
 
 .p-left-16 {
     padding-left: 16px;
+}
+
+.p-right-8 {
+    padding-right: 8px;
 }
 
 .p-right-16 {
