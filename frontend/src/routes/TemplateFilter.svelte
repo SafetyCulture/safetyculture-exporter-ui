@@ -10,9 +10,10 @@
     import StatusBar from "../components/StatusBar.svelte";
 
     let searchFilter = ""
+    let showEmptyFilter = false
+
     let isChecked = false
     let templatesLoaded = false
-    let showEmptyFilter = true
 
     if (Array.isArray($templateCache)) {
         if ($templateCache.length === 0) {
@@ -35,6 +36,18 @@
         }
     }
 
+     function updateFilter() {
+        if (searchFilter.length < 2) {
+            showEmptyFilter = false
+        }
+
+         showEmptyFilter = $templateCache
+             .filter(v => v.name.toLowerCase().includes(searchFilter.toLowerCase()))
+             .length === 0
+    }
+
+    $: searchFilter, updateFilter()
+
     function checkAllSelected() {
         if($shadowConfig["Export"]["TemplateIds"].length === 0) {
             $shadowConfig["Export"]["TemplateIds"] = $templateCache.map(e => e.id)
@@ -56,6 +69,12 @@
     }
 
     function handleDone() {
+        // if the results were empty, we will keep the previous selection
+        if (showEmptyFilter === true) {
+            push("/config")
+            return
+        }
+
         const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
         let selectedTemplates = [];
 
@@ -111,7 +130,7 @@
             <div class="template-empty-search-body">
                 <img src="../images/empty_page.svg" alt="empty page"/>
                 <div class="p-top-48">
-                    <div>Your search - <span class="search-term">{searchFilter}</span> - did not match any template names.</div>
+                    <div>Your search - <span class="search-term">{searchFilter.length > 15 ? searchFilter.substring(0, 15).concat(" ...") : searchFilter}</span> - did not match any template names.</div>
                     <div class="p-top-8">
                         Suggestions:<br/>
                         &#x2022; Make sure all the words are spelled correctly.<br/>
