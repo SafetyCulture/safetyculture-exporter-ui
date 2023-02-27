@@ -1,6 +1,7 @@
 <script>
     export let placeholder = ''
     export let error = false
+    export let errorMsg = ''
     export let value = '';
 </script>
 
@@ -11,9 +12,24 @@
         bind:value={value}
 />
 
+{#if error}
+    <div class="input-error-block">
+        <div class="input-error-title">{errorMsg}</div>
+    </div>
+{/if}
+
 <style>
     .input-error {
         border-color: #9b3d41!important;
+    }
+
+    .input-error-block {
+        font-size: 0.7rem;
+        color: #A02228;
+    }
+
+    .input-error-title {
+        color: #A02228;
     }
 
     .input-error::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
