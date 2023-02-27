@@ -4,11 +4,12 @@
     export let label = ''
     export let placeholder = ''
     export let error = false
+    export let errorMsg = ''
     export let value = '';
 </script>
 
 <div class="form-label">{label}</div>
-<ValidatablePassword placeholder={placeholder} error={error} bind:value={value}/>
+<ValidatablePassword placeholder={placeholder} error={error} errorMsg={errorMsg} bind:value={value}/>
 
 <style>
     .form-label {

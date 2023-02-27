@@ -24,8 +24,12 @@
     <div>
         {#if !isNullOrEmptyObject($latestVersion)}
             <span>Current version: {$latestVersion['current']}</span>
-            {#if $latestVersion['current'] !== $latestVersion['latest'] && $latestVersion['latest'] !== '' && $latestVersion['download_url'] !== ''}
+            {#if $latestVersion['current'] !== $latestVersion['latest'] && $latestVersion['latest'] !== ''}
+                {#if $latestVersion['download_url'] !== ''}
                 <span class="accent m-left-16 block-link" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>Latest version available: {$latestVersion['latest']}</span>
+                {:else}
+                <span class="m-left-16">Latest version: {$latestVersion['latest']}</span>
+                {/if}
             {/if}
         {/if}
     </div>
