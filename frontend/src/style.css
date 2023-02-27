@@ -36,7 +36,7 @@
 body {
     font-style: normal;
     font-size: 1rem;
-    font-family: NotoSansRegular, sans-serif;
+    font-family: NotoSansRegular, Tahoma, sans-serif;
     overflow-x: hidden;
     letter-spacing: .005rem;
     color: #1D2330;
