@@ -57,8 +57,7 @@ jobs:
             certutil -decode certificate\certificate.txt certificate\certificate.pfx
             echo "Signing binary"
             & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p "${{ secrets.WIN_SIGNING_CERT_PASSWORD }}" .\build\bin\safetyculture-exporter.exe
-            Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
-
+            Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .wails
         - name: Build package linux
           if: matrix.os == 'ubuntu-latest'
           run: |
@@ -66,14 +65,15 @@ jobs:
             echo "building on ${{ matrix.os }}"
             echo ${{ env.GITHUB_REF }}
             echo ${{ env.GITHUB_HEAD_REF }}
-            VERSION=${{ github.ref_name }} ./scripts/build-linux.sh
+            wails build -platform linux/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}"
+            tar -czf exporter-linux-amd64.tar.gz ./build/bin/safetyculture-exporter
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-linux
-            path: exporter-linux-amd64
+            path: exporter-linux-amd64.tar.gz
 
         - name: Upload artifacts windows
           if: matrix.os == 'windows-latest'
@@ -101,5 +101,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "exporter-linux-amd64,exporter-windows-x86_64.exe"
+          artifacts: "exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
+          prerelease: true
+          makeLatest: false
