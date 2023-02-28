@@ -18,18 +18,27 @@
     }
 
 
+    let currentYear = new Date().getFullYear();
+
 </script>
 
 <div class="bar">
     <div>
         {#if !isNullOrEmptyObject($latestVersion)}
             <span>Current version: {$latestVersion['current']}</span>
-            {#if $latestVersion['current'] !== $latestVersion['latest'] && $latestVersion['latest'] !== '' && $latestVersion['download_url'] !== ''}
+            {#if $latestVersion['current'] !== $latestVersion['latest'] && $latestVersion['latest'] !== ''}
+                {#if $latestVersion['download_url'] !== ''}
                 <span class="accent m-left-16 block-link" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>Latest version available: {$latestVersion['latest']}</span>
+                {:else}
+                <span class="m-left-16">Latest version: {$latestVersion['latest']}</span>
+                {/if}
             {/if}
         {/if}
     </div>
-    <div class="accent block-link" on:click={openFolderDialog} on:keypress={openFolderDialog}>Open logs</div>
+    <div>
+        <span class="accent block-link" on:click={openFolderDialog} on:keypress={openFolderDialog}>Open logs</span>
+        <span class="m-left-16 copyright">Copyright © {currentYear}</span>
+    </div>
 </div>
 
 <style>
@@ -48,4 +57,9 @@
     .accent {
         color: #4740D4;
     }
+
+    .copyright {
+        font-size: small;
+    }
+
 </style>
