@@ -104,3 +104,4 @@ jobs:
           token: "${{ secrets.GITHUB_TOKEN }}"
           artifacts: "exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
+          prerelease: true
