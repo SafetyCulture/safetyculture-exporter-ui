@@ -4,7 +4,7 @@
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
 	import Select from 'svelte-select';
-	import { SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ExportReports, ReadBuild,CheckDBConnection
+	import { SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ExportReports, ReadBuild, ExportSQLite, CheckDBConnection
 	} from "../../wailsjs/go/main/App.js"
 	import {latestVersion, shadowConfig, exportConfig} from '../lib/store.js';
 	import {allTables, isNullOrEmptyObject} from "../lib/utils.js";
@@ -43,6 +43,7 @@
 		{value: "mysql", label: "MySQL"},
 		{value: "postgres", label: "Postgres"},
 		{value: "sqlserver", label: "SQL Server"},
+		{value: "sqlite", label: "SQLite"},
 		{value: "reports", label: "Reports"},
 	];
 
@@ -217,6 +218,15 @@
 		$shadowConfig["Report"]["Format"] = prepareReportFormatForSave()
 		$shadowConfig["Session"]["ExportType"] = selectedExportFormat.value
 
+		if ($shadowConfig["Export"]["Media"] === true && !$shadowConfig["Export"]["Tables"].includes("inspection_items")) {
+			$shadowConfig["Export"]["Tables"].push("inspection_items")
+		}
+
+		if ($shadowConfig["Export"]["Tables"].includes("inspection_items") && !$shadowConfig["Export"]["Tables"].includes("inspections")) {
+			$shadowConfig["Export"]["Tables"].push("inspections")
+		}
+
+
 		if($shadowConfig !== {}) {
 			return SaveSettings($shadowConfig)
 		}
@@ -262,6 +272,8 @@
 		switch (selectedExportFormat.value) {
 			case 'csv':
 				break
+			case 'sqlite':
+				break;
 			case 'mysql':
 			case 'postgres':
 			case 'sqlserver':
@@ -340,6 +352,11 @@
 				case 'reports':
 					$exportConfig['items'] = ['inspections','reports']
 					ExportReports()
+					push("/export/status")
+					break
+				case 'sqlite':
+					$exportConfig['items'] = getFeedsForExport()
+					ExportSQLite()
 					push("/export/status")
 					break
 			}
