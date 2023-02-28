@@ -115,6 +115,10 @@ func (a *App) ExportSQL() error {
 	return a.exporter.RunSQL()
 }
 
+func (a *App) ExportSQLite() error {
+	return a.exporter.RunSQLite()
+}
+
 func (a *App) ExportReports() error {
 	return a.exporter.RunInspectionReports()
 }

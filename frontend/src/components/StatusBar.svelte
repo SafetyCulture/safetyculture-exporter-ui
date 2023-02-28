@@ -18,6 +18,8 @@
     }
 
 
+    let currentYear = new Date().getFullYear();
+
 </script>
 
 <div class="bar">
@@ -33,7 +35,10 @@
             {/if}
         {/if}
     </div>
-    <div class="accent block-link" on:click={openFolderDialog} on:keypress={openFolderDialog}>Open logs</div>
+    <div>
+        <span class="accent block-link" on:click={openFolderDialog} on:keypress={openFolderDialog}>Open logs</span>
+        <span class="m-left-16 copyright">Copyright © {currentYear}</span>
+    </div>
 </div>
 
 <style>
@@ -52,4 +57,9 @@
     .accent {
         color: #4740D4;
     }
+
+    .copyright {
+        font-size: small;
+    }
+
 </style>

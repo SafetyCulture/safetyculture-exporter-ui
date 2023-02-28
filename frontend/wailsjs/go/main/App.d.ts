@@ -13,6 +13,8 @@ export function ExportReports():Promise<void>;
 
 export function ExportSQL():Promise<void>;
 
+export function ExportSQLite():Promise<void>;
+
 export function GetSettingDir():Promise<string>;
 
 export function GetSettings():Promise<api.ExporterConfiguration>;
