@@ -30,6 +30,7 @@
         border: none;
         outline: none;
         font-family: NotoSansRegular, Tahoma, sans-serif;
+        font-size: 14px;
     }
 
     img.pointer {
