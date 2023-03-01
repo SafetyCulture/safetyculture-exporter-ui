@@ -18,6 +18,7 @@
 	import FormNumberInput from "../components/FormNumberInput.svelte";
 	import ButtonSelector from "../components/ButtonSelector.svelte";
 	import {DateInput} from "../components/date-picker-svelte/index.js";
+	import FolderPicker from "../components/FolderPicker.svelte";
 
 	let build = ""
 	ReadBuild().then(it => {
@@ -116,7 +117,6 @@
 	dayjs.extend(timezone);
 	const minDate = dayjs().add(-1, 'year').toDate()
 	let date = convertStringToDate($shadowConfig["Export"]["ModifiedAfter"], selectedTimeZone);
-	let stringDate = convertDateToDDMMYYYY(date, selectedTimeZone.value)
 
 	function generateTemplateName() {
 		let num = $shadowConfig["Export"]["TemplateIds"].length
@@ -329,7 +329,7 @@
 			return
 		}
 
-		saveConfiguration().then(it => {
+		saveConfiguration().then(_ => {
 			switch (selectedExportFormat.value) {
 				case 'csv':
 					$exportConfig['items'] = getFeedsForExport()
@@ -381,7 +381,7 @@
 	}
 
 	function handleSaveAndClose() {
-		saveConfiguration().then(it => {
+		saveConfiguration().then(_ => {
 			Quit()
 		})
 	}
@@ -422,14 +422,12 @@
 	}
 
 	parseDbConnectionString();
-
-	let dateInstance;
 </script>
 
 {#if !isNullOrEmptyObject($latestVersion) && $latestVersion["should_update"] === true && $latestVersion['current'] !== 'v0.0.0-dev'}
 	<Overlay>
 		<div class="download-alert" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
-			<div>This version is not longer supported</div>
+			<div>This version is no longer supported</div>
 			<div>Latest version is {$latestVersion['latest']}</div>
 			{#if $latestVersion['download_url'] !== ''}
 				<div>Please click here to download it</div>
@@ -534,9 +532,8 @@
 
             {#if selectedExportFormat != null}
 			<div class="label">Folder location</div>
-			<div id="folder" class="button-long selector border-weak border-round-8 p-8 align-items-c" on:click={openFolderDialog} on:keypress={openFolderDialog}>
-				<div class="text-weak word-wrap-break width-18em" >{$shadowConfig["Export"]["Path"]}</div>
-				<img class="{build === 'windows' ? '' : 'cursor-pointer'}" src="../images/folder.svg" alt="folder icon">
+			<div class="m-top-4">
+				<FolderPicker label="Folder location" value={$shadowConfig["Export"]["Path"]} trimLongWords={true} onClick={build === 'windows' ? null : openFolderDialog} />
 			</div>
             {/if}
 			{#if build === 'windows'}

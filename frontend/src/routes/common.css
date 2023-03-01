@@ -26,11 +26,6 @@
     font-size: 0.9rem;
 }
 
-.button-long {
-    display: flex;
-    justify-content: space-between;
-}
-
 .block-link {
     cursor: pointer;
 }
@@ -39,14 +34,6 @@
     accent-color: #4740D4;
     height: 20px;
     width: 20px;
-}
-
-.selector {
-    margin-top: 4px;
-    padding: 12px 16px;
-    font-weight: 400;
-    font-size: 1rem;
-    line-height: 1rem;
 }
 
 .label {
@@ -64,10 +51,6 @@
 }
 
 /*ALIGNMENT*/
-.align-items-c {
-    align-items: center;
-}
-
 .flex-spaced {
     justify-content: space-between;
 }
@@ -139,14 +122,6 @@
 .p-horiz-8 {
     padding-left: 8px;
     padding-right: 8px;
-}
-
-.width-18em {
-    width: 18.75em;
-}
-
-.word-wrap-break {
-    word-wrap: break-word;
 }
 
 /*COLOURS AND BORDERS*/
