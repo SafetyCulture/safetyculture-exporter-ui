@@ -1,12 +1,11 @@
 <script>
-    export let label = ''
     export let onClick
     export let value = ''
     export let clazz = ''
     export let trimLongWords = false
     export let trimValue = 30
 
-    let shouldShowToolTip = value.length > trimValue
+    let shouldShowToolTip = false
 
     function getTrimmedFolderLocation() {
         const len = value.length
@@ -25,10 +24,21 @@
 
         onClick()
     }
+
+    function handleHover() {
+        shouldShowToolTip = value.length > trimValue
+    }
+
+    function handleOut() {
+        shouldShowToolTip = false;
+    }
 </script>
 
 <div class="container {clazz}" style:cursor={onClick === null ? 'default' : 'pointer'}
-     on:click={executeOnClick} on:keypress={executeOnClick} >
+     on:click={executeOnClick} on:keypress={executeOnClick}
+     on:mouseover={handleHover} on:focus={handleHover}
+     on:mouseout={handleOut} on:blur={handleOut}
+>
     <div class="value">{trimLongWords === true ? getTrimmedFolderLocation() : value}</div>
     <img src="../images/folder.svg" alt="folder icon">
 
@@ -55,10 +65,6 @@
         align-items: center;
     }
 
-    .container:hover .tooltip {
-        visibility: visible;
-    }
-
     .value {
         word-wrap: break-word;
     }
@@ -75,6 +81,6 @@
         right: -10px;
         top: 30px;
 
-        visibility: hidden;
+        word-wrap: break-word;
     }
 </style>
