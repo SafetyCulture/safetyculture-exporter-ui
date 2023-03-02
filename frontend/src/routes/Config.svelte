@@ -218,12 +218,14 @@
 		$shadowConfig["Report"]["Format"] = prepareReportFormatForSave()
 		$shadowConfig["Session"]["ExportType"] = selectedExportFormat.value
 
-		if ($shadowConfig["Export"]["Media"] === true && !$shadowConfig["Export"]["Tables"].includes("inspection_items")) {
-			$shadowConfig["Export"]["Tables"].push("inspection_items")
-		}
+		if ($shadowConfig["Export"]["Tables"].length > 0) {
+			if ($shadowConfig["Export"]["Media"] === true && !$shadowConfig["Export"]["Tables"].includes("inspection_items")) {
+				$shadowConfig["Export"]["Tables"].push("inspection_items")
+			}
 
-		if ($shadowConfig["Export"]["Tables"].includes("inspection_items") && !$shadowConfig["Export"]["Tables"].includes("inspections")) {
-			$shadowConfig["Export"]["Tables"].push("inspections")
+			if ($shadowConfig["Export"]["Tables"].includes("inspection_items") && !$shadowConfig["Export"]["Tables"].includes("inspections")) {
+				$shadowConfig["Export"]["Tables"].push("inspections")
+			}
 		}
 
 
