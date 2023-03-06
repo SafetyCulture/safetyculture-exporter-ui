@@ -32,7 +32,11 @@
             "right": { "id": "action_assignees", "name": "Action Assignees"}
         },
         {
-            "left":  { "id": "issues", "name": "Issues"},
+            "left":  { "id": "action_timeline_items", "name": "Action Timeline Items"},
+            "right": { "id": "issues", "name": "Issues"}
+        },
+        {
+            "left":  { "id": "issue_timeline_items", "name": "Issue Timeline Items"},
             "right": { "id": "assets", "name": "Assets"}
         },
         {
