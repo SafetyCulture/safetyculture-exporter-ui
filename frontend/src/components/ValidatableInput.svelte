@@ -12,6 +12,7 @@
         bind:value={value}
 />
 
+
 {#if error}
     <div class="input-error-block">
         <div class="input-error-title">{errorMsg}</div>
@@ -46,7 +47,7 @@
     }
 
     .form-input {
-        width: 95%;
+        width: 100%;
         padding: 10px 16px;
         border-radius: 8px;
         border: 1px solid #BFC5D4;
