@@ -49,7 +49,6 @@
         color: #1D2330;
         display: flex;
         justify-content: space-between;
-        height: auto;
         width: 100%;
         bottom: 0;
     }
