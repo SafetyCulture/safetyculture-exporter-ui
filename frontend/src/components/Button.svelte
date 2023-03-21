@@ -14,7 +14,6 @@
     }
 </script>
 
-
 <button class="button {clazz}"
         class:button-error={error}
         class:button-purple={type === 'active-purple'}
@@ -27,9 +26,9 @@
 
 <style>
     .button {
-        padding: 14px 16px;
+        padding: 10px 16px;
         border-width: 1px;
-        border-radius: 12px;
+        border-radius: 8px;
         font-weight: 500;
         font-size: 1rem;
         line-height: 1.5rem;

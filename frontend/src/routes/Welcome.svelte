@@ -61,53 +61,49 @@
 		})
 	}
 </script>
+
 <div class="welcome-page">
-	<section class="welcome-left-side">
-		<section class="welcome-header">
-			<img id="welcome-page-logo" src="../images/logo.svg" alt="SafetyCulture logo"/>
-			<div class="h1">Welcome to SafetyCulture Exporter</div>
-		</section>
-		<section class="token-validation">
-			<div class="token-validation-text">Generate an API token from your SafetyCulture <span class="link" on:click={openURL} on:keypress={openURL}>user profile</span>.</div>
+	<img id="welcome-page-logo" class="p-top-32" src="../images/logo.svg" alt="SafetyCulture logo"/>
+	<div class="h1">Welcome to SafetyCulture Exporter</div>
+	<img id="welcome-page-image" src="../images/welcome.png" alt="welcome"/>
+	<div class="token-validation-text p-top-16">Generate an API token from your <span class="link" on:click={openURL} on:keypress={openURL}>SafetyCulture account</span>.</div>
+
+	<div class="token-validation">
+		<div class="input">
 			<ValidatableInput placeholder="Enter API Token here" error={displayValidationError} bind:value={accessToken}/>
+		</div>
 
-			{#if displayBadApiKeyErr}
-				<div class="error-block">
-					<div class="error-block-title">Unable to verify token</div>
-					<div class="error-block-body">It looks like your token may be expired after 30 days of inactivity. Please generate a new token and try again.</div>
-				</div>
-			{/if}
+		<div class="p-left-8">
+			<Button label={buttonLabel} type="active-purple" active={buttonActive} error={displayValidationError} onClick={validate}/>
+		</div>
+	</div>
 
-			{#if displayConnectionErr}
-				<div class="error-block">
-					<div class="error-block-title">Connection error</div>
-					<div class="error-block-body">It looks like you are not connected to the internet or behind a firewall. Please check your connection and try again.</div>
-				</div>
-			{/if}
+	{#if displayBadApiKeyErr}
+		<div class="error-block">
+			<div class="error-block-title">Unable to verify token</div>
+			<div class="error-block-body">It looks like your token may be expired after 30 days of inactivity. Please generate a new token and try again.</div>
+		</div>
+	{/if}
 
-			<Button label={buttonLabel} type="active-purple" active={buttonActive} error={displayValidationError} clazz="m-top-8" onClick={validate}/>
-		</section>
+	{#if displayConnectionErr}
+		<div class="error-block">
+			<div class="error-block-title">Connection error</div>
+			<div class="error-block-body">It looks like you are not connected to the internet or behind a firewall. Please check your connection and try again.</div>
+		</div>
+	{/if}
 
-		<section class="storage-info">
-			<div class="note border-round-8">
-				<div>
-					<img src="../images/warning.svg" alt="alert icon">
-				</div>
-				<div>
-					<div class="note-title">Before you continue</div>
-					<div class="note-body">All files (apart from SQL) you export will be stored in the same place on your computer or server as the SafetyCulture Exporter. If you want to change where your files get exported, please move the SafetyCulture Exporter file itself to that place.</div>
-				</div>
+	<section class="storage-info">
+		<div class="note border-round-8">
+			<div>
+				<img src="../images/warning.svg" alt="alert icon">
 			</div>
-		</section>
+			<div>
+				<div class="note-title">Important note</div>
+				<div class="note-body">All files (apart from SQL) you export will be stored in the same place on your computer or server as the SafetyCulture Exporter. If you want to change where your files get exported, please move the SafetyCulture Exporter file itself to that place.</div>
+			</div>
+		</div>
 	</section>
-	<section class="welcome-right-side">
-        <div class="right-side-bg bg-light border-round-12-left ">
-            <div class="right-image">
-                <img class="border-round-12-left" src="../images/token.svg" alt="example generating token">
-            </div>
-            <div class="img-caption text-weak">Example API token</div>
-        </div>
-	</section>
+
 </div>
 
 <StatusBar/>
@@ -115,16 +111,28 @@
 <style>
 	.welcome-page {
 		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
-	.welcome-left-side {
-		width: 50%;
-		padding-left: 24px;
-		padding-top: 48px;
+	.welcome-page .h1 {
+		font-size: 1.8rem;
 	}
 
 	#welcome-page-logo {
 		width: 150px;
+	}
+
+	#welcome-page-image {
+		width: 600px;
+	}
+
+	.token-validation {
+		display: flex;
+	}
+
+	.token-validation .input {
+		width: 360px;
 	}
 
 	div.token-validation-text {
@@ -139,6 +147,14 @@
 		line-height: 1.5rem;
 	}
 
+	.storage-info {
+		margin-left: 16px;
+		margin-right: 16px;
+
+		position: absolute;
+		bottom: 60px;
+	}
+
 	.note {
 		background-color: #EEF1F7;
 		padding: 16px;
@@ -147,7 +163,6 @@
 		flex-direction: row;
 		gap: 16px;
 		font-size: 0.9rem;
-		width: 95%;
 	}
 
 	.note .note-title {
@@ -159,30 +174,6 @@
 		line-height: 1.5rem;
 	}
 
-    .welcome-right-side {
-        width: 50%;
-        padding-top: 48px;
-    }
-
-    .right-side-bg {
-        padding: 50px 0;
-    }
-
-    .right-image {
-        display: flex;
-        flex-direction: row-reverse;
-    }
-
-	.right-image img {
-		height: 90%;
-		width: 90%;
-    }
-
-    .img-caption {
-        padding-top: 8px;
-        text-align: center;
-    }
-
 	div.error-block {
 		font-size: 0.8rem;
 		color: #1D2330;
@@ -190,9 +181,5 @@
 
 	div.error-block .error-block-title {
 		color: #A02228;
-	}
-
-	section.storage-info {
-		margin-top: 24px;
 	}
 </style>
