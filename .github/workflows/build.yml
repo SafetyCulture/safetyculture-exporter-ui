@@ -74,16 +74,21 @@ jobs:
           run: |
             export PATH=${PATH}:`go env GOPATH`/bin
             wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
-            mv ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.app
+            # Signing goes here
+            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.zip
+            rm -rf build/bin/SafetyCulture Exporter.app
+
             wails build -platform darwin/arm64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
-            mv ./build/bin/safetyculture-exporter.app ./exporter-darwin-arm64.zip
+            # Signing goes here
+            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-arm64.zip
+            rm -rf ./build/bin/SafetyCulture Exporter.app
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-macos
-            path: exporter-darwin-*.app
+            path: exporter-darwin-*.zip
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -123,7 +128,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "exporter-darwin-*.app, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "exporter-darwin-*.zip, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
           prerelease: true
           makeLatest: false
