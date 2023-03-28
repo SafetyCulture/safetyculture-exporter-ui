@@ -79,16 +79,18 @@ jobs:
             wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
             
             # Sign
+            echo "Signing for macOS"
             echo $MAC_SIGNING_CERT | base64 —-decode > certificate.p12
-            echo $MAC_SIGNING_CERT 
+            echo "Seting up keychain"
             security create-keychain -p 1234abcd build.keychain
             security default-keychain -s build.keychain
             security unlock-keychain -p 1234abcd build.keychain  
             security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
+            echo "keychain is setup now checking for identity"
             echo security find-identity -v
             # /usr/bin/codesign --force -s <identity-id> ./build/bin/safetyculture-exporter.app -v
-
+            echo "all done"
             # Zip
             ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.zip
             rm -rf build/bin/SafetyCulture Exporter.app
