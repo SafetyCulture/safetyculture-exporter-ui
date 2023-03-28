@@ -71,18 +71,26 @@ jobs:
 
         - name: Build package macos
           if: matrix.os == 'macos-latest'
+          env: 
+            MAC_SIGNING_CERT: ${{ secrets.MAC_SIGNING_CERT }}
+            MAC_SIGNING_CERT_PASSWORD: ${{ secrets.MAC_SIGNING_CERT_PASSWORD }}
           run: |
             export PATH=${PATH}:`go env GOPATH`/bin
             wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
-            # Signing goes here
+            
+            # Sign
+            echo $MACOS_CERTIFICATE | base64 —decode > certificate.p12
+            security create-keychain -p 1234abcd build.keychain
+            security default-keychain -s build.keychain
+            security unlock-keychain -p 1234abcd build.keychain  
+            security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
+            echo security find-identity -v
+            # /usr/bin/codesign --force -s <identity-id> ./build/bin/safetyculture-exporter.app -v
+
+            # Zip
             ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.zip
             rm -rf build/bin/SafetyCulture Exporter.app
-
-            wails build -platform darwin/arm64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
-            # Signing goes here
-            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-arm64.zip
-            rm -rf ./build/bin/SafetyCulture Exporter.app
-
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
