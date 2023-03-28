@@ -88,7 +88,7 @@ jobs:
             security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
             echo "keychain is setup now checking for identity"
-            echo security find-identity -v
+            security find-identity -v
             # /usr/bin/codesign --force -s <identity-id> ./build/bin/safetyculture-exporter.app -v
             echo "all done"
             # Zip
