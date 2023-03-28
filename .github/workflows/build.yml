@@ -79,7 +79,7 @@ jobs:
             wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
             
             # Sign
-            echo $MACOS_CERTIFICATE | base64 —-decode > certificate.p12
+            echo $MAC_SIGNING_CERT | base64 —decode > certificate.p12
             security create-keychain -p 1234abcd build.keychain
             security default-keychain -s build.keychain
             security unlock-keychain -p 1234abcd build.keychain  
