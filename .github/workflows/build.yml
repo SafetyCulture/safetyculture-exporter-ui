@@ -80,7 +80,7 @@ jobs:
             
             # Sign
             echo "Signing for macOS"
-            echo $MAC_SIGNING_CERT | base64 —-decode > certificate.p12
+            echo $MAC_SIGNING_CERT | base64 --decode > certificate.p12
             echo "Seting up keychain"
             security create-keychain -p 1234abcd build.keychain
             security default-keychain -s build.keychain
