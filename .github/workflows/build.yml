@@ -14,7 +14,7 @@ jobs:
         matrix:
           go-version: [1.18]
           node-version: [16]
-          os: [windows-latest, ubuntu-latest]
+          os: [windows-latest, ubuntu-latest, macos-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -58,6 +58,7 @@ jobs:
             echo "Signing binary"
             & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p "${{ secrets.WIN_SIGNING_CERT_PASSWORD }}" .\build\bin\safetyculture-exporter.exe
             Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
+
         - name: Build package linux
           if: matrix.os == 'ubuntu-latest'
           run: |
@@ -67,6 +68,22 @@ jobs:
             echo ${{ env.GITHUB_HEAD_REF }}
             wails build -platform linux/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}"
             tar -czf exporter-linux-amd64.tar.gz ./build/bin/safetyculture-exporter
+
+        - name: Build package macos
+          if: matrix.os == 'macos-latest'
+          run: |
+            export PATH=${PATH}:`go env GOPATH`/bin
+            wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+            mv ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.app
+            wails build -platform darwin/arm64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+            mv ./build/bin/safetyculture-exporter.app ./exporter-darwin-arm64.zip
+
+        - name: Upload artifacts macOS
+          if: matrix.os == 'macos-latest'
+          uses: actions/upload-artifact@v2
+          with:
+            name: exporter-macos
+            path: exporter-darwin-*.app
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -96,12 +113,17 @@ jobs:
         with:
           name: exporter-linux
 
+      - name: Download package macos
+        uses: actions/download-artifact@v2
+        with:
+          name: exporter-macos
+
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "exporter-darwin-*.app, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
           prerelease: true
           makeLatest: false
