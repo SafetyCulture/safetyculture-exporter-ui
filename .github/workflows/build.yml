@@ -105,7 +105,7 @@ jobs:
           if: matrix.os == 'macos-latest'
           run: |
             echo "Staring Notarisation"
-            xcrun notarytool submit "Safetyculture-Exporter 1.0.0.dmg" --key "${{ secrets.APPSTORE_API_KEY }}" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
+            xcrun notarytool submit "SafetyCulture-Exporter 1.0.0.dmg" --key "${{ secrets.APPSTORE_API_KEY }}" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
             echo "Finished Notarisation"
 
         - name: Upload artifacts macOS
