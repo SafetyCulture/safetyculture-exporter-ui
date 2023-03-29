@@ -73,14 +73,14 @@ jobs:
             export PATH=${PATH}:`go env GOPATH`/bin
             echo "building on ${{ matrix.os }}"
             wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}"
-            cp ./build/bin/safetyculture-exporter.app ./safetyculture-exporter.app
+            tar -czf exporter-darwin-amd64.tar.gz ./build/bin/safetyculture-exporter.app
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-macos
-            path: safetyculture-exporter.app
+            path: exporter-darwin-amd64.tar.gz  
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -120,7 +120,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe,safetyculture-exporter.app"
+          artifacts: "exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe,exporter-darwin-amd64.tar.gz"
           allowUpdates: true
           prerelease: true
           draft: true
