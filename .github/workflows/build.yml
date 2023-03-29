@@ -99,20 +99,20 @@ jobs:
           if: matrix.os == 'macos-latest'
           run: |
             npm install --global create-dmg
-            create-dmg "safetyculture-exporter.app"
+            create-dmg "./build/bin/safetyculture-exporter.app" 
 
         - name: Apple Notarisation
           if: matrix.os == 'macos-latest'
           run: |
             echo "Staring Notarisation"
-            xcrun notarytool submit "safetyculture-exporter.dmg" --key "${{ secrets.APPSTORE_API_KEY }}" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
+            xcrun notarytool submit "Safetyculture-Exporter ${VERSION}.dmg" --key "${{ secrets.APPSTORE_API_KEY }}" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
             echo "Finished Notarisation"
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-macos
-            path: safetyculture-exporter.dmg
+            path: Safetyculture-*.dmg
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -152,7 +152,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "safetyculture-exporter.dmg, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "Safetyculture-*.dmg, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
           prerelease: true
           makeLatest: false
