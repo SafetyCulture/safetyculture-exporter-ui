@@ -14,7 +14,7 @@ jobs:
         matrix:
           go-version: [1.18]
           node-version: [16]
-          os: [windows-latest, ubuntu-latest, macos-latest]
+          os: [macos-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -71,35 +71,48 @@ jobs:
 
         - name: Build package macos
           if: matrix.os == 'macos-latest'
-          env: 
-            MAC_SIGNING_CERT: ${{ secrets.MAC_SIGNING_CERT }}
-            MAC_SIGNING_CERT_PASSWORD: ${{ secrets.MAC_SIGNING_CERT_PASSWORD }}
           run: |
             export PATH=${PATH}:`go env GOPATH`/bin
             wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
             
-            # Sign
-            echo "Signing for macOS"
+            # ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.zip
+            # rm -rf build/bin/SafetyCulture Exporter.app
+
+        - name: Sign macos
+          if: matrix.os == 'macos-latest'
+          env: 
+            MAC_SIGNING_CERT: ${{ secrets.MAC_SIGNING_CERT }}
+            MAC_SIGNING_CERT_PASSWORD: ${{ secrets.MAC_SIGNING_CERT_PASSWORD }}
+          run: |
             echo $MAC_SIGNING_CERT | base64 --decode > certificate.p12
-            echo "Seting up keychain"
             security create-keychain -p 1234abcd build.keychain
             security default-keychain -s build.keychain
             security unlock-keychain -p 1234abcd build.keychain  
             security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
-            echo "keychain is setup, now signing the build"
+            
             # security find-identity -v
+            
             /usr/bin/codesign --force -s 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 ./build/bin/safetyculture-exporter.app -v
-            echo "all done"
-            # Zip
-            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.zip
-            rm -rf build/bin/SafetyCulture Exporter.app
+
+        - name: MacOS Dmg packaging
+          if: matrix.os == 'macos-latest'
+          run: |
+            npm install --global create-dmg
+            create-dmg "safetyculture-exporter.app"
+
+        - name: Apple Notarisation
+          if: matrix.os == 'macos-latest'
+          run: |
+            echo "Staring Notarisation"
+            xcrun notarytool submit "safetyculture-exporter.dmg" --key "${{ secrets.APPSTORE_API_KEY }}" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
+            echo "Finished Notarisation"
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-macos
-            path: exporter-darwin-*.zip
+            path: safetyculture-exporter.dmg
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -139,7 +152,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "exporter-darwin-*.zip, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "safetyculture-exporter.dmg, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
           prerelease: true
           makeLatest: false
