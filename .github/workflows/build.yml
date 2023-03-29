@@ -73,7 +73,7 @@ jobs:
             export PATH=${PATH}:`go env GOPATH`/bin
             echo "building on ${{ matrix.os }}"
             wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}"
-            tar -czf exporter-darwin-amd64.tar.gz ./build/bin/safetyculture-exporter.app
+            zip -r exporter-darwin-amd64.tar.gz safetyculture-exporter.app
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
