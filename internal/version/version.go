@@ -168,3 +168,6 @@ func readFile(url string) (io.ReadCloser, error) {
 	}
 	return fReaderCloser, nil
 }
+
+//TODO: disable mac builds
+//TODO: add windows support / dev
