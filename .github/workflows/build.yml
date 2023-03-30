@@ -95,28 +95,27 @@ jobs:
             
             /usr/bin/codesign --force -s 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 ./build/bin/safetyculture-exporter.app -v
 
-        - name: MacOS Dmg packaging
-          if: matrix.os == 'macos-latest'
-          run: |
-            npm install --global create-dmg
-            create-dmg "./build/bin/safetyculture-exporter.app"
-
         - name: Apple Notarisation
           if: matrix.os == 'macos-latest'
           uses: love-actions/xcode-notarizer@v1.0.2
           with:
-            product-path: "SafetyCulture-Exporter 1.0.0.dmg"
+            product-path: "./build/bin/safetyculture-exporter.app"
             key-content: ${{ secrets.APPSTORE_API_KEY }}
             key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
             issuer-id: ${{ secrets.APPSTORE_API_ISSUER_ID }}
             staple: false
+
+        - name: zip macOS app
+          if: matrix.os == 'macos-latest'
+          run: |
+            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter.zip
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-macos
-            path: Safetyculture-*.dmg
+            path: safetyculture-*.zip
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -156,7 +155,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "Safetyculture-*.dmg, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "safetyculture-*.zip, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
           prerelease: true
           makeLatest: false
