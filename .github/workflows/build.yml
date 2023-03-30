@@ -85,21 +85,21 @@ jobs:
             p12-file-base64: ${{ secrets.MAC_SIGNING_CERT }}
             p12-password: ${{ secrets.MAC_SIGNING_CERT_PASSWORD }}
 
-        - name: Apple Notarisation
-          if: matrix.os == 'macos-latest'
-          uses: love-actions/xcode-notarizer@v1.0.2
-          with:
-            product-path: "./build/bin/safetyculture-exporter.app"
-            key-content: ${{ secrets.APPSTORE_API_KEY }}
-            key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
-            issuer-id: ${{ secrets.APPSTORE_API_ISSUER_ID }}
-            staple: false
-
         - name: zip macOS app
           if: matrix.os == 'macos-latest'
           run: |
             ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter.zip
 
+        - name: Apple Notarisation
+          if: matrix.os == 'macos-latest'
+          uses: love-actions/xcode-notarizer@v1.0.2
+          with:
+            product-path: "safetyculture-exporter.zip"
+            key-content: ${{ secrets.APPSTORE_API_KEY }}
+            key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+            issuer-id: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+            staple: false
+        
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
