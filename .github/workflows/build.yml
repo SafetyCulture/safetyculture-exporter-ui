@@ -78,22 +78,12 @@ jobs:
             # ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.zip
             # rm -rf build/bin/SafetyCulture Exporter.app
 
-        - name: Sign macos
+        - name: MacOS Codesign
           if: matrix.os == 'macos-latest'
-          env: 
-            MAC_SIGNING_CERT: ${{ secrets.MAC_SIGNING_CERT }}
-            MAC_SIGNING_CERT_PASSWORD: ${{ secrets.MAC_SIGNING_CERT_PASSWORD }}
-          run: |
-            echo $MAC_SIGNING_CERT | base64 --decode > certificate.p12
-            security create-keychain -p 1234abcd build.keychain
-            security default-keychain -s build.keychain
-            security unlock-keychain -p 1234abcd build.keychain  
-            security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
-            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
-            
-            # security find-identity -v
-            
-            /usr/bin/codesign --force -s 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 ./build/bin/safetyculture-exporter.app -v
+          uses: apple-actions/import-codesign-certs@v2
+          with: 
+            p12-file-base64: ${{ secrets.MAC_SIGNING_CERT }}
+            p12-password: ${{ secrets.MAC_SIGNING_CERT_PASSWORD }}
 
         - name: Apple Notarisation
           if: matrix.os == 'macos-latest'
