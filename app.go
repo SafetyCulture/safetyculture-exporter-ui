@@ -250,7 +250,7 @@ func (a *App) ReadVersion() *VersionResponse {
 	if releaseInfo != nil {
 		latest = releaseInfo.Version
 		downloadURL = releaseInfo.DownloadURL
-		shouldUpdate = version.ShouldUpdate(current, latest)
+		shouldUpdate = version.ShouldUpdate(current, latest) && downloadURL != ""
 	}
 
 	return &VersionResponse{
@@ -259,6 +259,14 @@ func (a *App) ReadVersion() *VersionResponse {
 		DownloadURL:  downloadURL,
 		ShouldUpdate: shouldUpdate,
 	}
+}
+
+func (a *App) TriggerUpdate(url string) {
+	runtime.LogInfof(a.ctx, "triggering auto-update for %v\n", url)
+	if err := version.DoUpdate(url); err != nil {
+		runtime.LogErrorf(a.ctx, "error during triggering auto-update for %v\n", url)
+	}
+
 }
 
 func (a *App) ReadBuild() string {

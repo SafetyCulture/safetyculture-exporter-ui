@@ -66,6 +66,10 @@ export function SelectDirectory(arg1) {
   return window['go']['main']['App']['SelectDirectory'](arg1);
 }
 
+export function TriggerUpdate(arg1) {
+  return window['go']['main']['App']['TriggerUpdate'](arg1);
+}
+
 export function ValidateApiKey(arg1) {
   return window['go']['main']['App']['ValidateApiKey'](arg1);
 }

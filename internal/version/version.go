@@ -1,11 +1,19 @@
 package version
 
 import (
+	"archive/zip"
+	"bytes"
+	"fmt"
+	"io"
+	"net/http"
+	"runtime"
+
 	vv "github.com/hashicorp/go-version"
+	"github.com/minio/selfupdate"
 )
 
 // This variable should be overridden at build time using ldflags.
-var version string = "v0.0.0-dev"
+var version string = "v1.0.0"
 
 const integrationID string = "safetyculture-exporter-ui"
 
@@ -104,4 +112,59 @@ func isBigger(maj, min, patch int) bool {
 
 func isEqual(maj, min, patch int) bool {
 	return maj == 0 && min == 0 && patch == 0
+}
+
+func DoUpdate(url string) error {
+	fReaderCloser, err := readFile(url)
+	if err != nil {
+		return err
+	}
+	defer fReaderCloser.Close()
+
+	err = selfupdate.Apply(fReaderCloser, selfupdate.Options{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func readFile(url string) (io.ReadCloser, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.Status != "200" {
+		return nil, fmt.Errorf("received %s status for %s", resp.Status, url)
+	}
+
+	content, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	archive, err := zip.NewReader(bytes.NewReader(content), int64(len(content)))
+	if err != nil {
+		return nil, err
+	}
+
+	var fReaderCloser io.ReadCloser
+	var search string
+	switch runtime.GOOS {
+	case "darwin":
+		search = "build/bin/safetyculture-exporter.app/Contents/MacOS/SafetyCulture-Exporter"
+	default:
+		return nil, fmt.Errorf("current architecture is not supported")
+	}
+	for _, f := range archive.File {
+		if f.Name == search {
+			fReaderCloser, err = f.Open()
+			if err != nil {
+				return nil, err
+			}
+			break
+		}
+	}
+	return fReaderCloser, nil
 }

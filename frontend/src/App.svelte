@@ -7,11 +7,13 @@
     import TemplateFilter from "./routes/TemplateFilter.svelte";
     import DataSetFilter from "./routes/DataSetFilter.svelte";
     import ExportStatus from "./routes/ExportStatus.svelte";
+    import Update from "./routes/Update.svelte";
 </script>
 
 <div class="container">
 <Router routes={{
 	'/': Init,
+	'/update': Update,
 	'/welcome': Welcome,
 	'/config': Config,
 	'/config/templates': TemplateFilter,

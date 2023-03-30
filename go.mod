@@ -5,11 +5,13 @@ go 1.18
 require (
 	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230327025354-362d100ba0e5
 	github.com/hashicorp/go-version v1.6.0
+	github.com/minio/selfupdate v0.6.0
 	github.com/stretchr/testify v1.8.2
 	github.com/wailsapp/wails/v2 v2.4.1
 )
 
 require (
+	aead.dev/minisign v0.2.0 // indirect
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dghubble/sling v1.4.1 // indirect

@@ -4,7 +4,7 @@ export namespace api {
 	export class TemplateResponseItem {
 	    id: string;
 	    name: string;
-	    // Go type: time.Time
+	    // Go type: time
 	    modified_at: any;
 	
 	    static createFrom(source: any = {}) {
