@@ -91,12 +91,13 @@ jobs:
             security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
             
-            # security find-identity -v // 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 
-            #/usr/bin/codesign --force -s  ./build/bin/safetyculture-exporter.app -v
+            # security find-identity -v 
+            #/usr/bin/codesign --force -s 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 --options runtime ./build/bin/safetyculture-exporter.app -v
         
         - name: MacOS Codesign
           run: |
-            codesign --force --identifier com.safetyculture.ExporterUI. --keychain build.keychain --deep --display --options runtime --verbose=4 -h -f -s
+            codesign --force -s 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 --options runtime ./build/bin/safetyculture-exporter.app -v
+            #codesign --force --identifier com.safetyculture.ExporterUI. --keychain build.keychain --deep --display --options runtime --verbose=4 -h -f -s
 
         - name: Zip macOS app
           if: matrix.os == 'macos-latest'
