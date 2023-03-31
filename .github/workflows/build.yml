@@ -14,7 +14,7 @@ jobs:
         matrix:
           go-version: [1.18]
           node-version: [16]
-          os: [ubuntu-latest, windows-latest, macos-latest]
+          os: [macos-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -78,25 +78,46 @@ jobs:
             # ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.zip
             # rm -rf build/bin/SafetyCulture Exporter.app
 
-        - name: MacOS Codesign
+        - name: MacOS import certificates
           if: matrix.os == 'macos-latest'
-          uses: apple-actions/import-codesign-certs@v2
-          with:
-            p12-file-base64: ${{ secrets.MAC_SIGNING_CERT }}
-            p12-password: ${{ secrets.MAC_SIGNING_CERT_PASSWORD }}
-            options: --options runtime
+          env: 
+            MAC_SIGNING_CERT: ${{ secrets.MAC_SIGNING_CERT }}
+            MAC_SIGNING_CERT_PASSWORD: ${{ secrets.MAC_SIGNING_CERT_PASSWORD }}
+          run: |
+            echo $MAC_SIGNING_CERT | base64 --decode > certificate.p12
+            security create-keychain -p 1234abcd build.keychain
+            security default-keychain -s build.keychain
+            security unlock-keychain -p 1234abcd build.keychain  
+            security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
+            
+            # security find-identity -v // 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 
+            #/usr/bin/codesign --force -s  ./build/bin/safetyculture-exporter.app -v
+        
+        - name: MacOS Codesign
+          run: |
+            codesign --force --identifier com.safetyculture.ExporterUI. --keychain build.keychain --deep --display --options runtime --verbose=4 -h -f -s
 
-        - name: zip macOS app
+        - name: .app to .zip
           if: matrix.os == 'macos-latest'
           run: |
             ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter.zip
 
+        - name: Apple Notarisation
+          if: matrix.os == 'macos-latest'
+          APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_KEY }}
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }
+          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          run: |
+            echo $APPSTORE_API_KEY_CONTENT > appstore_api_key.p8
+            xcrun notarytool submit "safetyculture-exporter.zip" --key "appstore_api_key.p8" --key-id "$APPSTORE_API_KEY_ID" --issuer "$APPSTORE_API_ISSUER_ID" --wait
+        
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-macos
-            path: safetyculture-*.zip
+            path: safetyculture-exporter.dmg
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -136,7 +157,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "safetyculture-*.zip, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "safetyculture-exporter.dmg, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
           prerelease: true
           makeLatest: false
