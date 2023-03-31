@@ -98,7 +98,7 @@ jobs:
           run: |
             codesign --force --identifier com.safetyculture.ExporterUI. --keychain build.keychain --deep --display --options runtime --verbose=4 -h -f -s
 
-        - name: .app to .zip
+        - name: Zip macOS app
           if: matrix.os == 'macos-latest'
           run: |
             ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter.zip
@@ -117,7 +117,7 @@ jobs:
           uses: actions/upload-artifact@v2
           with:
             name: exporter-macos
-            path: safetyculture-exporter.dmg
+            path: safetyculture-exporter.zip
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -157,7 +157,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "safetyculture-exporter.dmg, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "safetyculture-exporter.zip, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
           prerelease: true
           makeLatest: false
