@@ -95,6 +95,7 @@ jobs:
             #/usr/bin/codesign --force -s 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 --options runtime ./build/bin/safetyculture-exporter.app -v
         
         - name: MacOS Codesign
+          if: matrix.os == 'macos-latest'
           run: |
             codesign --force -s 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 --options runtime ./build/bin/safetyculture-exporter.app -v
             #codesign --force --identifier com.safetyculture.ExporterUI. --keychain build.keychain --deep --display --options runtime --verbose=4 -h -f -s
