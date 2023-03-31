@@ -111,7 +111,7 @@ jobs:
             APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
             APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
           run: |
-            echo $APPSTORE_API_KEY_CONTENT > appstore_api_key.p8
+            echo "$APPSTORE_API_KEY_CONTENT" > appstore_api_key.p8
             xcrun notarytool submit "safetyculture-exporter.zip" --key "appstore_api_key.p8" --key-id "$APPSTORE_API_KEY_ID" --issuer "$APPSTORE_API_ISSUER_ID" --wait
         
         - name: Upload artifacts macOS
