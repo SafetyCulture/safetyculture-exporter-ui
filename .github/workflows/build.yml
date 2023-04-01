@@ -96,7 +96,7 @@ jobs:
           env:
             MAC_SIGNING_CERT_NAME: ${{ secrets.MAC_SIGNING_CERT_NAME }}
           run: |
-            codesign --force -s $MAC_SIGNING_CERT_NAME --options runtime ./build/bin/safetyculture-exporter.app -v
+            codesign --force -s "$MAC_SIGNING_CERT_NAME" --options runtime ./build/bin/safetyculture-exporter.app -v
 
         - name: Zip macOS app
           if: matrix.os == 'macos-latest'
