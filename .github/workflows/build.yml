@@ -91,14 +91,12 @@ jobs:
             security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
             
-            # security find-identity -v 
-            #/usr/bin/codesign --force -s 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 --options runtime ./build/bin/safetyculture-exporter.app -v
-        
         - name: MacOS Codesign
           if: matrix.os == 'macos-latest'
+          env:
+            MAC_SIGNING_CERT_NAME: ${{ secrets.MAC_SIGNING_CERT_NAME }}
           run: |
-            codesign --force -s 99661E9A9ED47D0E91F764661B2D12A7F0ABDDE0 --options runtime ./build/bin/safetyculture-exporter.app -v
-            #codesign --force --identifier com.safetyculture.ExporterUI. --keychain build.keychain --deep --display --options runtime --verbose=4 -h -f -s
+            codesign --force -s $MAC_SIGNING_CERT_NAME --options runtime ./build/bin/safetyculture-exporter.app -v
 
         - name: Zip macOS app
           if: matrix.os == 'macos-latest'
@@ -114,7 +112,8 @@ jobs:
           run: |
             echo "$APPSTORE_API_KEY_CONTENT" > appstore_api_key.p8
             xcrun notarytool submit "safetyculture-exporter.zip" --key "appstore_api_key.p8" --key-id "$APPSTORE_API_KEY_ID" --issuer "$APPSTORE_API_ISSUER_ID" --wait
-        
+            xcrun stapler staple --verbose Gqrx.app
+
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
