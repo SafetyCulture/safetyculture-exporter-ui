@@ -112,7 +112,6 @@ jobs:
           run: |
             echo "$APPSTORE_API_KEY_CONTENT" > appstore_api_key.p8
             xcrun notarytool submit "safetyculture-exporter.zip" --key "appstore_api_key.p8" --key-id "$APPSTORE_API_KEY_ID" --issuer "$APPSTORE_API_ISSUER_ID" --wait
-            xcrun stapler staple --verbose Gqrx.app
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
