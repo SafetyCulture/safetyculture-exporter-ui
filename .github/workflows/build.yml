@@ -73,7 +73,7 @@ jobs:
           if: matrix.os == 'macos-latest'
           run: |
             export PATH=${PATH}:`go env GOPATH`/bin
-            wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+            wails build -platform darwin/arm64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
             
             # ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.zip
             # rm -rf build/bin/SafetyCulture Exporter.app
