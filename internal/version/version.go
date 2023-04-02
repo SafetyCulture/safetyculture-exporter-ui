@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"runtime"
+	"strings"
 
 	vv "github.com/hashicorp/go-version"
 	"github.com/minio/selfupdate"
@@ -115,11 +116,25 @@ func isEqual(maj, min, patch int) bool {
 }
 
 func DoUpdate(url string) error {
-	fReaderCloser, err := readFile(url)
-	if err != nil {
-		return err
+	var fReaderCloser io.ReadCloser
+	var err error
+
+	switch {
+	case strings.HasSuffix(url, ".zip"):
+		fReaderCloser, err = readZipFile(url)
+		if err != nil {
+			return err
+		}
+		defer fReaderCloser.Close()
+	case strings.HasSuffix(url, ".exe"):
+		fReaderCloser, err = getFileContentsFromURL(url)
+		if err != nil {
+			return err
+		}
+		defer fReaderCloser.Close()
+	default:
+		return fmt.Errorf("unrecognizable file extention for %v", url)
 	}
-	defer fReaderCloser.Close()
 
 	err = selfupdate.Apply(fReaderCloser, selfupdate.Options{})
 	if err != nil {
@@ -128,18 +143,14 @@ func DoUpdate(url string) error {
 	return nil
 }
 
-func readFile(url string) (io.ReadCloser, error) {
-	resp, err := http.Get(url)
+func readZipFile(url string) (io.ReadCloser, error) {
+	urlReaderCloser, err := getFileContentsFromURL(url)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer urlReaderCloser.Close()
 
-	if resp.Status != "200" {
-		return nil, fmt.Errorf("received %s status for %s", resp.Status, url)
-	}
-
-	content, err := io.ReadAll(resp.Body)
+	content, err := io.ReadAll(urlReaderCloser)
 	if err != nil {
 		return nil, err
 	}
@@ -167,6 +178,20 @@ func readFile(url string) (io.ReadCloser, error) {
 		}
 	}
 	return fReaderCloser, nil
+}
+
+// getFileContentsFromURL will return an io.ReadCloser for the given URL or error
+func getFileContentsFromURL(url string) (io.ReadCloser, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Status != "200" {
+		return nil, fmt.Errorf("received %s status for %s", resp.Status, url)
+	}
+
+	return resp.Body, nil
 }
 
 //TODO: disable mac builds
