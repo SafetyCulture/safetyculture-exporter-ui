@@ -14,7 +14,7 @@ jobs:
         matrix:
           go-version: [1.18]
           node-version: [16]
-          os: [windows-latest, ubuntu-latest]
+          os: [windows-latest, ubuntu-latest, macos-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -58,6 +58,7 @@ jobs:
             echo "Signing binary"
             & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p "${{ secrets.WIN_SIGNING_CERT_PASSWORD }}" .\build\bin\safetyculture-exporter.exe
             Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
+
         - name: Build package linux
           if: matrix.os == 'ubuntu-latest'
           run: |
@@ -67,6 +68,55 @@ jobs:
             echo ${{ env.GITHUB_HEAD_REF }}
             wails build -platform linux/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}"
             tar -czf exporter-linux-amd64.tar.gz ./build/bin/safetyculture-exporter
+
+        - name: Build and code sign macos binaries
+          if: matrix.os == 'macos-latest'
+          env:
+            MAC_SIGNING_CERT: ${{ secrets.MAC_SIGNING_CERT }}
+          run: |
+            echo "Importing certificates"
+            echo $MAC_SIGNING_CERT | base64 --decode > certificate.p12
+            security create-keychain -p ${{ secrets.MAC_SIGNING_KEYCHAIN_PWD }} build.keychain
+            security default-keychain -s build.keychain
+            security unlock-keychain -p ${{ secrets.MAC_SIGNING_KEYCHAIN_PWD }} build.keychain
+            security import certificate.p12 -k build.keychain -P ${{ secrets.MAC_SIGNING_CERT_PASSWORD }} -T /usr/bin/codesign
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k ${{ secrets.MAC_SIGNING_KEYCHAIN_PWD }} build.keychain
+
+            export PATH=${PATH}:`go env GOPATH`/bin
+            echo "Building darwin/arm64"
+            wails build -platform darwin/arm64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+
+            echo "Code signing darwin/arm64"
+            codesign --force -s "${{ secrets.MAC_SIGNING_CERT_NAME }}" --options runtime ./build/bin/safetyculture-exporter.app -v
+
+            echo "Zipping Package"
+            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter-darwin-arm64.zip
+
+            echo "Cleaning up"
+            rm -rf build/bin/SafetyCulture Exporter.app
+
+            echo "Building darwin/amd64"
+            wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+
+            echo "Code signing darwin/amd64"
+            codesign --force -s "${{ secrets.MAC_SIGNING_CERT_NAME }}" --options runtime ./build/bin/safetyculture-exporter.app -v
+
+            echo "Zipping Package"
+            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter-darwin-amd64.zip
+
+            echo "Cleaning up"
+            rm -rf build/bin/SafetyCulture Exporter.app
+
+            echo "${{ secrets.APPSTORE_API_KEY }}" > appstore_api_key.p8
+            xcrun notarytool submit "safetyculture-exporter-darwin-arm64.zip" --key "appstore_api_key.p8" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
+            xcrun notarytool submit "safetyculture-exporter-darwin-amd64.zip" --key "appstore_api_key.p8" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
+
+        - name: Upload artifacts macOS
+          if: matrix.os == 'macos-latest'
+          uses: actions/upload-artifact@v2
+          with:
+            name: exporter-macos
+            path: safetyculture-exporter-*.zip
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -96,12 +146,17 @@ jobs:
         with:
           name: exporter-linux
 
+      - name: Download package macos
+        uses: actions/download-artifact@v2
+        with:
+          name: exporter-macos
+
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "safetyculture-exporter-*.zip, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
           prerelease: true
           makeLatest: false
