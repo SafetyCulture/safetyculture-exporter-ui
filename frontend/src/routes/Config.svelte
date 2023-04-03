@@ -426,23 +426,9 @@
 	parseDbConnectionString();
 </script>
 
-{#if !isNullOrEmptyObject($latestVersion) && $latestVersion["should_update"] === true && $latestVersion['current'] !== 'v0.0.0-dev'}
-	<Overlay>
-		<div class="download-alert" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
-			<div>This version is no longer supported</div>
-			<div>Latest version is {$latestVersion['latest']}</div>
-			{#if $latestVersion['download_url'] !== ''}
-				<div>Please click here to download it</div>
-			{/if}
-		</div>
-	</Overlay>
-{/if}
-
-
 {#if formError === false && showBanner === true}
 	<Overlay>This might take a while ...</Overlay>
 {/if}
-
 
 {#if dbError === true}
 	<Overlay>
