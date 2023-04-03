@@ -71,9 +71,11 @@ jobs:
 
         - name: Build and code sign macos binaries
           if: matrix.os == 'macos-latest'
+          env:
+            MAC_SIGNING_CERT: ${{ secrets.MAC_SIGNING_CERT }}
           run: |
             echo "Importing certificates"
-            echo ${{ secrets.MAC_SIGNING_CERT }} | base64 --decode > certificate.p12
+            echo $MAC_SIGNING_CERT | base64 --decode > certificate.p12
             security create-keychain -p ${{ secrets.MAC_SIGNING_KEYCHAIN_PWD }} build.keychain
             security default-keychain -s build.keychain
             security unlock-keychain -p ${{ secrets.MAC_SIGNING_KEYCHAIN_PWD }} build.keychain
