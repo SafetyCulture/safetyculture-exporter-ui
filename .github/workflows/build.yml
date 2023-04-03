@@ -73,10 +73,8 @@ jobs:
           if: matrix.os == 'macos-latest'
           run: |
             export PATH=${PATH}:`go env GOPATH`/bin
-            wails build -platform darwin/arm64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
-            
-            # ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./exporter-darwin-amd64.zip
-            # rm -rf build/bin/SafetyCulture Exporter.app
+            wails build -platform darwin/arm64 -clean -o "safetyculture-exporter-darwin-arm64.app" -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+            wails build -platform darwin/amd64 -clean -o "safetyculture-exporter-darwin-amd64.app" -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
 
         - name: MacOS import certificates
           if: matrix.os == 'macos-latest'
@@ -96,12 +94,14 @@ jobs:
           env:
             MAC_SIGNING_CERT_NAME: ${{ secrets.MAC_SIGNING_CERT_NAME }}
           run: |
-            codesign --force -s "$MAC_SIGNING_CERT_NAME" --options runtime ./build/bin/safetyculture-exporter.app -v
+            codesign --force -s "$MAC_SIGNING_CERT_NAME" --options runtime ./build/bin/safetyculture-exporter-darwin-arm64.app -v
+            codesign --force -s "$MAC_SIGNING_CERT_NAME" --options runtime ./build/bin/safetyculture-exporter-darwin-amd64.app -v
 
         - name: Zip macOS app
           if: matrix.os == 'macos-latest'
           run: |
-            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter.zip
+            ditto -c -k --keepParent ./build/bin/safetyculture-exporter-darwin-arm64.app ./safetyculture-exporter-darwin-arm64.zip
+            ditto -c -k --keepParent ./build/bin/safetyculture-exporter-darwin-amd64.app ./safetyculture-exporter-darwin-amd64.zip
 
         - name: Apple Notarisation
           if: matrix.os == 'macos-latest'
@@ -111,14 +111,15 @@ jobs:
             APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
           run: |
             echo "$APPSTORE_API_KEY_CONTENT" > appstore_api_key.p8
-            xcrun notarytool submit "safetyculture-exporter.zip" --key "appstore_api_key.p8" --key-id "$APPSTORE_API_KEY_ID" --issuer "$APPSTORE_API_ISSUER_ID" --wait
+            xcrun notarytool submit "safetyculture-exporter-darwin-arm64" --key "appstore_api_key.p8" --key-id "$APPSTORE_API_KEY_ID" --issuer "$APPSTORE_API_ISSUER_ID" --wait
+            xcrun notarytool submit "safetyculture-exporter-darwin-amd64" --key "appstore_api_key.p8" --key-id "$APPSTORE_API_KEY_ID" --issuer "$APPSTORE_API_ISSUER_ID" --wait
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
           uses: actions/upload-artifact@v2
           with:
             name: exporter-macos
-            path: safetyculture-exporter.zip
+            path: safetyculture-exporter-*.zip
 
         - name: Upload artifacts linux
           if: matrix.os == 'ubuntu-latest'
@@ -158,7 +159,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          artifacts: "safetyculture-exporter.zip, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
+          artifacts: "safetyculture-exporter-*.zip, exporter-linux-amd64.tar.gz,exporter-windows-x86_64.exe"
           allowUpdates: true
           prerelease: true
           makeLatest: false
