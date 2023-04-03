@@ -165,6 +165,8 @@ func readZipFile(url string) (io.ReadCloser, error) {
 	switch runtime.GOOS {
 	case "darwin":
 		search = "build/bin/safetyculture-exporter.app/Contents/MacOS/SafetyCulture-Exporter"
+	case "windows":
+		search = "build/bin/safetyculture-exporter.exe"
 	default:
 		return nil, fmt.Errorf("current architecture is not supported")
 	}
@@ -187,12 +189,9 @@ func getFileContentsFromURL(url string) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	if resp.Status != "200" {
+	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("received %s status for %s", resp.Status, url)
 	}
 
 	return resp.Body, nil
 }
-
-//TODO: disable mac builds
-//TODO: add windows support / dev

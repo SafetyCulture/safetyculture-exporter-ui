@@ -262,7 +262,6 @@ func (a *App) ReadVersion() *VersionResponse {
 }
 
 func (a *App) TriggerUpdate(url string) {
-	runtime.LogInfof(a.ctx, "triggering auto-update for %v\n", url)
 	var redactedUrl string
 	switch osRuntime.GOOS {
 	case "darwin":
@@ -272,10 +271,10 @@ func (a *App) TriggerUpdate(url string) {
 	default:
 		return
 	}
+	runtime.LogInfof(a.ctx, "triggering auto-update from this source: %v", redactedUrl)
 	if err := version.DoUpdate(redactedUrl); err != nil {
-		runtime.LogErrorf(a.ctx, "error during triggering auto-update for %v\n", url)
+		runtime.LogErrorf(a.ctx, "error during triggering auto-update for %v", url)
 	}
-
 }
 
 func (a *App) ReadBuild() string {
