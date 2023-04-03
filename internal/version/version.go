@@ -14,7 +14,7 @@ import (
 )
 
 // This variable should be overridden at build time using ldflags.
-var version string = "v1.0.0"
+var version string = "v0.0.0"
 
 const integrationID string = "safetyculture-exporter-ui"
 

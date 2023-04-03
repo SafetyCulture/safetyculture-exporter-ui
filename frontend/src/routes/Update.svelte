@@ -12,7 +12,7 @@
     let cancelActive = false 
     let restartActive = false
 
-    TriggerUpdate("https://github.com/MickStanciu/SC-Mock/releases/download/v1.0.0/exporter-darwin-amd64.zip").then(result => {
+    TriggerUpdate($latestVersion['url']).then(result => {
         if (result === true) {
             isUpdating = false
             cancelActive = false

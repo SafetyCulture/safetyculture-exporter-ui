@@ -50,6 +50,7 @@
             && $appUpdateAttempted === false
             && $latestVersion["should_update"] === true 
             && $latestVersion['current'] !== 'v0.0.0-dev'
+            && $latestVersion['url'] !== ''
     }
     
     nextPage()

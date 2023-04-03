@@ -262,17 +262,8 @@ func (a *App) ReadVersion() *VersionResponse {
 }
 
 func (a *App) TriggerUpdate(url string) bool {
-	var redactedUrl string
-	switch osRuntime.GOOS {
-	case "darwin":
-		redactedUrl = "https://github.com/MickStanciu/SC-Mock/releases/download/v1.0.0/exporter-darwin-amd64.zip"
-	case "windows":
-		redactedUrl = "https://github.com/MickStanciu/SC-Mock/releases/download/v1.0.0/exporter-windows-x86_64.exe"
-	default:
-		return false
-	}
-	runtime.LogInfof(a.ctx, "triggering auto-update from this source: %v", redactedUrl)
-	if err := version.DoUpdate(redactedUrl); err != nil {
+	runtime.LogInfof(a.ctx, "triggering auto-update from this source: %v", url)
+	if err := version.DoUpdate(url); err != nil {
 		runtime.LogErrorf(a.ctx, "error during triggering auto-update for %v", url)
 		return false
 	}
