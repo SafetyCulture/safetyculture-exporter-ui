@@ -34,6 +34,6 @@ export function SaveSettings(arg1:any):Promise<void>;
 
 export function SelectDirectory(arg1:string):Promise<string>;
 
-export function TriggerUpdate(arg1:string):Promise<void>;
+export function TriggerUpdate(arg1:string):Promise<boolean>;
 
 export function ValidateApiKey(arg1:string):Promise<string>;

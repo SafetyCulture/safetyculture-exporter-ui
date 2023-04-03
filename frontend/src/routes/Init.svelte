@@ -1,7 +1,7 @@
 <script>
     import {push} from 'svelte-spa-router'
     import {ReadVersion, GetSettings, ValidateApiKey} from "../../wailsjs/go/main/App.js"
-    import {shadowConfig, latestVersion, emptyStores} from '../lib/store.js';
+    import {shadowConfig, latestVersion, emptyStores, appUpdateAttempted} from '../lib/store.js';
     import {isNullOrEmptyObject} from "../lib/utils.js";
 
     
@@ -15,10 +15,10 @@
                 latestVersion.set({})
             }
         })
-        // if (shouldForceUpdate() === true) {
-        //     push('/update')
-        //     return
-        // }
+        if (shouldForceUpdate() === true) {
+            push('/update')
+            return
+        } 
 
         GetSettings().then(result => {
             shadowConfig.set(result);
@@ -46,9 +46,11 @@
     }
 
     function shouldForceUpdate() {
-        return !isNullOrEmptyObject($latestVersion) && $latestVersion["should_update"] === true && $latestVersion['current'] !== 'v0.0.0-dev'
+        return !isNullOrEmptyObject($latestVersion)
+            && $appUpdateAttempted === false
+            && $latestVersion["should_update"] === true 
+            && $latestVersion['current'] !== 'v0.0.0-dev'
     }
-
     
     nextPage()
 </script>

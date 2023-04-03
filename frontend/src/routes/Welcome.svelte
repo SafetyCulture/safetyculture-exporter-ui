@@ -26,6 +26,7 @@
 	function updateHack() {
 		push("/update")
 	}
+	
 	function validate() {
 		tries++
 		isValid = false
