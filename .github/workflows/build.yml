@@ -69,13 +69,6 @@ jobs:
             wails build -platform linux/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}"
             tar -czf exporter-linux-amd64.tar.gz ./build/bin/safetyculture-exporter
 
-        - name: Build package macos
-          if: matrix.os == 'macos-latest'
-          run: |
-            export PATH=${PATH}:`go env GOPATH`/bin
-            wails build -platform darwin/arm64 -clean -o "safetyculture-exporter-darwin-arm64.app" -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
-            wails build -platform darwin/amd64 -clean -o "safetyculture-exporter-darwin-amd64.app" -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
-
         - name: MacOS import certificates
           if: matrix.os == 'macos-latest'
           env: 
@@ -88,31 +81,24 @@ jobs:
             security unlock-keychain -p 1234abcd build.keychain  
             security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
-            
-        - name: MacOS Codesign
-          if: matrix.os == 'macos-latest'
-          env:
-            MAC_SIGNING_CERT_NAME: ${{ secrets.MAC_SIGNING_CERT_NAME }}
-          run: |
-            codesign --force -s "$MAC_SIGNING_CERT_NAME" --options runtime ./build/bin/safetyculture-exporter-darwin-arm64.app -v
-            codesign --force -s "$MAC_SIGNING_CERT_NAME" --options runtime ./build/bin/safetyculture-exporter-darwin-amd64.app -v
 
-        - name: Zip macOS app
+        - name: Build package macos
           if: matrix.os == 'macos-latest'
           run: |
-            ditto -c -k --keepParent ./build/bin/safetyculture-exporter-darwin-arm64.app ./safetyculture-exporter-darwin-arm64.zip
-            ditto -c -k --keepParent ./build/bin/safetyculture-exporter-darwin-amd64.app ./safetyculture-exporter-darwin-amd64.zip
+            export PATH=${PATH}:`go env GOPATH`/bin
+            wails build -platform darwin/arm64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+            codesign --force -s "${{ secrets.MAC_SIGNING_CERT_NAME }}" --options runtime ./build/bin/safetyculture-exporter.app -v
+            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter-darwin-arm64.zip
+            rm -rf build/bin/SafetyCulture Exporter.app
 
-        - name: Apple Notarisation
-          if: matrix.os == 'macos-latest'
-          env:
-            APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_KEY }}
-            APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-            APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
-          run: |
-            echo "$APPSTORE_API_KEY_CONTENT" > appstore_api_key.p8
-            xcrun notarytool submit "safetyculture-exporter-darwin-arm64" --key "appstore_api_key.p8" --key-id "$APPSTORE_API_KEY_ID" --issuer "$APPSTORE_API_ISSUER_ID" --wait
-            xcrun notarytool submit "safetyculture-exporter-darwin-amd64" --key "appstore_api_key.p8" --key-id "$APPSTORE_API_KEY_ID" --issuer "$APPSTORE_API_ISSUER_ID" --wait
+            wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+            codesign --force -s "${{ secrets.MAC_SIGNING_CERT_NAME }}" --options runtime ./build/bin/safetyculture-exporter.app -v
+            ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter-darwin-amd64.zip
+            rm -rf build/bin/SafetyCulture Exporter.app
+
+            echo "${{ secrets.APPSTORE_API_KEY }}" > appstore_api_key.p8
+            xcrun notarytool submit "safetyculture-exporter-darwin-arm64.zip" --key "appstore_api_key.p8" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
+            xcrun notarytool submit "safetyculture-exporter-darwin-amd64.zip" --key "appstore_api_key.p8" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
