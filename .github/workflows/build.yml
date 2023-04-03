@@ -82,18 +82,32 @@ jobs:
             security import certificate.p12 -k build.keychain -P $MAC_SIGNING_CERT_PASSWORD -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 1234abcd build.keychain
 
-        - name: Build package macos
+        - name: Build and code sign macos binaries
           if: matrix.os == 'macos-latest'
           run: |
             export PATH=${PATH}:`go env GOPATH`/bin
+            echo "Building darwin/arm64"
             wails build -platform darwin/arm64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+
+            echo "Code signing darwin/arm64"
             codesign --force -s "${{ secrets.MAC_SIGNING_CERT_NAME }}" --options runtime ./build/bin/safetyculture-exporter.app -v
+
+            echo "Zipping Package"
             ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter-darwin-arm64.zip
+
+            echo "Cleaning up"
             rm -rf build/bin/SafetyCulture Exporter.app
 
+            echo "Building darwin/amd64"
             wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${VERSION}"
+
+            echo "Code signing darwin/amd64"
             codesign --force -s "${{ secrets.MAC_SIGNING_CERT_NAME }}" --options runtime ./build/bin/safetyculture-exporter.app -v
+
+            echo "Zipping Package"
             ditto -c -k --keepParent ./build/bin/safetyculture-exporter.app ./safetyculture-exporter-darwin-amd64.zip
+
+            echo "Cleaning up"
             rm -rf build/bin/SafetyCulture Exporter.app
 
             echo "${{ secrets.APPSTORE_API_KEY }}" > appstore_api_key.p8
