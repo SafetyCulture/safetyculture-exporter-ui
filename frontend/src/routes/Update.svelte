@@ -3,27 +3,29 @@
     import Button from "../components/Button.svelte";
     import {TriggerUpdate} from "../../wailsjs/go/main/App.js";
     import {push} from "svelte-spa-router";
-    import {Quit} from "../../wailsjs/runtime/runtime.js";
+    import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
     
     // in order to block future attempts within the same session
     $appUpdateAttempted = true
 
-    let isUpdating = true
+    let updateStatus = "updating"
+    let updateMessage = 'Please wait until we update your application from ' + $latestVersion['current'] + ' to ' + $latestVersion['latest']
     let cancelActive = false 
     let restartActive = false
 
-    TriggerUpdate($latestVersion['url']).then(result => {
+    TriggerUpdate($latestVersion['download_url']).then(result => {
         if (result === true) {
-            isUpdating = false
+            updateStatus = "success"
             cancelActive = false
             restartActive = true
         } else {
-            isUpdating = false
+            updateStatus = "failed"
+            updateMessage = 'There was an error updating to version ' + $latestVersion['latest']
             cancelActive = true
-            restartActive = false   
+            restartActive = false
         }
-    }).catch(e => {
-        isUpdating = false
+    }).catch(() => {
+        updateStatus = "failed"
         cancelActive = true
         restartActive = false
     })
@@ -36,21 +38,34 @@
         Quit()
     }
     
+    function openURL(url) {
+        if (url !== '') {
+            BrowserOpenURL(url)
+        }
+    }
+    
 </script>
 <div class="update-page">
     <img id="update-page-logo" class="p-top-32" src="../images/logo.svg" alt="SafetyCulture logo"/>
     <div class="h1">SafetyCulture Exporter Updater</div>
     
     <div class="middle">
-        {#if isUpdating === true}
-            <img id="spinner" src="../images/spinning.gif" alt="loading"/>
-        {:else}
-            <img id="complete" src="../images/complete.svg" alt="ok"/>
+        {#if updateStatus === 'updating'}
+            <img class="status" src="../images/spinning.gif" alt="loading"/>
+        {/if}
+        {#if updateStatus === 'success'}
+            <img class="status" src="../images/complete.svg" alt="ok"/>
+        {/if}
+        {#if updateStatus === 'failed'}
+            <img class="status" src="../images/warning.svg" alt="ok"/>
         {/if}
 
-        <div class="h3 p-top-64">
-            Please wait until we update your application from {$latestVersion['current']} to {$latestVersion['latest']}
-        </div>
+        <div class="h3 p-top-64">{updateMessage}</div>
+        {#if updateStatus === 'failed'}
+            <div class="download-alert" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
+                You can manually download and install the Exporter
+            </div>
+        {/if}
 
         <div class="p-top-32">
             <Button label="Cancel" type="active-purple" active={cancelActive} onClick={cancelHandler}/>
@@ -76,12 +91,7 @@
         width: 150px;
     }
     
-    img#spinner {
-        width: 200px;
-        height: 200px;
-    }
-    
-    img#complete {
+    img.status {
         width: 200px;
         height: 200px;
     }
@@ -93,5 +103,12 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+    }
+
+    .download-alert {
+        font-size: 0.9rem;
+        text-align: center;
+        cursor: pointer;
+        color: #0d75b5;
     }
 </style>

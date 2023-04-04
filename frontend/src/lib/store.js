@@ -60,10 +60,13 @@ exportConfig.subscribe(value => {
     localStorage.setItem("export-config", JSON.stringify(value))
 })
 
-// application session store. Not to be included in emptyStores function
+// application session store
 let storedUpdateAttempted
 try {
     storedUpdateAttempted = JSON.parse(localStorage.getItem("session-update-attempted"))
+    if (storedUpdateAttempted == null) {
+        storedUpdateAttempted = false 
+    }
 } catch (e) {
     storedUpdateAttempted = false
 }

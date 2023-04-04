@@ -568,12 +568,6 @@
 		overflow-y: auto;
 	}
 
-	.download-alert {
-		font-size: 1.2rem;
-		text-align: center;
-		cursor: pointer;
-	}
-
 	.db-error {
 		text-align: center;
 		cursor: pointer;

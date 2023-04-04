@@ -262,8 +262,10 @@ func (a *App) ReadVersion() *VersionResponse {
 }
 
 func (a *App) TriggerUpdate(url string) bool {
+	fmt.Println(url)
 	runtime.LogInfof(a.ctx, "triggering auto-update from this source: %v", url)
 	if err := version.DoUpdate(url); err != nil {
+		fmt.Println(err)
 		runtime.LogErrorf(a.ctx, "error during triggering auto-update for %v", url)
 		return false
 	}

@@ -171,6 +171,7 @@ func readZipFile(url string) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("current architecture is not supported")
 	}
 	for _, f := range archive.File {
+		fmt.Println(f.Name)
 		if f.Name == search {
 			fReaderCloser, err = f.Open()
 			if err != nil {
@@ -178,6 +179,9 @@ func readZipFile(url string) (io.ReadCloser, error) {
 			}
 			break
 		}
+	}
+	if fReaderCloser == nil {
+		return nil, fmt.Errorf("could not find the binary in the provided archive")
 	}
 	return fReaderCloser, nil
 }
