@@ -23,10 +23,6 @@
 		BrowserOpenURL("https://app.safetyculture.com/account/api-tokens")
 	}
 
-	function updateHack() {
-		push("/update")
-	}
-	
 	function validate() {
 		tries++
 		isValid = false

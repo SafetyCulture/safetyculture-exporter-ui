@@ -1,5 +1,5 @@
 <script>
-    import {appUpdateAttempted, latestVersion} from '../lib/store.js';
+    import {latestVersion} from '../lib/store.js';
     import Button from "../components/Button.svelte";
     import {TriggerUpdate} from "../../wailsjs/go/main/App.js";
     import {push} from "svelte-spa-router";

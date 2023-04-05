@@ -60,24 +60,6 @@ exportConfig.subscribe(value => {
     localStorage.setItem("export-config", JSON.stringify(value))
 })
 
-// application session store
-let storedUpdateAttempted
-try {
-    storedUpdateAttempted = JSON.parse(localStorage.getItem("session-update-attempted"))
-    if (storedUpdateAttempted == null) {
-        storedUpdateAttempted = false 
-    }
-} catch (e) {
-    storedUpdateAttempted = false
-}
-export const appUpdateAttempted = writable(storedUpdateAttempted)
-appUpdateAttempted.subscribe(value => {
-    if (value === null) {
-        value = false
-    }
-    localStorage.setItem("session-update-attempted", JSON.stringify(value))
-})
-
 export function emptyStores() {
     templateCache.set([])
     shadowConfig.set({})
