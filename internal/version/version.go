@@ -3,14 +3,16 @@ package version
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
-	"runtime"
+	osRuntime "runtime"
 	"strings"
 
 	vv "github.com/hashicorp/go-version"
 	"github.com/minio/selfupdate"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // This variable should be overridden at build time using ldflags.
@@ -115,13 +117,13 @@ func isEqual(maj, min, patch int) bool {
 	return maj == 0 && min == 0 && patch == 0
 }
 
-func DoUpdate(url string) error {
+func DoUpdate(ctx context.Context, url string) error {
 	var fReaderCloser io.ReadCloser
 	var err error
 
 	switch {
 	case strings.HasSuffix(url, ".zip"):
-		fReaderCloser, err = readZipFile(url)
+		fReaderCloser, err = readZipFile(ctx, url)
 		if err != nil {
 			return err
 		}
@@ -143,7 +145,7 @@ func DoUpdate(url string) error {
 	return nil
 }
 
-func readZipFile(url string) (io.ReadCloser, error) {
+func readZipFile(ctx context.Context, url string) (io.ReadCloser, error) {
 	urlReaderCloser, err := getFileContentsFromURL(url)
 	if err != nil {
 		return nil, err
@@ -162,7 +164,7 @@ func readZipFile(url string) (io.ReadCloser, error) {
 
 	var fReaderCloser io.ReadCloser
 	var search string
-	switch runtime.GOOS {
+	switch osRuntime.GOOS {
 	case "darwin":
 		search = "SafetyCulture-Exporter.app/Contents/MacOS/SafetyCulture-Exporter"
 	case "windows":
@@ -170,7 +172,10 @@ func readZipFile(url string) (io.ReadCloser, error) {
 	default:
 		return nil, fmt.Errorf("current architecture is not supported")
 	}
+
+	runtime.LogErrorf(ctx, ">>> LOOKING FOR FILE: %v", search)
 	for _, f := range archive.File {
+		runtime.LogErrorf(ctx, ">>> PRINT FILE: %v", f.Name)
 		fmt.Println(f.Name)
 		if f.Name == search {
 			fReaderCloser, err = f.Open()
