@@ -14,7 +14,7 @@ import (
 )
 
 // This variable should be overridden at build time using ldflags.
-var version string = "v0.0.0"
+var version string = "v0.0.0-dev"
 
 const integrationID string = "safetyculture-exporter-ui"
 
@@ -164,7 +164,7 @@ func readZipFile(url string) (io.ReadCloser, error) {
 	var search string
 	switch runtime.GOOS {
 	case "darwin":
-		search = "build/bin/safetyculture-exporter.app/Contents/MacOS/SafetyCulture-Exporter"
+		search = "SafetyCulture-Exporter.app/Contents/MacOS/SafetyCulture-Exporter"
 	case "windows":
 		search = "build/bin/safetyculture-exporter.exe"
 	default:

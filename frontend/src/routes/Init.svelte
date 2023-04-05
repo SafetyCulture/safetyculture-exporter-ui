@@ -18,55 +18,47 @@
         }) 
     }
     
-    async function processGetSettings() {
-        return await GetSettings().then(result => {
-            shadowConfig.set(result);
-        }).then(() => {
-            if ("AccessToken" in $shadowConfig) {
-                const token = $shadowConfig["AccessToken"]
-                if (token.length === 0) {
-                    return '/welcome'
-                } else {
-                    // check if it can auth
-                    return ValidateApiKey(token).then(res => {
-                        if (res === false) {
-                            return '/welcome'
-                        } else {
-                            return '/config'
-                        }
-                    })
-                }
-            } else {
+    async function processAccessToken() {
+        if ("AccessToken" in $shadowConfig) {
+            const token = $shadowConfig["AccessToken"]
+            if (token.length === 0) {
                 return '/welcome'
+            } else {
+                // check if it can auth
+                return ValidateApiKey(token).then(res => {
+                    if (res === false) {
+                        return '/welcome'
+                    } else {
+                        return '/config'
+                    }
+                })
             }
-        })
+        } else {
+            return '/welcome'
+        }
     }
 
     function shouldForceUpdate() {
-        console.log(JSON.stringify($latestVersion))
-        console.log(JSON.stringify($appUpdateAttempted))
-        // console.log(!isNullOrEmptyObject($latestVersion))
-        // console.log($appUpdateAttempted === false)
-        // console.log($latestVersion['current'] !== 'v0.0.0-dev')
-        // console.log($latestVersion['download_url'] !== '')
-        
         return !isNullOrEmptyObject($latestVersion)
-            && $appUpdateAttempted === false
             && $latestVersion["should_update"] === true 
             && $latestVersion['current'] !== 'v0.0.0-dev'
             && $latestVersion['download_url'] !== ''
     }
 
     emptyStores();
-    processVersion().then(shouldUpdate => {
-        if (shouldUpdate === true) {
-            push('/update')
-        } else {
-            processGetSettings().then(page => {
-                console.log(page)
-                push(page)    
-            })
-        }
+
+    GetSettings().then(result => {
+        shadowConfig.set(result);
+    }).then(() => {
+        processVersion().then(shouldUpdate => {
+            if (shouldUpdate === true) {
+                push('/update')
+            } else {
+                processAccessToken().then(page => {
+                    push(page)
+                })
+            }
+        })
     })
 
 </script>

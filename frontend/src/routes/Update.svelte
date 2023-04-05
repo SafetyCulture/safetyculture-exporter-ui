@@ -5,9 +5,6 @@
     import {push} from "svelte-spa-router";
     import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
     
-    // in order to block future attempts within the same session
-    $appUpdateAttempted = true
-
     let updateStatus = "updating"
     let updateMessage = 'Please wait until we update your application from ' + $latestVersion['current'] + ' to ' + $latestVersion['latest']
     let cancelActive = false 
@@ -16,6 +13,7 @@
     TriggerUpdate($latestVersion['download_url']).then(result => {
         if (result === true) {
             updateStatus = "success"
+            updateMessage = 'We have updated your application to the ' + $latestVersion['latest']
             cancelActive = false
             restartActive = true
         } else {
@@ -31,7 +29,7 @@
     })
 
     function cancelHandler() {
-        push("/")
+        push("/welcome")
     }
 
     function restartHandler() {
