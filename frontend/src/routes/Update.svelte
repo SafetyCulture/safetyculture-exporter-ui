@@ -60,7 +60,10 @@
 
         <div class="h3 p-top-64">{updateMessage}</div>
         {#if updateStatus === 'failed'}
-            <div class="download-alert" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
+            {#if $latestVersion['os'] === 'darwin'}
+                <div class="p-top-8">SafetyCulture Exporter must be moved into the Applications folder in order for the auto-update to work</div>
+            {/if}   
+            <div class="download-alert p-top-8" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
                 You can manually download and install the Exporter
             </div>
         {/if}

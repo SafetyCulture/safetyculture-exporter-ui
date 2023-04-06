@@ -234,6 +234,7 @@ func (a *App) ReadExportStatus() {
 }
 
 type VersionResponse struct {
+	OS           string `json:"os"`
 	Current      string `json:"current"`
 	Latest       string `json:"latest"`
 	DownloadURL  string `json:"download_url"`
@@ -254,6 +255,7 @@ func (a *App) ReadVersion() *VersionResponse {
 	}
 
 	return &VersionResponse{
+		OS:           osRuntime.GOOS,
 		Current:      current,
 		Latest:       latest,
 		DownloadURL:  downloadURL,
