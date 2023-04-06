@@ -3,16 +3,14 @@ package version
 import (
 	"archive/zip"
 	"bytes"
-	"context"
 	"fmt"
 	"io"
 	"net/http"
-	osRuntime "runtime"
+	"runtime"
 	"strings"
 
 	vv "github.com/hashicorp/go-version"
 	"github.com/minio/selfupdate"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // This variable should be overridden at build time using ldflags.
@@ -117,7 +115,7 @@ func isEqual(maj, min, patch int) bool {
 	return maj == 0 && min == 0 && patch == 0
 }
 
-func DoUpdate(ctx context.Context, url string) error {
+func DoUpdate(url string) error {
 	var fReaderCloser io.ReadCloser
 	var err error
 
@@ -140,7 +138,6 @@ func DoUpdate(ctx context.Context, url string) error {
 
 	err = selfupdate.Apply(fReaderCloser, selfupdate.Options{})
 	if err != nil {
-		runtime.LogError(ctx, err.Error())
 		return err
 	}
 	return nil
@@ -165,7 +162,7 @@ func readZipFile(url string) (io.ReadCloser, error) {
 
 	var fReaderCloser io.ReadCloser
 	var search string
-	switch osRuntime.GOOS {
+	switch runtime.GOOS {
 	case "darwin":
 		search = "SafetyCulture-Exporter.app/Contents/MacOS/SafetyCulture-Exporter"
 	case "windows":

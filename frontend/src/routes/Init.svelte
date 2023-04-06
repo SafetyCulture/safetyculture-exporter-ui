@@ -39,11 +39,10 @@
     }
 
     function shouldForceUpdate() {
-        return false
-        // return !isNullOrEmptyObject($latestVersion)
-        //     && $latestVersion["should_update"] === true 
-        //     && $latestVersion['current'] !== 'v0.0.0-dev'
-        //     && $latestVersion['download_url'] !== ''
+        return !isNullOrEmptyObject($latestVersion)
+            && $latestVersion["should_update"] === true 
+            && $latestVersion['current'] !== 'v0.0.0-dev'
+            && $latestVersion['download_url'] !== ''
     }
 
     emptyStores();
