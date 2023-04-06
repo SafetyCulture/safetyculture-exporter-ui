@@ -234,6 +234,7 @@ func (a *App) ReadExportStatus() {
 }
 
 type VersionResponse struct {
+	OS           string `json:"os"`
 	Current      string `json:"current"`
 	Latest       string `json:"latest"`
 	DownloadURL  string `json:"download_url"`
@@ -250,15 +251,25 @@ func (a *App) ReadVersion() *VersionResponse {
 	if releaseInfo != nil {
 		latest = releaseInfo.Version
 		downloadURL = releaseInfo.DownloadURL
-		shouldUpdate = version.ShouldUpdate(current, latest)
+		shouldUpdate = version.ShouldUpdate(current, latest) && downloadURL != ""
 	}
 
 	return &VersionResponse{
+		OS:           osRuntime.GOOS,
 		Current:      current,
 		Latest:       latest,
 		DownloadURL:  downloadURL,
 		ShouldUpdate: shouldUpdate,
 	}
+}
+
+func (a *App) TriggerUpdate(url string) bool {
+	runtime.LogInfof(a.ctx, "triggering auto-update from this source: %v", url)
+	if err := version.DoUpdate(url); err != nil {
+		runtime.LogErrorf(a.ctx, "error during triggering auto-update for %v: %v", url, err.Error())
+		return false
+	}
+	return true
 }
 
 func (a *App) ReadBuild() string {

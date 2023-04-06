@@ -42,6 +42,7 @@ export namespace api {
 export namespace main {
 	
 	export class VersionResponse {
+	    os: string;
 	    current: string;
 	    latest: string;
 	    download_url: string;
@@ -53,6 +54,7 @@ export namespace main {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.os = source["os"];
 	        this.current = source["current"];
 	        this.latest = source["latest"];
 	        this.download_url = source["download_url"];
