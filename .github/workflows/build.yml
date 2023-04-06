@@ -94,7 +94,7 @@ jobs:
             rm -rf build/bin/SafetyCulture Exporter.app
 
             echo "Building darwin/amd64"
-            wails build -platform darwin/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}"
+            wails build -platform darwin/amd64 -clean -ldflags "-X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}"
 
             echo "Code signing darwin/amd64"
             codesign --force -s "${{ secrets.MAC_SIGNING_CERT_NAME }}" --options runtime ./build/bin/safetyculture-exporter.app -v

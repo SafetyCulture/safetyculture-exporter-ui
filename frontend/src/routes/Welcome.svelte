@@ -22,6 +22,10 @@
 	function openURL() {
 		BrowserOpenURL("https://app.safetyculture.com/account/api-tokens")
 	}
+	
+	function update() {
+		push("/update")
+	}
 
 	function validate() {
 		tries++
@@ -75,6 +79,7 @@
 
 		<div class="p-left-8">
 			<Button label={buttonLabel} type="active-purple" active={buttonActive} error={displayValidationError} onClick={validate}/>
+			<Button label="HACK" type="active-purple" onClick={update}/>
 		</div>
 	</div>
 

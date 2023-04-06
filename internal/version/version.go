@@ -123,7 +123,7 @@ func DoUpdate(ctx context.Context, url string) error {
 
 	switch {
 	case strings.HasSuffix(url, ".zip"):
-		fReaderCloser, err = readZipFile(ctx, url)
+		fReaderCloser, err = readZipFile(url)
 		if err != nil {
 			return err
 		}
@@ -140,12 +140,13 @@ func DoUpdate(ctx context.Context, url string) error {
 
 	err = selfupdate.Apply(fReaderCloser, selfupdate.Options{})
 	if err != nil {
+		runtime.LogError(ctx, err.Error())
 		return err
 	}
 	return nil
 }
 
-func readZipFile(ctx context.Context, url string) (io.ReadCloser, error) {
+func readZipFile(url string) (io.ReadCloser, error) {
 	urlReaderCloser, err := getFileContentsFromURL(url)
 	if err != nil {
 		return nil, err
@@ -173,10 +174,7 @@ func readZipFile(ctx context.Context, url string) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("current architecture is not supported")
 	}
 
-	runtime.LogErrorf(ctx, ">>> LOOKING FOR FILE: %v", search)
 	for _, f := range archive.File {
-		runtime.LogErrorf(ctx, ">>> PRINT FILE: %v", f.Name)
-		fmt.Println(f.Name)
 		if f.Name == search {
 			fReaderCloser, err = f.Open()
 			if err != nil {
