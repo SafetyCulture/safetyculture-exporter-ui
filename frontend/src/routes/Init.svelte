@@ -43,7 +43,6 @@
             && $latestVersion["should_update"] === true 
             && $latestVersion['current'] !== 'v0.0.0-dev'
             && $latestVersion['download_url'] !== ''
-            && $latestVersion['os'] !== 'linux'
     }
 
     emptyStores();
