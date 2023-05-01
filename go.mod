@@ -3,7 +3,7 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 go 1.18
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230327025354-362d100ba0e5
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230430230255-4dd17b7a3d1d
 	github.com/hashicorp/go-version v1.6.0
 	github.com/minio/selfupdate v0.6.0
 	github.com/stretchr/testify v1.8.2
@@ -40,7 +40,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
-	github.com/microsoft/go-mssqldb v0.19.0 // indirect
+	github.com/microsoft/go-mssqldb v0.21.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -61,12 +61,12 @@ require (
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/mysql v1.4.7 // indirect
+	gorm.io/driver/mysql v1.5.0 // indirect
 	gorm.io/driver/postgres v1.5.0 // indirect
-	gorm.io/driver/sqlite v1.4.4 // indirect
-	gorm.io/driver/sqlserver v1.4.2 // indirect
-	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11 // indirect
+	gorm.io/driver/sqlite v1.5.0 // indirect
+	gorm.io/driver/sqlserver v1.4.3 // indirect
+	gorm.io/gorm v1.25.0 // indirect
 )
