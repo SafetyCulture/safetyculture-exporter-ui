@@ -7,7 +7,7 @@ require (
 	github.com/hashicorp/go-version v1.6.0
 	github.com/minio/selfupdate v0.6.0
 	github.com/stretchr/testify v1.8.3
-	github.com/wailsapp/wails/v2 v2.5.0
+	github.com/wailsapp/wails/v2 v2.5.1
 )
 
 require (
