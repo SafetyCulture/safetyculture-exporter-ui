@@ -4,11 +4,19 @@
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
 	import Select from 'svelte-select';
-	import { SaveSettings, SelectDirectory, ExportCSV, ExportSQL, ExportReports, ReadBuild, ExportSQLite, CheckDBConnection
+	import {
+		CheckDBConnection,
+		ExportCSV,
+		ExportReports,
+		ExportSQL,
+		ExportSQLite,
+		ReadBuild,
+		SaveSettings,
+		SelectDirectory
 	} from "../../wailsjs/go/main/App.js"
-	import {latestVersion, shadowConfig, exportConfig} from '../lib/store.js';
-	import {allTables, isNullOrEmptyObject} from "../lib/utils.js";
-	import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
+	import {exportConfig, shadowConfig} from '../lib/store.js';
+	import {allTables} from "../lib/utils.js";
+	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "svelte-spa-router";
 	import FormTextInput from "../components/FormTextInput.svelte";
 	import Button from "../components/Button.svelte";
@@ -147,13 +155,11 @@
 	function setConnString() {
 		if (selectedExportFormat !== '') {
 			const connectionString = connectionStrings[selectedExportFormat.value];
-			const replacedConnectionString = connectionString.replace(/\${dbUser}/g, dbUser)
+			$shadowConfig['Db']['ConnectionString'] = connectionString.replace(/\${dbUser}/g, dbUser)
 					.replace(/\${dbPassword}/g, dbPassword)
 					.replace(/\${dbHost}/g, dbHost)
 					.replace(/\${dbPort}/g, dbPort)
 					.replace(/\${dbName}/g, dbName);
-
-			$shadowConfig['Db']['ConnectionString'] = replacedConnectionString;
 			$shadowConfig['Db']['Dialect'] = dialects[selectedExportFormat.value];
 		}
 	}
@@ -239,12 +245,8 @@
 		return dayjs(dt).tz(tz).format()
 	}
 
-	function convertDateToDDMMYYYY(dt, tz) {
-		return dayjs(dt).tz(tz).format('DD MM YYYY')
-	}
-
 	function convertStringToDate(input, tz) {
-		if (input === "") {
+		if (input === "" || input === "0001-01-01T00:00:00Z") {
 			return minDate
 		}
 
@@ -410,12 +412,6 @@
 				$shadowConfig["Export"]["MediaPath"] = result + '/media/'
 			}
 		})
-	}
-
-	function openURL(url) {
-		if (url !== '') {
-			BrowserOpenURL(url)
-		}
 	}
 
 	function removeOverlay() {
