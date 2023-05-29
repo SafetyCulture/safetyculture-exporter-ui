@@ -12,7 +12,7 @@ jobs:
   package:
       strategy:
         matrix:
-          go-version: [1.18]
+          go-version: [1.20.4]
           node-version: [16]
           os: [windows-latest, ubuntu-latest, macos-latest]
       runs-on: ${{ matrix.os }}
@@ -31,7 +31,7 @@ jobs:
             node-version: ${{ matrix.node-version }}
 
         - name: Install wails
-          run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.4.1
+          run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.5.1
 
         - name: Build package windows
           if: matrix.os == 'windows-latest'
