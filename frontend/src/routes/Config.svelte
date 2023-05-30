@@ -347,7 +347,6 @@
 						} else {
 							showBanner = false
 							exportLocationError = true
-							return
 						}
 					}).catch(() => {
 						exportLocationError = true
@@ -367,14 +366,36 @@
 					})
 					break
 				case 'reports':
-					$exportConfig['items'] = ['inspections','reports']
-					ExportReports()
-					push("/export/status")
+					ValidateExportDirectory().then((result) => {
+						if (result === true) {
+							showBanner = false
+							exportLocationError = false
+							$exportConfig['items'] = ['inspections','reports']
+							ExportReports()
+							push("/export/status")
+						} else {
+							showBanner = false
+							exportLocationError = true
+						}
+					}).catch(() => {
+						exportLocationError = true
+					})
 					break
 				case 'sqlite':
-					$exportConfig['items'] = getFeedsForExport()
-					ExportSQLite()
-					push("/export/status")
+					ValidateExportDirectory().then((result) => {
+						if (result === true) {
+							showBanner = false
+							exportLocationError = false
+							$exportConfig['items'] = getFeedsForExport()
+							ExportSQLite()
+							push("/export/status")
+						} else {
+							showBanner = false
+							exportLocationError = true
+						}
+					}).catch(() => {
+						exportLocationError = true
+					})
 					break
 			}
 		}).catch(e => {
