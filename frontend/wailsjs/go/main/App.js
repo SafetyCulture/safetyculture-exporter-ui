@@ -73,3 +73,7 @@ export function TriggerUpdate(arg1) {
 export function ValidateApiKey(arg1) {
   return window['go']['main']['App']['ValidateApiKey'](arg1);
 }
+
+export function ValidateExportDirectory() {
+  return window['go']['main']['App']['ValidateExportDirectory']();
+}

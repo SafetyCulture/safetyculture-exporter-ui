@@ -4,6 +4,7 @@
     export let clazz = ''
     export let trimLongWords = false
     export let trimValue = 30
+    export let error = false
 
     let shouldShowToolTip = false
 
@@ -34,7 +35,8 @@
     }
 </script>
 
-<div class="container {clazz}" style:cursor={onClick === null ? 'default' : 'pointer'}
+<div class="container {clazz}" class:input-error={error} 
+     style:cursor={onClick === null ? 'default' : 'pointer'}
      on:click={executeOnClick} on:keypress={executeOnClick}
      on:mouseover={handleHover} on:focus={handleHover}
      on:mouseout={handleOut} on:blur={handleOut}
@@ -82,5 +84,10 @@
         top: 30px;
 
         word-wrap: break-word;
+    }
+    
+    .input-error {
+        border-color: #A8242A!important;
+        background-color: rgba(180, 20, 20, 0.15);
     }
 </style>

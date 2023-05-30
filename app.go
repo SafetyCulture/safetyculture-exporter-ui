@@ -107,6 +107,23 @@ func (a *App) SelectDirectory(currentDir string) string {
 	return directoryDialog
 }
 
+func (a *App) ValidateExportDirectory() bool {
+	exportPath := a.cm.Configuration.Export.Path
+	if len(exportPath) == 0 {
+		return false
+	}
+
+	if _, err := os.Stat(exportPath); os.IsNotExist(err) {
+		err := os.MkdirAll(exportPath, os.ModePerm)
+		if err != nil {
+			runtime.LogErrorf(a.ctx, "can't create export directory: %v", err)
+			return false
+		}
+	}
+
+	return true
+}
+
 func (a *App) ExportCSV() error {
 	return a.exporter.RunCSV()
 }

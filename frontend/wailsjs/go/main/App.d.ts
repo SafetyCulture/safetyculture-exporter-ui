@@ -38,3 +38,5 @@ export function SelectDirectory(arg1:string):Promise<string>;
 export function TriggerUpdate(arg1:string):Promise<boolean>;
 
 export function ValidateApiKey(arg1:string):Promise<string>;
+
+export function ValidateExportDirectory():Promise<boolean>;

@@ -12,7 +12,7 @@
 		ExportSQLite,
 		ReadBuild,
 		SaveSettings,
-		SelectDirectory
+		SelectDirectory, ValidateExportDirectory
 	} from "../../wailsjs/go/main/App.js"
 	import {exportConfig, shadowConfig} from '../lib/store.js';
 	import {allTables} from "../lib/utils.js";
@@ -79,6 +79,7 @@
 	let formError = false
 	let dbError = false
 	let showBanner = false
+	let exportLocationError = false
 
 	let selectedExportFormat = $shadowConfig["Session"]["ExportType"];
 
@@ -336,9 +337,21 @@
 		saveConfiguration().then(_ => {
 			switch (selectedExportFormat.value) {
 				case 'csv':
-					$exportConfig['items'] = getFeedsForExport()
-					ExportCSV()
-					push("/export/status")
+					ValidateExportDirectory().then((result) => {
+						if (result === true) {
+							showBanner = false
+							exportLocationError = false
+							$exportConfig['items'] = getFeedsForExport()
+							ExportCSV()
+							push("/export/status")
+						} else {
+							showBanner = false
+							exportLocationError = true
+							return
+						}
+					}).catch(() => {
+						exportLocationError = true
+					})
 					break
 				case 'mysql':
 				case 'postgres':
@@ -517,7 +530,7 @@
             {#if selectedExportFormat != null}
 			<div class="label">Folder location</div>
 			<div class="m-top-4">
-				<FolderPicker label="Folder location" value={$shadowConfig["Export"]["Path"]} trimLongWords={true} onClick={build === 'windows' ? null : openFolderDialog} />
+				<FolderPicker label="Folder location" value={$shadowConfig["Export"]["Path"]} trimLongWords={true} onClick={build === 'windows' ? null : openFolderDialog} error={exportLocationError}/>
 			</div>
             {/if}
 			{#if build === 'windows'}
