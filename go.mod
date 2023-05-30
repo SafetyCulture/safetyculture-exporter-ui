@@ -2,6 +2,8 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 
 go 1.20
 
+replace github.com/SafetyCulture/safetyculture-exporter => /Users/mick/go/src/github.com/SafetyCulture/safetyculture-exporter
+
 require (
 	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230523044354-2dff2a54dad0
 	github.com/hashicorp/go-version v1.6.0
@@ -67,7 +69,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.5.1 // indirect
 	gorm.io/driver/postgres v1.5.2 // indirect
-	gorm.io/driver/sqlite v1.5.0 // indirect
+	gorm.io/driver/sqlite v1.5.1 // indirect
 	gorm.io/driver/sqlserver v1.5.0 // indirect
 	gorm.io/gorm v1.25.1 // indirect
 )
