@@ -2,8 +2,6 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 
 go 1.20
 
-replace github.com/SafetyCulture/safetyculture-exporter => /Users/mick/go/src/github.com/SafetyCulture/safetyculture-exporter
-
 require (
 	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230523044354-2dff2a54dad0
 	github.com/hashicorp/go-version v1.6.0
