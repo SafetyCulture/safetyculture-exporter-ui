@@ -6,7 +6,7 @@ require (
 	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230523044354-2dff2a54dad0
 	github.com/hashicorp/go-version v1.6.0
 	github.com/minio/selfupdate v0.6.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	github.com/wailsapp/wails/v2 v2.5.1
 )
 
