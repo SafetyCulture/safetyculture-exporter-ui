@@ -3,10 +3,10 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 go 1.20
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230523044354-2dff2a54dad0
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20230606002616-ab9c90702bef
 	github.com/hashicorp/go-version v1.6.0
 	github.com/minio/selfupdate v0.6.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	github.com/wailsapp/wails/v2 v2.5.1
 )
 
@@ -59,10 +59,10 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
-	golang.org/x/crypto v0.8.0 // indirect
+	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
-	golang.org/x/net v0.9.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.5.1 // indirect
