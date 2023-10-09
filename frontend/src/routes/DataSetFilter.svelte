@@ -42,6 +42,9 @@
         {
             "left":  { "id": "users", "name": "Users"},
             "right": { "id": "schedules", "name": "Schedules"},
+        },
+        {
+            "left": { "id": "training_course_progresses", "name": "Training Courses Progresses"}
         }
     ]
 
