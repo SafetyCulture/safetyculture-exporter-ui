@@ -44,7 +44,7 @@
             "right": { "id": "schedules", "name": "Schedules"}
         },
         {
-            "left": { "id": "training_course_progresses", "name": "Training Courses Progresses"},
+            "left": { "id": "training_course_progresses", "name": "Training course completions"},
             "right": null
         }
     ]
