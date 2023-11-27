@@ -4,6 +4,10 @@ updates:
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"      
     commit-message:
       prefix: "[INTG-1601]"
