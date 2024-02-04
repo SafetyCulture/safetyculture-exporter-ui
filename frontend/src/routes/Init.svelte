@@ -26,7 +26,7 @@
             } else {
                 // check if it can auth
                 return ValidateApiKey(token).then(res => {
-                    if (res === false) {
+                    if (res !== "") {
                         return '/welcome'
                     } else {
                         return '/config'
