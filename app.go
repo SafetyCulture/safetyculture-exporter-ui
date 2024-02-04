@@ -175,12 +175,12 @@ func (a *App) ValidateApiKey(apiKey string) string {
 
 		if err != nil {
 			runtime.LogErrorf(a.ctx, "cannot check WhoAmI: %s", err.Error())
-			return err.Error()
+			return "cannot validate the credentials for the given ApiKey"
 		}
 
-		if res != nil && (res.UserID == "" || res.OrganisationID == "") {
-			runtime.LogErrorf(a.ctx, "cannot validate the credentials for the given ApiKey: %s", err.Error())
-			return err.Error()
+		if res == nil || (res != nil && res.UserID == "" || res.OrganisationID == "") {
+			runtime.LogErrorf(a.ctx, "cannot validate the credentials for the given ApiKey: %s", apiKey)
+			return "cannot validate the credentials for the given ApiKey"
 		}
 
 		runtime.LogInfo(a.ctx, "saving the key")
