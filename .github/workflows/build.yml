@@ -31,7 +31,7 @@ jobs:
             node-version: ${{ matrix.node-version }}
 
         - name: Install wails
-          run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.6.0
+          run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.8.0
 
         - name: Build package windows
           if: matrix.os == 'windows-latest'
