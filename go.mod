@@ -3,7 +3,7 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 go 1.20
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20240214221316-d541dee1bbf2
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20240229003859-277261412a0c
 	github.com/hashicorp/go-version v1.6.0
 	github.com/minio/selfupdate v0.6.0
 	github.com/stretchr/testify v1.8.4

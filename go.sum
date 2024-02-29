@@ -20,8 +20,8 @@ github.com/AzureAD/microsoft-authentication-library-for-go v1.1.0 h1:HCc0+LpPfpC
 github.com/AzureAD/microsoft-authentication-library-for-go v1.1.0/go.mod h1:wP83P5OoQ5p6ip3ScPr0BAq0BvuPAvacpEuSzyouqAI=
 github.com/MickStanciu/go-fn v1.4.1 h1:YaGsvrs8mzjHVvTWbVoLj77l8STAS0+XyI+bF4KLgoA=
 github.com/MickStanciu/go-fn v1.4.1/go.mod h1:SJgkGBV+iZX8LR4TbpfZp5QUuwYW1mJv1Pf4qNZtxtg=
-github.com/SafetyCulture/safetyculture-exporter v0.0.0-20240214221316-d541dee1bbf2 h1:ySGQ3spkYx/OsXHHjZViSFrdQCSZNKRhXgjpvo60wG0=
-github.com/SafetyCulture/safetyculture-exporter v0.0.0-20240214221316-d541dee1bbf2/go.mod h1:R/feWt2lKgPpBgYipLPrBGG86yKDtbv6UW0KsJWrovY=
+github.com/SafetyCulture/safetyculture-exporter v0.0.0-20240229003859-277261412a0c h1:dyE9K8kMUFOTY90fQnYrD7KVzUGA7J++gFGNrtlB3dY=
+github.com/SafetyCulture/safetyculture-exporter v0.0.0-20240229003859-277261412a0c/go.mod h1:R/feWt2lKgPpBgYipLPrBGG86yKDtbv6UW0KsJWrovY=
 github.com/bep/debounce v1.2.1 h1:v67fRdBA9UQu2NhLFXrSg0Brw7CexQekrBwDMM8bzeY=
 github.com/bep/debounce v1.2.1/go.mod h1:H8yggRPQKLUhUoqrJC1bO2xNya7vanpDl7xR3ISbCJ0=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
