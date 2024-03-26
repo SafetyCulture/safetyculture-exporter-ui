@@ -24,29 +24,31 @@
             "right": { "id": "group_users", "name": "Group Users"}
         },
         {
+            "left":  { "id": "users", "name": "Users"},
+            "right": { "id": "schedules", "name": "Schedules"}
+        },
+        {
             "left":  { "id": "schedule_assignees", "name": "Schedule Assignees"},
             "right": { "id": "schedule_occurrences", "name": "Schedule Occurrences"}
         },
         {
             "left":  { "id": "actions", "name": "Actions"},
-            "right": { "id": "action_assignees", "name": "Action Assignees"}
+            "right": { "id": "issues", "name": "Issues"}
+
         },
         {
             "left":  { "id": "action_timeline_items", "name": "Action Timeline Items"},
-            "right": { "id": "issues", "name": "Issues"}
+            "right":  { "id": "issue_timeline_items", "name": "Issue Timeline Items"},
         },
         {
-            "left":  { "id": "issue_timeline_items", "name": "Issue Timeline Items"},
-            "right": { "id": "assets", "name": "Assets"}
+            "left":  { "id": "action_assignees", "name": "Action Assignees"},
+            "right": { "id": "issue_assignees", "name": "Issue Assignees"}
         },
         {
-            "left":  { "id": "users", "name": "Users"},
-            "right": { "id": "schedules", "name": "Schedules"}
-        },
-        {
-            "left": { "id": "training_course_progresses", "name": "Training course completions"},
-            "right": null
+            "left": { "id": "assets", "name": "Assets"},
+            "right": { "id": "training_course_progresses", "name": "Training course completions"},
         }
+
     ]
 
     function trim(org) {
