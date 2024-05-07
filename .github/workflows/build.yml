@@ -12,6 +12,7 @@ on:
 env:
   INSTALL_DIR: C:\Users\runneradmin\eSignerCKA
   MASTER_KEY_FILE: C:\Users\runneradmin\eSignerCKA\master.key
+  WINDOWS_BINARY_PATH: C:\Users\runneradmin\build\bin
 
 jobs:
   package:
@@ -19,7 +20,7 @@ jobs:
         matrix:
           go-version: [1.22]
           node-version: [16]
-          os: [windows-latest, ubuntu-latest, macos-latest]
+          os: [windows-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -36,7 +37,7 @@ jobs:
             node-version: ${{ matrix.node-version }}
 
         - name: Install wails
-          run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.8.0
+          run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.8.1
 
         - name: Build package windows
           if: matrix.os == 'windows-latest'
@@ -48,6 +49,7 @@ jobs:
             echo "${{ env.GITHUB_HEAD_REF }}"
             choco install mingw
             wails build -platform windows/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}" -skipbindings
+            Move-Item -Path .\build\bin\safetyculture-exporter.exe -Destination ${{ env.WINDOWS_BINARY_PATH }}
 
         - name: Sign Windows Binary
           if: matrix.os == 'windows-latest'
@@ -60,6 +62,7 @@ jobs:
             Move-Item -Destination "eSigner_CKA_Installer.exe" -Path "eSigner_CKA_*\*.exe"
 
             New-Item -ItemType Directory -Force -Path ${{ env.INSTALL_DIR }}
+            Set-Location ${{ env.INSTALL_DIR }}
             Start-Process ".\eSigner_CKA_Installer.exe" -argumentlist '/CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR="${{ env.INSTALL_DIR }}"' -wait
             Start-Process ".\setup\vc_redist.x86.exe" -argumentlist "/install /q" -wait
             Start-Process ".\setup\vc_redist.x64.exe" -argumentlist "/install /q" -wait
@@ -74,11 +77,12 @@ jobs:
             $CodeSigningCert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | WHERE { $_.subject -Match "Esigner" }
             echo "THUMBPRINT=$($CodeSigningCert.Thumbprint)" >> $env:GITHUB_ENV
 
-            & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe' sign /debug /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.THUMBPRINT }} .\build\bin\safetyculture-exporter.exe
+            & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe' sign /debug /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.THUMBPRINT }} ${{ env.WINDOWS_BINARY_PATH }}\safetyculture-exporter.exe
 
             echo "signing windows file - end"
 
         - name: Upload eSignerCKA Logs
+          if: matrix.os == 'windows-latest'
           uses: actions/upload-artifact@v3
           with:
             name: eSignerCKA-logs
