@@ -58,11 +58,15 @@ jobs:
             Remove-Item eSigner_CKA_Setup.zip
             Move-Item -Destination "eSigner_CKA_Installer.exe" -Path "eSigner_CKA_*\*.exe"
 
+
         # 3) Install eSignerCKA
         - name: Setup eSignerCKA in Silent Mode
           if: matrix.os == 'windows-latest'
           run: |
             New-Item -ItemType Directory -Force -Path ${{ env.INSTALL_DIR }}
+            Set-Location -Path ${{ env.INSTALL_DIR }}
+            echo (Get-Location)
+            echo (Get-ChildItem)
             Start-Process ".\eSigner_CKA_Installer.exe" -argumentlist '/CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR="${{ env.INSTALL_DIR }}"' -wait
             Start-Process ".\setup\vc_redist.x86.exe" -argumentlist "/install /q" -wait
             Start-Process ".\setup\vc_redist.x64.exe" -argumentlist "/install /q" -wait
