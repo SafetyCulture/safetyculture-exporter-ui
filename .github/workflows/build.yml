@@ -12,7 +12,7 @@ on:
 env:
   INSTALL_DIR: C:\Users\runneradmin\eSignerCKA
   MASTER_KEY_FILE: C:\Users\runneradmin\eSignerCKA\master.key
-  WINDOWS_BINARY_PATH: C:\Users\runneradmin\build\bin
+  WINDOWS_BINARY_PATH: C:\Users\runneradmin\build\bin\safetyculture-exporter.exe
 
 jobs:
   package:
@@ -77,7 +77,7 @@ jobs:
             $CodeSigningCert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | WHERE { $_.subject -Match "Esigner" }
             echo "THUMBPRINT=$($CodeSigningCert.Thumbprint)" >> $env:GITHUB_ENV
 
-            & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe' sign /debug /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.THUMBPRINT }} ${{ env.WINDOWS_BINARY_PATH }}\safetyculture-exporter.exe
+            & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe' sign /debug /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.THUMBPRINT }} ${{ env.WINDOWS_BINARY_PATH }}
 
             echo "signing windows file - end"
 
