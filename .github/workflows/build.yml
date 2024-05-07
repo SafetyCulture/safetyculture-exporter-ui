@@ -12,7 +12,6 @@ on:
 env:
   INSTALL_DIR: C:\Users\runneradmin\eSignerCKA
   MASTER_KEY_FILE: C:\Users\runneradmin\eSignerCKA\master.key
-  WINDOWS_BINARY_PATH: C:\Users\runneradmin\build\bin\safetyculture-exporter.exe
 
 jobs:
   package:
@@ -49,7 +48,6 @@ jobs:
             echo "${{ env.GITHUB_HEAD_REF }}"
             choco install mingw
             wails build -platform windows/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}" -skipbindings
-            Move-Item -Path ".\build\bin\safetyculture-exporter.exe" -Destination ${{ env.WINDOWS_BINARY_PATH }}
 
         - name: Sign Windows Binary
           if: matrix.os == 'windows-latest'
@@ -77,7 +75,7 @@ jobs:
             $CodeSigningCert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | WHERE { $_.subject -Match "Esigner" }
             echo "THUMBPRINT=$($CodeSigningCert.Thumbprint)" >> $env:GITHUB_ENV
 
-            & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe' sign /debug /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.THUMBPRINT }} ${{ env.WINDOWS_BINARY_PATH }}
+            & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe' sign /debug /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ${{ env.THUMBPRINT }} D:\a\safetyculture-exporter-ui\safetyculture-exporter-ui\build\bin\safetyculture-exporter.exe
 
             echo "signing windows file - end"
 
