@@ -53,6 +53,8 @@ jobs:
         - name: Download and Unzip eSignerCKA Setup
           if: matrix.os == 'windows-latest'
           run: |
+            New-Item -ItemType Directory -Force -Path ${{ env.INSTALL_DIR }}
+            Set-Location -Path ${{ env.INSTALL_DIR }}
             Invoke-WebRequest -OutFile eSigner_CKA_Setup.zip "https://github.com/SSLcom/eSignerCKA/releases/download/v1.0.6/SSL.COM-eSigner-CKA_1.0.6.zip"
             Expand-Archive -Force eSigner_CKA_Setup.zip
             Remove-Item eSigner_CKA_Setup.zip
@@ -63,10 +65,7 @@ jobs:
         - name: Setup eSignerCKA in Silent Mode
           if: matrix.os == 'windows-latest'
           run: |
-            New-Item -ItemType Directory -Force -Path ${{ env.INSTALL_DIR }}
             Set-Location -Path ${{ env.INSTALL_DIR }}
-            echo (Get-Location)
-            echo (Get-ChildItem)
             Start-Process ".\eSigner_CKA_Installer.exe" -argumentlist '/CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR="${{ env.INSTALL_DIR }}"' -wait
             Start-Process ".\setup\vc_redist.x86.exe" -argumentlist "/install /q" -wait
             Start-Process ".\setup\vc_redist.x64.exe" -argumentlist "/install /q" -wait
