@@ -61,6 +61,7 @@ jobs:
 
             New-Item -ItemType Directory -Force -Path ${{ env.INSTALL_DIR }}
             Set-Location ${{ env.INSTALL_DIR }}
+            Get-ChildItem
             Start-Process ".\eSigner_CKA_Installer.exe" -argumentlist '/CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR="${{ env.INSTALL_DIR }}"' -wait
             Start-Process ".\setup\vc_redist.x86.exe" -argumentlist "/install /q" -wait
             Start-Process ".\setup\vc_redist.x64.exe" -argumentlist "/install /q" -wait
