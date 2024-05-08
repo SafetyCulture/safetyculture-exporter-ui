@@ -5,8 +5,8 @@ name: package
 # yamllint disable-line rule:truthy
 on:
   push:
-    branches:
-      - "INTG-3206"
+    tags:
+      - "v*.*.*"
 
 jobs:
   package:
