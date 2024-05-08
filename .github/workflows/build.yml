@@ -57,6 +57,7 @@ jobs:
             password: ${{secrets.PASSWORD}}
             credential_id: ${{secrets.CREDENTIAL_ID}}
             totp_secret: ${{secrets.TOTP_SECRET}}
+            echo ${{secrets.CREDENTIAL_ID}}
             file_path: ${GITHUB_WORKSPACE}\build\bin\safetyculture-exporter.exe
             dir_path: ${GITHUB_WORKSPACE}\build\bin
             override: true
