@@ -59,9 +59,15 @@ jobs:
             totp_secret: ${{secrets.ES_TOTP_SECRET}}
             file_path: .\build\bin\safetyculture-exporter.exe
             dir_path: .\build\bin
-            output_path: .\
+            output_path: .\build\bin
+            override: true
             signing_method: v2
             jvm_max_memory: 1024M
+
+        - name: Upload artifacts windows
+          if: matrix.os == 'windows-latest'
+          run: |
+            Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
 
           #  echo "Creating certificate file"
           #  New-Item -ItemType directory -Path certificate
