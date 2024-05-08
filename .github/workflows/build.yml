@@ -61,7 +61,7 @@ jobs:
             dir_path: .\build\bin
             output_path: .\build\bin
             override: true
-            signing_method: v2
+            signing_method: v1
             jvm_max_memory: 1024M
 
         - name: Upload artifacts windows
