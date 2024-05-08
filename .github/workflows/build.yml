@@ -61,10 +61,10 @@ jobs:
             signing_method: v2
             jvm_max_memory: 1024M
 
-        - name: Upload artifacts windows
+        - name: Copy signed binary
           if: matrix.os == 'windows-latest'
           run: |
-            Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
+            Copy-Item -Path ${GITHUB_WORKSPACE}\build\bin\safetyculture-exporter.exe -Destination ${GITHUB_WORKSPACE}\exporter-windows-x86_64.exe
 
           #  echo "Creating certificate file"
           #  New-Item -ItemType directory -Path certificate
