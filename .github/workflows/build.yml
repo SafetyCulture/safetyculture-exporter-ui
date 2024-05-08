@@ -44,8 +44,6 @@ jobs:
             $GP = (go env GOPATH)
             $env:path = "$env:path;$GP\bin"
             echo "building on ${{ matrix.os }}"
-            echo "${{secrets.USERNAME}}"
-            echo "${{secrets.CREDENTIAL_ID}}"
             choco install mingw
             wails build -platform windows/amd64 -clean -ldflags "-s -w -X github.com/SafetyCulture/safetyculture-exporter-ui/internal/version.version=${{ github.ref_name }}" -skipbindings
 
@@ -53,8 +51,8 @@ jobs:
           uses: sslcom/esigner-codesign@develop
           with:
             command: sign
-            username: ${{secrets.USERNAME}}
-            password: ${{secrets.PASSWORD}}
+            username: ${{secrets.SSL_DOT_COM_USERNAME}}
+            password: ${{secrets.SSL_DOT_COM_PASSWORD}}
             credential_id: ${{secrets.CREDENTIAL_ID}}
             totp_secret: ${{secrets.TOTP_SECRET}}
             file_path: ${GITHUB_WORKSPACE}\build\bin\safetyculture-exporter.exe
