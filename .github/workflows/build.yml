@@ -8,18 +8,13 @@ on:
     branches:
       - "INTG-3206"
 
-# Create an environment variable
-env:
-  INSTALL_DIR: C:\Users\runneradmin\eSignerCKA
-  MASTER_KEY_FILE: C:\Users\runneradmin\eSignerCKA\master.key
-
 jobs:
   package:
       strategy:
         matrix:
           go-version: [1.22]
           node-version: [16]
-          os: [windows-latest]
+          os: [windows-latest, ubuntu-latest, macos-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
@@ -65,14 +60,6 @@ jobs:
           if: matrix.os == 'windows-latest'
           run: |
             Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
-
-          #  echo "Creating certificate file"
-          #  New-Item -ItemType directory -Path certificate
-          #  Set-Content -Path certificate\certificate.txt -Value "${{ secrets.WIN_SIGNING_CERT }}"
-          #  certutil -decode certificate\certificate.txt certificate\certificate.pfx
-          #  echo "Signing binary"
-          #  & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /f certificate\certificate.pfx /p "${{ secrets.WIN_SIGNING_CERT_PASSWORD }}" .\build\bin\safetyculture-exporter.exe
-          #  Copy-Item -Path .\build\bin\safetyculture-exporter.exe -Destination .\exporter-windows-x86_64.exe
 
         - name: Build and code sign macos binaries
           if: matrix.os == 'macos-latest'
@@ -130,27 +117,27 @@ jobs:
             name: exporter-windows
             path: exporter-windows-x86_64.exe
 
-#   release:
-#     runs-on: ubuntu-latest
-#     needs: package
-#     steps:
-#       - name: Download package windows
-#         uses: actions/download-artifact@v2
-#         with:
-#           name: exporter-windows
-#
-#       - name: Download package macos
-#         uses: actions/download-artifact@v2
-#         with:
-#           name: exporter-macos
-#
-#       - name: Create Release
-#         id: create_release
-#         uses: ncipollo/release-action@v1
-#         with:
-#           token: "${{ secrets.GITHUB_TOKEN }}"
-#           artifacts: "safetyculture-exporter-*.zip,exporter-windows-x86_64.exe"
-#           allowUpdates: true
-#           prerelease: true
-#           draft: true
-#           makeLatest: false
+  release:
+    runs-on: ubuntu-latest
+    needs: package
+    steps:
+      - name: Download package windows
+        uses: actions/download-artifact@v2
+        with:
+          name: exporter-windows
+
+      - name: Download package macos
+        uses: actions/download-artifact@v2
+        with:
+          name: exporter-macos
+
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          artifacts: "safetyculture-exporter-*.zip,exporter-windows-x86_64.exe"
+          allowUpdates: true
+          prerelease: true
+          draft: true
+          makeLatest: false
