@@ -3,7 +3,7 @@ module github.com/SafetyCulture/safetyculture-exporter-ui
 go 1.22
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20240506021635-aec272ce9ee0
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20240606060849-df2bfebbb286
 	github.com/hashicorp/go-version v1.7.0
 	github.com/minio/selfupdate v0.6.0
 	github.com/stretchr/testify v1.9.0
@@ -12,7 +12,7 @@ require (
 
 require (
 	aead.dev/minisign v0.2.0 // indirect
-	github.com/MickStanciu/go-fn v1.4.1 // indirect
+	github.com/MickStanciu/go-fn v1.4.2 // indirect
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dghubble/sling v1.4.2 // indirect
@@ -52,7 +52,7 @@ require (
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/samber/lo v1.38.1 // indirect
-	github.com/shirou/gopsutil/v3 v3.24.3 // indirect
+	github.com/shirou/gopsutil/v3 v3.24.5 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/tidwall/gjson v1.17.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
@@ -78,5 +78,5 @@ require (
 	gorm.io/driver/postgres v1.5.7 // indirect
 	gorm.io/driver/sqlite v1.5.5 // indirect
 	gorm.io/driver/sqlserver v1.5.3 // indirect
-	gorm.io/gorm v1.25.7 // indirect
+	gorm.io/gorm v1.25.10 // indirect
 )
