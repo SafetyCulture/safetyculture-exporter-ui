@@ -76,7 +76,7 @@
 </td>
 <td class="status-col-3">
     {#if cancelled !== true }
-        {(counter === -1 || counter === 0) ? "" : counter + " " + (counterDecremental === true ? "remaining" : "downloaded")}
+        {(counter === -1 || counter === 0) ? "" : counter + " " + (counterDecremental === true ? "remaining" : "exported")}
     {/if}
 </td>
 

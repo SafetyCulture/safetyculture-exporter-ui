@@ -1,6 +1,17 @@
 export namespace api {
 	
+	export class ExporterConfiguration {
 	
+	
+	    static createFrom(source: any = {}) {
+	        return new ExporterConfiguration(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
 	export class TemplateResponseItem {
 	    id: string;
 	    name: string;
