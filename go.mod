@@ -7,7 +7,7 @@ require (
 	github.com/hashicorp/go-version v1.7.0
 	github.com/minio/selfupdate v0.6.0
 	github.com/stretchr/testify v1.9.0
-	github.com/wailsapp/wails/v2 v2.9.1
+	github.com/wailsapp/wails/v2 v2.9.2
 )
 
 require (
@@ -64,7 +64,7 @@ require (
 	github.com/tkrajina/go-reflector v0.5.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	github.com/wailsapp/go-webview2 v1.0.10 // indirect
+	github.com/wailsapp/go-webview2 v1.0.16 // indirect
 	github.com/wailsapp/mimetype v1.4.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
