@@ -106,14 +106,14 @@ jobs:
 
         - name: Upload artifacts macOS
           if: matrix.os == 'macos-latest'
-          uses: actions/upload-artifact@v2
+          uses: actions/upload-artifact@v4
           with:
             name: exporter-macos
             path: safetyculture-exporter-*.zip
 
         - name: Upload artifacts windows
           if: matrix.os == 'windows-latest'
-          uses: actions/upload-artifact@v2
+          uses: actions/upload-artifact@v4
           with:
             name: exporter-windows
             path: exporter-windows-x86_64.exe
@@ -123,12 +123,12 @@ jobs:
     needs: package
     steps:
       - name: Download package windows
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: exporter-windows
 
       - name: Download package macos
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: exporter-macos
 
