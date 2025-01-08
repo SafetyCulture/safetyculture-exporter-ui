@@ -113,6 +113,9 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 60px;
 	}
 
 	.welcome-page .h1 {
@@ -148,11 +151,7 @@
 	}
 
 	.storage-info {
-		margin-left: 16px;
-		margin-right: 16px;
-
-		position: absolute;
-		bottom: 60px;
+		margin: 16px;
 	}
 
 	.note {
