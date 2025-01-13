@@ -43,7 +43,7 @@ body {
 
     -ms-overflow-style: none; /* for Internet Explorer, Edge */
     scrollbar-width: none; /* for Firefox */
-    overflow: hidden;
+    overflow: auto;
     margin: 0;
     padding: 0;
 }
