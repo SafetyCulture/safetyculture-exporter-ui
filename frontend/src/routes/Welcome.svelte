@@ -114,7 +114,6 @@
 		flex-direction: column;
 		align-items: center;
         height: 100%;
-        overflow-y: auto;
         padding-bottom: 60px;
 	}
 

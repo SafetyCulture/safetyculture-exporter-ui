@@ -43,7 +43,7 @@
 
 <style>
     .bar {
-        position: absolute;
+        position: fixed;
         padding: 14px 16px;
         background-color: #F8F9FC;
         color: #1D2330;
