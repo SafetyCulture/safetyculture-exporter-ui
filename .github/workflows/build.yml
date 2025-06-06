@@ -5,8 +5,6 @@ name: package
 # yamllint disable-line rule:truthy
 on:
   push:
-    branches:
-      - DEVP-3828
     tags:
       - "v*.*.*"
 
