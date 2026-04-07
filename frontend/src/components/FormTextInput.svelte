@@ -1,22 +1,20 @@
-<script>
+<script lang="ts">
     import ValidatableInput from "./ValidatableInput.svelte";
 
-    export let label = ''
-    export let placeholder = ''
-    export let error = false
-    export let errorMsg = ''
-    export let value = '';
+    let {
+        label = '',
+        placeholder = '',
+        error = false,
+        errorMsg = '',
+        value = $bindable(''),
+    }: {
+        label?: string;
+        placeholder?: string;
+        error?: boolean;
+        errorMsg?: string;
+        value?: string;
+    } = $props();
 </script>
 
-<div class="form-label">{label}</div>
-<ValidatableInput placeholder={placeholder} error={error} errorMsg={errorMsg} bind:value={value}/>
-
-<style>
-    .form-label {
-        margin-top: 8px;
-        font-weight: 500;
-        font-size: 0.8rem;
-        line-height: 1rem;
-        color: #545F70;
-    }
-</style>
+<div class="mt-2 text-xs font-medium leading-4 text-text-weak">{label}</div>
+<ValidatableInput {placeholder} {error} {errorMsg} bind:value />

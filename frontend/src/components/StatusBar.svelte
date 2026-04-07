@@ -1,64 +1,40 @@
-<script>
+<script lang="ts">
     import {
         OpenDirectory,
         GetSettingDir
     } from "../../wailsjs/go/main/App.js"
 
-    import {latestVersion} from '../lib/store';
+    import { latestVersion } from '../lib/store';
 
-    import {BrowserOpenURL} from "../../wailsjs/runtime/runtime.js";
-    import {isNullOrEmptyObject} from "../lib/utils";
+    import { BrowserOpenURL } from "../../wailsjs/runtime/runtime.js";
+    import { isNullOrEmptyObject } from "../lib/utils";
 
     async function openFolderDialog() {
         OpenDirectory(await GetSettingDir())
     }
 
-    function openURL(url) {
+    function openURL(url: string) {
         BrowserOpenURL(url)
     }
 
-
     let currentYear = new Date().getFullYear();
-
 </script>
 
-<div class="bar">
+<div class="fixed bottom-0 flex w-full justify-between bg-bg-subtle px-4 py-3.5 text-foreground">
     <div>
         {#if !isNullOrEmptyObject($latestVersion)}
             <span>Current version: {$latestVersion['current']}</span>
             {#if $latestVersion['current'] !== $latestVersion['latest'] && $latestVersion['latest'] !== ''}
                 {#if $latestVersion['download_url'] !== ''}
-                <span class="accent m-left-16 block-link" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>Latest version available: {$latestVersion['latest']}</span>
+                <button class="ml-4 cursor-pointer text-primary" onclick={() => openURL($latestVersion['download_url'])}>Latest version available: {$latestVersion['latest']}</button>
                 {:else}
-                <span class="m-left-16">Latest version: {$latestVersion['latest']}</span>
+                <span class="ml-4">Latest version: {$latestVersion['latest']}</span>
                 {/if}
             {/if}
         {/if}
     </div>
     <div>
-        <span class="accent block-link" on:click={openFolderDialog} on:keypress={openFolderDialog}>Open logs</span>
-        <span class="m-left-16 copyright">Copyright © {currentYear}</span>
+        <button class="cursor-pointer text-primary" onclick={openFolderDialog}>Open logs</button>
+        <span class="ml-4 text-sm">Copyright &copy; {currentYear}</span>
     </div>
 </div>
-
-<style>
-    .bar {
-        position: fixed;
-        padding: 14px 16px;
-        background-color: #F8F9FC;
-        color: #1D2330;
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        bottom: 0;
-    }
-
-    .accent {
-        color: #4740D4;
-    }
-
-    .copyright {
-        font-size: small;
-    }
-
-</style>

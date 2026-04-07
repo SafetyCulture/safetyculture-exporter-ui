@@ -1,23 +1,22 @@
-<script>
-    import './common.css';
-    import {CancelExport, ReadExportStatus, OpenDirectory} from "../../wailsjs/go/main/App.js"
+<script lang="ts">
+    import { CancelExport, ReadExportStatus, OpenDirectory } from "../../wailsjs/go/main/App.js"
     import Status from "./../components/Export/Status.svelte";
-    import {shadowConfig, exportConfig} from "../lib/store";
-    import {onMount} from "svelte";
-    import {EventsOn, Quit} from "../../wailsjs/runtime/runtime.js";
+    import { shadowConfig, exportConfig } from "../lib/store";
+    import { onMount } from "svelte";
+    import { EventsOn, Quit } from "../../wailsjs/runtime/runtime.js";
     import Button from "../components/Button.svelte";
-    import {push} from "@keenmate/svelte-spa-router";
+    import { push } from "@keenmate/svelte-spa-router";
     import Overlay from "../components/Overlay.svelte";
     import StatusBar from "../components/StatusBar.svelte";
 
-    let feedsToExport = $exportConfig['items']
-    let exportType = $shadowConfig["Session"]["ExportType"]
+    let feedsToExport = ($exportConfig as any)['items'] as string[];
+    let exportType = ($shadowConfig as any)["Session"]["ExportType"] as string;
 
-    let cancelTriggered = false
-    let exportCompleted = false
+    let cancelTriggered = $state(false);
+    let exportCompleted = $state(false);
 
     onMount(() => {
-        EventsOn("finished-export", (newValue) => {
+        EventsOn("finished-export", (newValue: boolean) => {
             if (newValue === true) {
                 exportCompleted = true
             }
@@ -38,28 +37,28 @@
     }
 
     function openExportFolder() {
-        OpenDirectory($shadowConfig["Export"]["Path"])
+        OpenDirectory(($shadowConfig as any)["Export"]["Path"])
     }
 
     ReadExportStatus();
 </script>
 
-<div class="status-page">
-    <section class="top-nav">
-        <div class="nav-left">
-            <div class="h1">Export status</div>
+<div class="h-full bg-bg-light pt-8 pr-8 pl-8">
+    <section class="flex items-center justify-between">
+        <div class="flex items-center">
+            <div class="my-4 font-semibold text-2xl">Export status</div>
         </div>
-        <div class="nav-right">
+        <div class="flex items-center">
             <div class="inline">
                 {#if cancelTriggered}
-                    <img id="status-cancelled" src='/images/warning-red.svg' alt="export cancelled icon">
+                    <img src='/images/warning-red.svg' alt="export cancelled icon">
                 {:else if exportCompleted}
-                    <img id="status-completed" src='/images/complete.svg' alt="export completed icon">
+                    <img src='/images/complete.svg' alt="export completed icon">
                 {:else}
-                    <img id="status-in-progress" src='/images/in-progress.svg' alt="export in progress icon">
+                    <img src='/images/in-progress.svg' alt="export in progress icon">
                 {/if}
             </div>
-            <div class="nav-left inline status-title p-left-8 p-right-16">
+            <div class="inline flex items-center px-2 pr-4 text-sm">
                 {#if cancelTriggered}
                     Export cancelled
                 {:else if exportCompleted}
@@ -73,10 +72,10 @@
                 <Button label="Cancel export" type="active-red" onClick={handleCancel}/>
             {:else}
                 {#if !cancelTriggered}
-                    {#if exportType  === "csv" || exportType === "reports"}
+                    {#if exportType === "csv" || exportType === "reports"}
                         <Button label="Open export folder" type="active-white" onClick={openExportFolder}/>
                     {/if}
-                    <Button label="Close" clazz="m-left-8" type="active-purple" onClick={handleClose}/>
+                    <Button label="Close" clazz="ml-2" type="active-purple" onClick={handleClose}/>
                 {:else}
                     {#if exportType === "reports"}
                         <Button label="Open export folder" type="active-white" onClick={openExportFolder}/>
@@ -93,18 +92,18 @@
         {/if}
     </div>
 
-    <div class="progress-body m-top-16">
-        <table class="status-table">
+    <div class="mt-4 h-[calc(100vh-200px)] overflow-y-scroll rounded-lg bg-white px-4 py-5">
+        <table class="w-full border-collapse">
             <thead>
-                <tr class="text-weak">
-                    <th class="status-col-1">Export item</th>
-                    <th class="status-col-2">Status</th>
-                    <th class="status-col-3">&nbsp</th>
+                <tr class="text-sm font-medium text-text-weak">
+                    <th class="w-[40%] text-left">Export item</th>
+                    <th class="w-[20%] text-left">Status</th>
+                    <th class="text-left">&nbsp;</th>
                 </tr>
             </thead>
             <tbody>
             {#each feedsToExport as feed}
-                <tr><Status name={feed} cancelled={cancelTriggered}></Status></tr>
+                <tr class="border-b border-[#EEF1F7] text-sm"><Status name={feed} cancelled={cancelTriggered}></Status></tr>
             {/each}
             </tbody>
         </table>
@@ -112,40 +111,3 @@
 </div>
 
 <StatusBar/>
-
-<style>
-    .status-page {
-        padding-top: var(--main-gutter-top);
-        padding-left: var(--main-gutter-left);
-        padding-right: var(--main-gutter-right);
-        background-color: #E9EEF6;
-        height: 100%;
-    }
-
-    .status-title {
-        font-size: 14px;
-    }
-
-    .progress-body {
-        background-color: white;
-        height: calc( 100vh - 200px );
-        padding: 20px 16px;
-        overflow-y: scroll;
-        border-radius: 8px;
-    }
-
-    .status-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .status-table th {
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .status-table tr {
-        font-size: 14px;
-        border-bottom: 1px solid #EEF1F7;
-    }
-</style>

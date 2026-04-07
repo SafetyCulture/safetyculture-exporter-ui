@@ -1,31 +1,30 @@
-<script>
-    import {push} from '@keenmate/svelte-spa-router'
-    import {ReadVersion, GetSettings, ValidateApiKey} from "../../wailsjs/go/main/App.js"
-    import {shadowConfig, latestVersion, emptyStores} from '../lib/store';
-    import {isNullOrEmptyObject} from "../lib/utils";
-    
-    async function processVersion() {
-        return await ReadVersion().then(result => {
+<script lang="ts">
+    import { push } from '@keenmate/svelte-spa-router'
+    import { ReadVersion, GetSettings, ValidateApiKey } from "../../wailsjs/go/main/App.js"
+    import { shadowConfig, latestVersion, emptyStores } from '../lib/store';
+    import { isNullOrEmptyObject } from "../lib/utils";
+
+    async function processVersion(): Promise<boolean> {
+        return await ReadVersion().then((result: Record<string, string> | null) => {
             if (result != null) {
                 latestVersion.set(result);
             } else {
                 latestVersion.set({})
             }
         }).then(() => {
-            return shouldForceUpdate() === true; 
-        }) .catch(() => {
+            return shouldForceUpdate() === true;
+        }).catch(() => {
             return false
-        }) 
+        })
     }
-    
-    async function processAccessToken() {
+
+    async function processAccessToken(): Promise<string> {
         if ("AccessToken" in $shadowConfig) {
-            const token = $shadowConfig["AccessToken"]
+            const token = $shadowConfig["AccessToken"] as string
             if (token.length === 0) {
                 return '/welcome'
             } else {
-                // check if it can auth
-                return ValidateApiKey(token).then(res => {
+                return ValidateApiKey(token).then((res: string) => {
                     if (res !== "") {
                         return '/welcome'
                     } else {
@@ -38,27 +37,26 @@
         }
     }
 
-    function shouldForceUpdate() {
+    function shouldForceUpdate(): boolean {
         return !isNullOrEmptyObject($latestVersion)
-            && $latestVersion["should_update"] === true 
+            && $latestVersion["should_update"] === true
             && $latestVersion['current'] !== 'v0.0.0-dev'
             && $latestVersion['download_url'] !== ''
     }
 
     emptyStores();
 
-    GetSettings().then(result => {
+    GetSettings().then((result: Record<string, unknown>) => {
         shadowConfig.set(result);
     }).then(() => {
-        processVersion().then(shouldUpdate => {
+        processVersion().then((shouldUpdate: boolean) => {
             if (shouldUpdate === true) {
                 push('/update')
             } else {
-                processAccessToken().then(page => {
+                processAccessToken().then((page: string) => {
                     push(page)
                 })
             }
         })
     })
-
 </script>

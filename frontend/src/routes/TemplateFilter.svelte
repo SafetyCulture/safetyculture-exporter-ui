@@ -1,22 +1,21 @@
-<script>
-    import './common.css';
+<script lang="ts">
     import dayjs from 'dayjs';
-    import {shadowConfig, templateCache} from "../lib/store";
-    import {GetTemplates} from "../../wailsjs/go/main/App.js"
-    import {push} from "@keenmate/svelte-spa-router";
-    import {trim} from "../lib/utils";
+    import { shadowConfig, templateCache } from "../lib/store";
+    import { GetTemplates } from "../../wailsjs/go/main/App.js"
+    import { push } from "@keenmate/svelte-spa-router";
+    import { trim } from "../lib/utils";
     import Button from "../components/Button.svelte";
     import Overlay from "../components/Overlay.svelte";
     import StatusBar from "../components/StatusBar.svelte";
     import SearchText from "../components/SearchText.svelte";
 
-    let searchFilter = ""
-    let isChecked = false
-    let templatesLoaded = false
+    let searchFilter = $state("");
+    let isChecked = $state(false);
+    let templatesLoaded = $state(false);
 
     if (Array.isArray($templateCache)) {
         if ($templateCache.length === 0) {
-            GetTemplates().then((result) => {
+            GetTemplates().then((result: any[]) => {
                 let niceFormat = result.map(elem => {
                     return {
                         id: elem.id,
@@ -35,13 +34,13 @@
         }
     }
 
-    $: showEmptyFilter = searchFilter.length >= 2 && $templateCache
-        .filter(v => v.name.toLowerCase().includes(searchFilter.toLowerCase()))
-        .length === 0
+    let showEmptyFilter = $derived(searchFilter.length >= 2 && ($templateCache as any[])
+        .filter((v: any) => v.name.toLowerCase().includes(searchFilter.toLowerCase()))
+        .length === 0);
 
     function checkAllSelected() {
-        if($shadowConfig["Export"]["TemplateIds"].length === 0) {
-            $shadowConfig["Export"]["TemplateIds"] = $templateCache.map(e => e.id)
+        if (($shadowConfig as any)["Export"]["TemplateIds"].length === 0) {
+            ($shadowConfig as any)["Export"]["TemplateIds"] = ($templateCache as any[]).map((e: any) => e.id)
             isChecked = true;
         }
     }
@@ -53,76 +52,74 @@
     }
 
     function toggleBodyCheckboxes() {
-        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
+        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
         for (const checkbox of checkboxes) {
             checkbox.checked = !isChecked;
         }
     }
 
     function handleDone() {
-        // if the results were empty, we will keep the previous selection
         if (showEmptyFilter === true) {
             push("/config")
             return
         }
 
-        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
-        let selectedTemplates = [];
+        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+        let selectedTemplates: string[] = [];
 
         for (const checkbox of checkboxes) {
             if (checkbox.checked) {
-                selectedTemplates.push(checkbox.__value)
+                selectedTemplates.push((checkbox as any).__value)
             }
         }
 
-        if ($templateCache.length === selectedTemplates.length) {
-            $shadowConfig["Export"]["TemplateIds"] = []
+        if (($templateCache as any[]).length === selectedTemplates.length) {
+            ($shadowConfig as any)["Export"]["TemplateIds"] = []
         } else {
-            $shadowConfig["Export"]["TemplateIds"] = selectedTemplates
+            ($shadowConfig as any)["Export"]["TemplateIds"] = selectedTemplates
         }
 
         push("/config")
     }
 
-    // will mark as selected all templates in the UI that were chosen
     checkAllSelected()
 </script>
 
 {#if templatesLoaded === false}
 <Overlay>
-    <div class="p-top-32">
+    <div class="pt-8">
         <img src="../images/loading.gif" alt="loading"/>
     </div>
-    <div class="p-top-8 p-bottom-48 loading-message">Please wait while we processing your request ...</div>
+    <div class="pb-12 pt-2 text-center text-lg">Please wait while we processing your request ...</div>
 </Overlay>
 {/if}
 
-<div class="template-filter-page">
-    <div class="top-nav">
-        <div class="nav-left">
-            <div class="h1">Template selection</div>
+<div class="px-8 pt-8">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center">
+            <div class="my-4 font-semibold text-2xl">Template selection</div>
         </div>
-        <div class="nav-right">
+        <div class="flex items-center">
             <Button label="Done" type="active-white" onClick={handleDone}/>
         </div>
     </div>
 
-    <div class="top-nav m-top-16">
-        <div class="nav-left">
-            <div class="h2">Select templates</div>
+    <div class="mt-4 flex items-center justify-between">
+        <div class="flex items-center">
+            <div class="font-semibold text-xl">Select templates</div>
         </div>
-        <div class="nav-right">
+        <div class="flex items-center">
             <SearchText placeholder="Search" bind:value={searchFilter}/>
         </div>
     </div>
 
     {#if showEmptyFilter === true}
-        <div class="template-empty-search m-top-16">
-            <div class="template-empty-search-body">
-                <img src="../images/empty_page.svg" alt="empty page"/>
-                <div class="p-top-48">
-                    <div>Your search - <span class="search-term">{searchFilter.length > 15 ? searchFilter.substring(0, 15).concat(" ...") : searchFilter}</span> - did not match any template names.</div>
-                    <div class="p-top-8">
+        <div class="mt-4 flex h-[60vh] items-center justify-center">
+            <div class="flex flex-col leading-6">
+                <img class="mx-auto" src="../images/empty_page.svg" alt="empty page"/>
+                <div class="pt-12">
+                    <div>Your search - <span class="font-semibold">{searchFilter.length > 15 ? searchFilter.substring(0, 15).concat(" ...") : searchFilter}</span> - did not match any template names.</div>
+                    <div class="pt-2">
                         Suggestions:<br/>
                         &#x2022; Make sure all the words are spelled correctly.<br/>
                         &#x2022; Try different keywords.<br/>
@@ -131,28 +128,28 @@
             </div>
         </div>
     {:else}
-        <div class="templates-body m-top-16">
-            <div class="table-header text-gray-2" >
-                <div class="table-row flex-spaced p-horiz-8">
-                    <div class="nav-left">
-                        <input type="checkbox" class="checkbox-purple" on:click="{toggleBodyCheckboxes}" bind:checked={isChecked}/>
-                        <div class="m-left-32">Template</div>
+        <div class="mt-4 overflow-hidden">
+            <div class="bg-[#DBDFEB] text-text-gray">
+                <div class="flex h-9 items-center justify-between px-2">
+                    <div class="flex items-center">
+                        <input type="checkbox" class="size-5 accent-primary" onclick={toggleBodyCheckboxes} bind:checked={isChecked}/>
+                        <div class="ml-8">Template</div>
                     </div>
-                    <div class="nav-right">
-                        <div class="m-right-8">Last modified</div>
+                    <div class="flex items-center">
+                        <div class="mr-2">Last modified</div>
                         <img src="../images/arrow-down.svg" alt="down"/>
                     </div>
                 </div>
             </div>
-            <div class="table-body text-gray-2 m-top-8">
+            <div class="table-body mt-2 max-h-[calc(100vh-300px)] overflow-y-scroll text-text-gray">
                 {#each $templateCache as { id, name, modified_at }, i}
-                    <div class="table-row flex-spaced p-horiz-8 m-right-8" class:hide={searchFilter.length >= 2 && !name.toLowerCase().includes(searchFilter.toLowerCase())}>
-                        <div class="nav-left">
-                            <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["TemplateIds"]} value="{id}"/>
-                            <img class="m-left-32" src="../images/template-icon.svg" alt="template"/>
-                            <div class="m-left-8">{trim(name)}</div>
+                    <div class="flex h-13 items-center justify-between px-2 pr-2" class:hidden={searchFilter.length >= 2 && !(name as string).toLowerCase().includes(searchFilter.toLowerCase())}>
+                        <div class="flex items-center">
+                            <input type="checkbox" class="size-5 accent-primary" onclick={toggleHeaderCheckbox} bind:group={($shadowConfig as any)["Export"]["TemplateIds"]} value={id}/>
+                            <img class="ml-8" src="../images/template-icon.svg" alt="template"/>
+                            <div class="ml-2">{trim(name as string, 90)}</div>
                         </div>
-                        <div class="nav-right">
+                        <div class="flex items-center">
                             <div>{modified_at}</div>
                         </div>
                     </div>
@@ -160,71 +157,6 @@
             </div>
         </div>
     {/if}
-
 </div>
 
 <StatusBar/>
-
-<style>
-    .loading-message {
-        text-align: center;
-        font-size: 1.2rem;
-    }
-
-    .hide {
-        display: none!important;
-    }
-
-    .template-filter-page {
-        padding-top: var(--main-gutter-top);
-        padding-left: var(--main-gutter-left);
-        padding-right: var(--main-gutter-right);
-    }
-
-    .templates-body {
-        overflow: hidden;
-    }
-
-    .template-empty-search {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 60vh;
-    }
-
-    .template-empty-search-body {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.5;
-    }
-
-    .template-empty-search img {
-        margin: auto;
-    }
-
-    .template-empty-search .search-term {
-        font-family: NotoSansSemiBold, sans-serif;
-    }
-
-    .table-header {
-        background-color: #DBDFEB;
-    }
-
-    .table-header > .table-row {
-        height: 36px;
-    }
-
-    .table-body {
-        max-height: calc(100vh - 300px);
-        overflow-y: scroll;
-    }
-
-    .table-body > .table-row {
-        height: 52px;
-    }
-
-    .table-row {
-        display: flex;
-        align-items: center;
-    }
-</style>

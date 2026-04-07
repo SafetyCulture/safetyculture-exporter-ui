@@ -1,16 +1,16 @@
-<script>
-    import {latestVersion} from '../lib/store';
+<script lang="ts">
+    import { latestVersion } from '../lib/store';
     import Button from "../components/Button.svelte";
-    import {TriggerUpdate} from "../../wailsjs/go/main/App.js";
-    import {push} from "@keenmate/svelte-spa-router";
-    import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
-    
-    let updateStatus = "updating"
-    let updateMessage = 'Please wait until we update your application from ' + $latestVersion['current'] + ' to ' + $latestVersion['latest']
-    let cancelActive = false 
-    let restartActive = false
+    import { TriggerUpdate } from "../../wailsjs/go/main/App.js";
+    import { push } from "@keenmate/svelte-spa-router";
+    import { BrowserOpenURL, Quit } from "../../wailsjs/runtime/runtime.js";
 
-    TriggerUpdate($latestVersion['download_url']).then(result => {
+    let updateStatus = $state("updating");
+    let updateMessage = $state('Please wait until we update your application from ' + $latestVersion['current'] + ' to ' + $latestVersion['latest']);
+    let cancelActive = $state(false);
+    let restartActive = $state(false);
+
+    TriggerUpdate($latestVersion['download_url']).then((result: boolean) => {
         if (result === true) {
             updateStatus = "success"
             updateMessage = 'We have updated your application to the ' + $latestVersion['latest']
@@ -35,81 +35,42 @@
     function restartHandler() {
         Quit()
     }
-    
-    function openURL(url) {
+
+    function openURL(url: string) {
         if (url !== '') {
             BrowserOpenURL(url)
         }
     }
-    
 </script>
-<div class="update-page">
-    <img id="update-page-logo" class="p-top-32" src="../images/logo.svg" alt="SafetyCulture logo"/>
-    <div class="h1">SafetyCulture Exporter Updater</div>
-    
-    <div class="middle">
+
+<div class="flex h-screen flex-col items-center">
+    <img class="w-[150px] pt-8" src="../images/logo.svg" alt="SafetyCulture logo"/>
+    <div class="my-4 font-semibold text-[1.8rem]">SafetyCulture Exporter Updater</div>
+
+    <div class="flex grow flex-col items-center justify-center">
         {#if updateStatus === 'updating'}
-            <img class="status" src="../images/spinning.gif" alt="loading"/>
+            <img class="size-[200px]" src="../images/spinning.gif" alt="loading"/>
         {/if}
         {#if updateStatus === 'success'}
-            <img class="status" src="../images/complete.svg" alt="ok"/>
+            <img class="size-[200px]" src="../images/complete.svg" alt="ok"/>
         {/if}
         {#if updateStatus === 'failed'}
-            <img class="status" src="../images/warning.svg" alt="ok"/>
+            <img class="size-[200px]" src="../images/warning.svg" alt="ok"/>
         {/if}
 
-        <div class="h3 p-top-64">{updateMessage}</div>
+        <div class="pt-16 text-base font-semibold">{updateMessage}</div>
         {#if updateStatus === 'failed'}
             {#if $latestVersion['os'] === 'darwin'}
-                <div class="p-top-8">SafetyCulture Exporter must be moved into the Applications folder in order for the auto-update to work</div>
-            {/if}   
-            <div class="download-alert p-top-8" on:click={openURL($latestVersion['download_url'])} on:keydown={openURL($latestVersion['download_url'])}>
+                <div class="pt-2">SafetyCulture Exporter must be moved into the Applications folder in order for the auto-update to work</div>
+            {/if}
+            <button class="cursor-pointer pt-2 text-sm text-[#0d75b5]" onclick={() => openURL($latestVersion['download_url'])}>
                 You can manually download and install the Exporter
-            </div>
+            </button>
         {/if}
 
-        <div class="p-top-32">
+        <div class="flex gap-2 pt-8">
             <Button label="Cancel" type="active-purple" active={cancelActive} onClick={cancelHandler}/>
             <Button label="Restart" type="active-purple" active={restartActive} onClick={restartHandler}/>
-        </div>  
+        </div>
     </div>
 </div>
-
-<style>
-    .update-page {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        
-        height: 100vh;
-    }
-
-    .update-page .h1 {
-        font-size: 1.8rem;
-    }
-
-    #update-page-logo {
-        width: 150px;
-    }
-    
-    img.status {
-        width: 200px;
-        height: 200px;
-    }
-    
-    .middle {
-        flex-grow: 1;
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .download-alert {
-        font-size: 0.9rem;
-        text-align: center;
-        cursor: pointer;
-        color: #0d75b5;
-    }
-</style>
