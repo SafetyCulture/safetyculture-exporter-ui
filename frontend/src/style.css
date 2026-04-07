@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Force light mode — prevent dark: classes from activating on dark OS theme */
+@custom-variant dark (&.dark);
+
 @theme {
   /* shadcn semantic colors mapped to app design tokens */
   --color-background: #FFFFFF;
@@ -34,11 +37,63 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
 
+  /* slightly larger base text for desktop app */
+  --text-xs: 0.8125rem;     /* 13px (was 12px) */
+  --text-xs--line-height: 1.25rem;
+  --text-sm: 0.9375rem;     /* 15px (was 14px) */
+  --text-sm--line-height: 1.375rem;
+
   /* fonts */
-  --font-sans: 'NotoSansRegular', Tahoma, sans-serif;
-  --font-light: 'NotoSansLight', Tahoma, sans-serif;
-  --font-medium: 'NotoSansMedium', Tahoma, sans-serif;
-  --font-semibold: 'NotoSansSemiBold', Tahoma, sans-serif;
+  --font-sans: 'NotoSans', Tahoma, sans-serif;
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    src: url('/fonts/NotoSans-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    src: url('/fonts/NotoSans-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    src: url('/fonts/NotoSans-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    src: url('/fonts/NotoSans-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    src: url('/fonts/NotoSans-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    src: url('/fonts/NotoSans-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    src: url('/fonts/NotoSans-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
 }
 
 *, *:before, *:after {
@@ -49,40 +104,11 @@
     height: 100vh;
 }
 
-:root {
-    --main-gutter-top: 32px;
-    --main-gutter-left: 32px;
-    --main-gutter-right: 32px;
-}
-
-@font-face {
-    font-family: 'NotoSansLight';
-    src: url('../fonts/NotoSans-Light.ttf')
-}
-
-@font-face {
-    font-family: 'NotoSansRegular';
-    src: url('../fonts/NotoSans-Regular.ttf')
-}
-
-@font-face {
-    font-family: 'NotoSansMedium';
-    src: url('../fonts/NotoSans-Medium.ttf')
-}
-
-@font-face {
-    font-family: 'NotoSansSemiBold';
-    src: url('../fonts/NotoSans-SemiBold.ttf')
-}
-
 body {
     font-style: normal;
-    font-size: 1rem;
-    font-family: NotoSansRegular, Tahoma, sans-serif;
     letter-spacing: .005rem;
     color: #1D2330;
     background-color: #FFFFFF;
-
     -ms-overflow-style: none;
     scrollbar-width: none;
     overflow: auto;

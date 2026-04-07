@@ -2,6 +2,8 @@
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
+	import { CalendarDate, today as calToday, getLocalTimeZone, parseDate } from "@internationalized/date";
+	import { toast } from "svelte-sonner";
 	import {
 		CheckDBConnection,
 		ExportCSV,
@@ -16,14 +18,20 @@
 	import { allTables } from "../lib/utils";
 	import { Quit } from "../../wailsjs/runtime/runtime.js";
 	import { push } from "@keenmate/svelte-spa-router";
-	import FormTextInput from "../components/FormTextInput.svelte";
-	import Button from "../components/Button.svelte";
-	import Overlay from "../components/Overlay.svelte";
-	import StatusBar from "../components/StatusBar.svelte";
-	import FormPassword from "../components/FormPassword.svelte";
-	import FormNumberInput from "../components/FormNumberInput.svelte";
-	import ButtonSelector from "../components/ButtonSelector.svelte";
-	import FolderPicker from "../components/FolderPicker.svelte";
+	import { Button } from "$lib/components/ui/button";
+	import { Input } from "$lib/components/ui/input";
+	import { Label } from "$lib/components/ui/label";
+	import { Checkbox } from "$lib/components/ui/checkbox";
+	import { Calendar } from "$lib/components/ui/calendar";
+	import * as Select from "$lib/components/ui/select";
+	import * as Dialog from "$lib/components/ui/dialog";
+	import * as Popover from "$lib/components/ui/popover";
+	import { Separator } from "$lib/components/ui/separator";
+
+	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+	import CalendarIcon from '@lucide/svelte/icons/calendar';
+	import FolderIcon from '@lucide/svelte/icons/folder';
+	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
 	let build = $state("");
 	ReadBuild().then((it: string) => {
@@ -53,26 +61,22 @@
 		{ value: "reports", label: "Reports" },
 	];
 
-	const POSTGRES_DIALECT = 'postgres';
-	const SQLSERVER_DIALECT = 'sqlserver';
-	const MYSQL_DIALECT = 'mysql';
-
 	const connectionStrings: Record<string, string> = {
 		postgres: 'postgresql://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}',
 		sqlserver: 'sqlserver://${dbUser}:${dbPassword}@${dbHost}:${dbPort}?database=${dbName}',
 		mysql: '${dbUser}:${dbPassword}@tcp(${dbHost}:${dbPort})/${dbName}?charset=utf8mb4&parseTime=True&loc=Local',
 	};
 	const dialects: Record<string, string> = {
-		postgres: POSTGRES_DIALECT,
-		sqlserver: SQLSERVER_DIALECT,
-		mysql: MYSQL_DIALECT,
+		postgres: 'postgres',
+		sqlserver: 'sqlserver',
+		mysql: 'mysql',
 	};
 
-	let dbHost = $state(''), dbHostShowError = $state(false), dbHostErrMsg = 'Host cannot be empty'
-	let dbPort = $state(''), dbPortPlaceholder = $state("e.g. " + getDefaultSQLPort(($shadowConfig as any)['Db']['Dialect'])), dbPortShowError = $state(false), dbPortErrMsg = 'Please enter a valid port number'
-	let dbUser = $state(''), dbUserShowError = $state(false), dbUserErrMsg = 'Username cannot be empty'
-	let dbPassword = $state(''), dbPasswordShowError = $state(false), dbPasswordErrMsg = 'Password cannot be empty'
-	let dbName = $state(''), dbNameShowError = $state(false), dbNameErrMsg = 'Name cannot be empty'
+	let dbHost = $state(''), dbHostShowError = $state(false)
+	let dbPort = $state(''), dbPortPlaceholder = $state("e.g. " + getDefaultSQLPort(($shadowConfig as any)['Db']['Dialect'])), dbPortShowError = $state(false)
+	let dbUser = $state(''), dbUserShowError = $state(false)
+	let dbPassword = $state(''), dbPasswordShowError = $state(false)
+	let dbName = $state(''), dbNameShowError = $state(false)
 	let formError = $state(false)
 	let dbError = $state(false)
 	let showBanner = $state(false)
@@ -87,19 +91,12 @@
 	];
 	let selectedReportFormat = $state(readReportFormat());
 
-	const timezoneItems = [
-		{ value: "UTC", label: "UTC" }
-	];
 	let selectedTimeZone = $state(($shadowConfig as any)["Export"]["TimeZone"] as string);
 
 	function readReportFormat(): string {
 		const fmt = ($shadowConfig as any)["Report"]["Format"];
-		if (Array.isArray(fmt) && fmt.includes("PDF") && fmt.includes("WORD")) {
-			return "BOTH"
-		}
-		if (Array.isArray(fmt) && fmt.includes("WORD")) {
-			return "WORD"
-		}
+		if (Array.isArray(fmt) && fmt.includes("PDF") && fmt.includes("WORD")) return "BOTH"
+		if (Array.isArray(fmt) && fmt.includes("WORD")) return "WORD"
 		return "PDF"
 	}
 
@@ -112,41 +109,77 @@
 		}
 	}
 
-	// DATE PICKER
+	// Date picker
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
-	const minDate = dayjs().add(-1, 'year').format('YYYY-MM-DD');
-	const today = dayjs().format('YYYY-MM-DD');
-	let dateValue = $state(convertToInputDate(($shadowConfig as any)["Export"]["ModifiedAfter"], selectedTimeZone));
 
-	function convertToInputDate(input: string, tz: string): string {
-		if (input === "" || input === "0001-01-01T00:00:00Z") {
-			return minDate
-		}
-		return dayjs(input).tz(tz).format('YYYY-MM-DD')
+	const minCalDate = calToday(getLocalTimeZone()).subtract({ years: 1 });
+	const maxCalDate = calToday(getLocalTimeZone());
+
+	function initCalendarDate(): CalendarDate {
+		const raw = ($shadowConfig as any)["Export"]["ModifiedAfter"] as string;
+		if (raw === "" || raw === "0001-01-01T00:00:00Z") return minCalDate;
+		const iso = dayjs(raw).tz(selectedTimeZone).format('YYYY-MM-DD');
+		try { return parseDate(iso); } catch { return minCalDate; }
 	}
 
-	function generateTemplateName(): string {
-		let num = ($shadowConfig as any)["Export"]["TemplateIds"].length
-		switch (num) {
-			case 0: return "All templates selected"
-			case 1: return "1 template selected"
-			default: return num + " templates selected"
+	let calendarValue = $state<CalendarDate>(initCalendarDate());
+	let datePickerOpen = $state(false);
+	let dateInputValue = $state(formatCalDate(initCalendarDate()));
+
+	function formatCalDate(d: CalendarDate): string {
+		return `${String(d.day).padStart(2, '0')}/${String(d.month).padStart(2, '0')}/${d.year}`;
+	}
+
+	function handleDateInput() {
+		const match = dateInputValue.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+		if (!match) return;
+		const [, dd, mm, yyyy] = match;
+		let parsed: CalendarDate;
+		try { parsed = new CalendarDate(+yyyy, +mm, +dd); } catch { return; }
+
+		if (parsed.compare(minCalDate) < 0) {
+			toast.error(`Date cannot be earlier than ${formatCalDate(minCalDate)}`);
+			calendarValue = minCalDate;
+			dateInputValue = formatCalDate(minCalDate);
+		} else if (parsed.compare(maxCalDate) > 0) {
+			toast.error(`Date cannot be later than ${formatCalDate(maxCalDate)}`);
+			calendarValue = maxCalDate;
+			dateInputValue = formatCalDate(maxCalDate);
+		} else {
+			calendarValue = parsed;
 		}
+	}
+
+	function handleCalendarSelect(value: CalendarDate | undefined) {
+		if (value) {
+			calendarValue = value;
+			dateInputValue = formatCalDate(value);
+			datePickerOpen = false;
+		}
+	}
+
+	// For saving — convert CalendarDate back to YYYY-MM-DD string
+	let dateValue = $derived(
+		`${calendarValue.year}-${String(calendarValue.month).padStart(2, '0')}-${String(calendarValue.day).padStart(2, '0')}`
+	);
+
+	function generateTemplateName(): string {
+		const num = ($shadowConfig as any)["Export"]["TemplateIds"].length
+		if (num === 0) return "All templates selected"
+		if (num === 1) return "1 template selected"
+		return num + " templates selected"
 	}
 
 	function generateDataSetName(): string {
-		let num = ($shadowConfig as any)["Export"]["Tables"].length
-		switch (num) {
-			case 0: return "All data sets selected"
-			case 1: return "1 data set selected"
-			default: return num + " data sets selected"
-		}
+		const num = ($shadowConfig as any)["Export"]["Tables"].length
+		if (num === 0) return "All data sets selected"
+		if (num === 1) return "1 data set selected"
+		return num + " data sets selected"
 	}
 
-	function handleExportFormatUpdate(e: Event) {
-		const target = e.target as HTMLSelectElement;
-		selectedExportFormat = target.value;
+	function handleExportFormatUpdate(value: string) {
+		selectedExportFormat = value;
 		if (['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)) {
 			dbPortPlaceholder = "e.g. " + getDefaultSQLPort(selectedExportFormat)
 			dbPort = getDefaultSQLPort(selectedExportFormat)
@@ -168,36 +201,21 @@
 
 	function parseDbConnectionString() {
 		const url = ($shadowConfig as any)["Db"]["ConnectionString"];
-		function mapFields(dbStringMatch: RegExpMatchArray) {
-			dbUser = dbStringMatch[1];
-			dbPassword = dbStringMatch[2];
-			dbHost = dbStringMatch[3];
-			dbPort = dbStringMatch[4];
-			dbName = dbStringMatch[5];
+		function mapFields(m: RegExpMatchArray) {
+			dbUser = m[1]; dbPassword = m[2]; dbHost = m[3]; dbPort = m[4]; dbName = m[5];
 		}
-
-		let dbStringMatch;
-
-		dbStringMatch = url.match(/^sqlserver:\/\/(.+):(.+)@(.+):(\d+)\?database=(.+)$/);
-		if (dbStringMatch) { mapFields(dbStringMatch); return; }
-
-		dbStringMatch = url.match(/^(.+):(.+)@tcp\((.+):(\d+)\)\/(.+)\?/);
-		if (dbStringMatch) { mapFields(dbStringMatch); return; }
-
-		dbStringMatch = url.match(/^postgresql:\/\/(.+):(.+)@(.+):(\d+)\/(.+)$/);
-		if (dbStringMatch) { mapFields(dbStringMatch); return; }
-
-		if (dbPort === '') {
-			dbPort = getDefaultSQLPort(($shadowConfig as any)['Db']['Dialect'])
-		}
+		let m;
+		m = url.match(/^sqlserver:\/\/(.+):(.+)@(.+):(\d+)\?database=(.+)$/);
+		if (m) { mapFields(m); return; }
+		m = url.match(/^(.+):(.+)@tcp\((.+):(\d+)\)\/(.+)\?/);
+		if (m) { mapFields(m); return; }
+		m = url.match(/^postgresql:\/\/(.+):(.+)@(.+):(\d+)\/(.+)$/);
+		if (m) { mapFields(m); return; }
+		if (dbPort === '') dbPort = getDefaultSQLPort(($shadowConfig as any)['Db']['Dialect'])
 	}
 
 	function saveConfiguration(): Promise<void> {
-		const validFormats: Record<string, boolean> = { mysql: true, postgres: true, sqlserver: true };
-
-		if (selectedExportFormat in validFormats) {
-			setConnString();
-		}
+		if (['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)) setConnString();
 
 		if (selectedTimeZone !== '') {
 			($shadowConfig as any)["Export"]["TimeZone"] = selectedTimeZone;
@@ -213,7 +231,6 @@
 			if (($shadowConfig as any)["Export"]["Media"] === true && !($shadowConfig as any)["Export"]["Tables"].includes("inspection_items")) {
 				($shadowConfig as any)["Export"]["Tables"].push("inspection_items")
 			}
-
 			if (($shadowConfig as any)["Export"]["Tables"].includes("inspection_items") && !($shadowConfig as any)["Export"]["Tables"].includes("inspections")) {
 				($shadowConfig as any)["Export"]["Tables"].push("inspections")
 			}
@@ -240,48 +257,37 @@
 
 	function validateExport(): boolean {
 		let hasError = false
-
-		switch (selectedExportFormat) {
-			case 'csv':
-			case 'sqlite':
-			case 'reports':
-				break
-			case 'mysql':
-			case 'postgres':
-			case 'sqlserver':
-				if (dbHost.trim() === '') { dbHostShowError = true; hasError = true } else { dbHostShowError = false }
-				if (dbPort.trim() === '' || isValidPortNumber(dbPort) === false) { dbPortShowError = true; hasError = true } else { dbPortShowError = false }
-				if (dbUser.trim() === '') { dbUserShowError = true; hasError = true } else { dbUserShowError = false }
-				if (dbPassword.trim() === '') { dbPasswordShowError = true; hasError = true } else { dbPasswordShowError = false }
-				if (dbName.trim() === '') { dbNameShowError = true; hasError = true } else { dbNameShowError = false }
-				break
-			default:
-				hasError = true
-				break
+		if (['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)) {
+			if (dbHost.trim() === '') { dbHostShowError = true; hasError = true } else { dbHostShowError = false }
+			if (dbPort.trim() === '' || !isValidPortNumber(dbPort)) { dbPortShowError = true; hasError = true } else { dbPortShowError = false }
+			if (dbUser.trim() === '') { dbUserShowError = true; hasError = true } else { dbUserShowError = false }
+			if (dbPassword.trim() === '') { dbPasswordShowError = true; hasError = true } else { dbPasswordShowError = false }
+			if (dbName.trim() === '') { dbNameShowError = true; hasError = true } else { dbNameShowError = false }
+		} else if (!['csv', 'sqlite', 'reports'].includes(selectedExportFormat)) {
+			hasError = true
 		}
-
 		return hasError
 	}
 
 	function handleSaveAndExport() {
 		showBanner = true
 		formError = validateExport()
-		if (formError === true) return
+		if (formError) return
 
 		saveConfiguration().then(() => {
 			switch (selectedExportFormat) {
 				case 'csv':
+				case 'sqlite':
 					ValidateExportDirectory().then((result: boolean) => {
-						if (result === true) {
+						if (result) {
 							showBanner = false; exportLocationError = false;
 							($exportConfig as any)['items'] = getFeedsForExport()
-							ExportCSV(); push("/export/status")
+							selectedExportFormat === 'csv' ? ExportCSV() : ExportSQLite();
+							push("/export/status")
 						} else { showBanner = false; exportLocationError = true }
 					}).catch(() => { exportLocationError = true })
 					break
-				case 'mysql':
-				case 'postgres':
-				case 'sqlserver':
+				case 'mysql': case 'postgres': case 'sqlserver':
 					CheckDBConnection().then(() => {
 						($exportConfig as any)['items'] = getFeedsForExport()
 						showBanner = false; ExportSQL(); push("/export/status")
@@ -289,50 +295,29 @@
 					break
 				case 'reports':
 					ValidateExportDirectory().then((result: boolean) => {
-						if (result === true) {
+						if (result) {
 							showBanner = false; exportLocationError = false;
 							($exportConfig as any)['items'] = ['inspections', 'reports']
 							ExportReports(); push("/export/status")
 						} else { showBanner = false; exportLocationError = true }
 					}).catch(() => { exportLocationError = true })
 					break
-				case 'sqlite':
-					ValidateExportDirectory().then((result: boolean) => {
-						if (result === true) {
-							showBanner = false; exportLocationError = false;
-							($exportConfig as any)['items'] = getFeedsForExport()
-							ExportSQLite(); push("/export/status")
-						} else { showBanner = false; exportLocationError = true }
-					}).catch(() => { exportLocationError = true })
-					break
 			}
-		}).catch((e: unknown) => {
-			console.debug('saveConfiguration err', e)
-		})
+		}).catch((e: unknown) => { console.debug('saveConfiguration err', e) })
 	}
 
 	function getFeedsForExport(): string[] {
 		let feedsToExport: string[] = []
 		const tables = ($shadowConfig as any)["Export"]["Tables"];
-		if (tables !== null && tables.length > 0) {
-			feedsToExport = Array.from(tables)
-		}
-		if (feedsToExport.length === 0) {
-			feedsToExport = Array.from(allTables)
-		}
+		if (tables !== null && tables.length > 0) feedsToExport = Array.from(tables)
+		if (feedsToExport.length === 0) feedsToExport = Array.from(allTables)
 		if (($shadowConfig as any)["Export"]["Media"] === true && !feedsToExport.includes("media")) {
 			feedsToExport.push("media")
 		}
 		return feedsToExport
 	}
 
-	function handleSaveAndClose() {
-		saveConfiguration().then(() => { Quit() })
-	}
-
-	function handleBackButton() { push("/welcome") }
-	function handleSelectTemplates() { push("/config/templates") }
-	function handleTables() { push("/config/datasets") }
+	function handleSaveAndClose() { saveConfiguration().then(() => { Quit() }) }
 
 	function openFolderDialog() {
 		if (build === 'windows' || build === '') return
@@ -344,136 +329,253 @@
 		})
 	}
 
-	function removeOverlay() {
-		dbError = false
-		showBanner = false
+	function handlePortInput(e: Event) {
+		const target = e.target as HTMLInputElement;
+		dbPort = target.value.replace(/[^0-9]/g, '');
+	}
+
+	function trimPath(value: string, size: number = 35): string {
+		if (value.length <= size) return value
+		return "..." + value.substring(value.length - size)
 	}
 
 	parseDbConnectionString();
 </script>
 
-{#if formError === false && showBanner === true}
-	<Overlay>This might take a while ...</Overlay>
+{#if !formError && showBanner}
+	<Dialog.Root open={true}>
+		<Dialog.Content class="sm:max-w-md">
+			<Dialog.Header>
+				<Dialog.Title>Exporting...</Dialog.Title>
+				<Dialog.Description>This might take a while...</Dialog.Description>
+			</Dialog.Header>
+		</Dialog.Content>
+	</Dialog.Root>
 {/if}
 
-{#if dbError === true}
-	<Overlay>
-		<button class="cursor-pointer text-center" onclick={removeOverlay}>
-			<div>Error connecting to the database</div>
-			<div>Please ensure the database details are correct</div>
-			<div>Click here to go back</div>
-		</button>
-	</Overlay>
+{#if dbError}
+	<Dialog.Root open={true}>
+		<Dialog.Content class="sm:max-w-md">
+			<Dialog.Header>
+				<Dialog.Title>Database connection error</Dialog.Title>
+				<Dialog.Description>Please ensure the database details are correct and try again.</Dialog.Description>
+			</Dialog.Header>
+			<Dialog.Footer>
+				<Button onclick={() => { dbError = false; showBanner = false; }}>Go back</Button>
+			</Dialog.Footer>
+		</Dialog.Content>
+	</Dialog.Root>
 {/if}
 
-<div class="px-8 pt-8">
-	<section class="flex items-center justify-between">
-		<div class="flex items-center">
-			<button class="cursor-pointer" onclick={handleBackButton}>
-				<img src="../images/back.svg" alt="back arrow icon">
-			</button>
-			<div class="my-4 pl-4 font-semibold text-2xl">Export configuration</div>
-		</div>
-		<div class="flex items-center">
-			<Button label="Save and close" type="active-white" onClick={handleSaveAndClose}/>
-			<Button label="Save and export" type="active-purple" clazz="ml-2" error={formError} onClick={handleSaveAndExport}/>
-		</div>
+<div class="px-8 pt-6">
+	<section class="flex items-center gap-3">
+		<Button variant="ghost" size="icon" onclick={() => push("/welcome")}>
+			<ArrowLeftIcon class="size-5"/>
+		</Button>
+		<h1 class="text-xl font-semibold">Export configuration</h1>
 	</section>
 
-	<div class="mt-2 flex justify-between">
-		<section class="w-[55%]">
+	<div class="mt-6 flex gap-6">
+		<!-- Left: Filters -->
+		<section class="flex-1 space-y-5">
 			<div>
-				<div class="text-base font-semibold">Filters</div>
-				<div class="mt-2 text-text-weak">Select which sets of data you want to export from your organization.</div>
-			</div>
-			<ButtonSelector label="Select templates" title={generateTemplateName()} onClick={handleSelectTemplates}/>
-			<ButtonSelector label="Select data sets" title={generateDataSetName()} onClick={handleTables}/>
-
-			<div class="mt-4 text-sm font-medium leading-4">Date range from (UTC)</div>
-			<div class="mt-1">
-				<input type="date" class="w-full rounded-lg border border-border px-4 py-2.5 text-base" min={minDate} max={today} bind:value={dateValue}/>
+				<h2 class="text-sm font-semibold">Filters</h2>
+				<p class="mt-1 text-sm text-muted-foreground">Select which sets of data you want to export from your organization.</p>
 			</div>
 
-			<div class="mt-4 text-sm font-medium leading-4">Include completed or incomplete inspections</div>
-			<div class="mt-1">
-				<select class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-base" bind:value={selectedStatus}>
-					{#each statusItems as item}
-						<option value={item.value}>{item.label}</option>
-					{/each}
-				</select>
+			<!-- Template selector -->
+			<div class="space-y-1.5">
+				<Label class="text-sm font-medium">Select templates</Label>
+				<Button variant="outline" class="h-10 w-full justify-between text-sm font-normal" onclick={() => push("/config/templates")}>
+					{generateTemplateName()}
+					<ChevronRightIcon class="size-4 text-muted-foreground"/>
+				</Button>
 			</div>
 
-			<div class="mt-4 text-sm font-medium leading-4">Include active or archived inspections</div>
-			<div class="mt-1">
-				<select class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-base" bind:value={selectedArchived}>
-					{#each archivedItems as item}
-						<option value={item.value}>{item.label}</option>
-					{/each}
-				</select>
+			<!-- Data set selector -->
+			<div class="space-y-1.5">
+				<Label class="text-sm font-medium">Select data sets</Label>
+				<Button variant="outline" class="h-10 w-full justify-between text-sm font-normal" onclick={() => push("/config/datasets")}>
+					{generateDataSetName()}
+					<ChevronRightIcon class="size-4 text-muted-foreground"/>
+				</Button>
+			</div>
+
+			<!-- Date range -->
+			<div class="space-y-1.5">
+				<Label class="text-sm font-medium">Date range from (UTC)</Label>
+				<Popover.Root bind:open={datePickerOpen}>
+					<Popover.Trigger>
+						{#snippet child({ props })}
+							<Button variant="outline" class="h-10 w-full justify-between font-normal" {...props}>
+								{dateInputValue}
+								<CalendarIcon class="size-4 text-muted-foreground"/>
+							</Button>
+						{/snippet}
+					</Popover.Trigger>
+					<Popover.Content class="w-auto p-3" align="start">
+						<Input
+							type="text"
+							placeholder="DD/MM/YYYY"
+							bind:value={dateInputValue}
+							oninput={handleDateInput}
+							class="mb-3"
+						/>
+						<Calendar
+							type="single"
+							bind:value={calendarValue}
+							minValue={minCalDate}
+							maxValue={maxCalDate}
+							captionLayout="dropdown"
+							onValueChange={handleCalendarSelect}
+						/>
+					</Popover.Content>
+				</Popover.Root>
+			</div>
+
+			<!-- Status -->
+			<div class="space-y-1.5">
+				<Label class="text-sm font-medium">Include completed or incomplete inspections</Label>
+				<Select.Root type="single" bind:value={selectedStatus}>
+					<Select.Trigger class="w-full">
+						{statusItems.find(i => i.value === selectedStatus)?.label ?? 'Select...'}
+					</Select.Trigger>
+					<Select.Content>
+						{#each statusItems as item}
+							<Select.Item value={item.value} label={item.label}/>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</div>
+
+			<!-- Archived -->
+			<div class="space-y-1.5">
+				<Label class="text-sm font-medium">Include active or archived inspections</Label>
+				<Select.Root type="single" bind:value={selectedArchived}>
+					<Select.Trigger class="w-full">
+						{archivedItems.find(i => i.value === selectedArchived)?.label ?? 'Select...'}
+					</Select.Trigger>
+					<Select.Content>
+						{#each archivedItems as item}
+							<Select.Item value={item.value} label={item.label}/>
+						{/each}
+					</Select.Content>
+				</Select.Root>
 			</div>
 		</section>
 
-		<section class="h-[590px] w-[380px] overflow-y-auto rounded-lg bg-bg-light p-4">
-			<div class="text-base font-semibold">Export details</div>
+		<!-- Right: Export details -->
+		<section class="w-[380px] shrink-0 space-y-4 overflow-y-auto rounded-lg border border-border p-5" style="max-height: calc(100vh - 160px);">
+			<h2 class="text-sm font-semibold">Export details</h2>
 
-			<div class="mt-4 text-sm font-medium leading-4">Export data as:</div>
-			<div class="mt-1">
-				<select class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-base" bind:value={selectedExportFormat} onchange={handleExportFormatUpdate}>
-					{#each dataExportFormatItems as item}
-						<option value={item.value}>{item.label}</option>
-					{/each}
-				</select>
-			</div>
-
-			{#if selectedExportFormat != null && ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)}
-				<div>
-					<div class="mt-4 text-sm font-medium leading-4">Database details:</div>
-					<FormTextInput label="Host address" error={dbHostShowError} errorMsg={dbHostErrMsg} bind:value={dbHost}/>
-					<FormNumberInput label="Host port" placeholder={dbPortPlaceholder} maxlength={5} error={dbPortShowError} errorMsg={dbPortErrMsg} bind:value={dbPort} />
-					<FormTextInput label="Username" error={dbUserShowError} errorMsg={dbUserErrMsg} bind:value={dbUser}/>
-					<FormPassword label="Password" error={dbPasswordShowError} errorMsg={dbPasswordErrMsg} bind:value={dbPassword}/>
-					<FormTextInput label="Database name" error={dbNameShowError} errorMsg={dbNameErrMsg} bind:value={dbName}/>
-					<hr class="my-2 border-border">
-				</div>
-			{/if}
-
-			{#if selectedExportFormat != null && selectedExportFormat === 'reports'}
-				<div class="mt-4 text-sm font-medium leading-4">Report format</div>
-				<div class="mt-1">
-					<select class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-base" bind:value={selectedReportFormat}>
-						{#each reportFormatItems as item}
-							<option value={item.value}>{item.label}</option>
+			<div class="space-y-1.5">
+				<Label class="text-sm font-medium">Export data as</Label>
+				<Select.Root type="single" bind:value={selectedExportFormat} onValueChange={handleExportFormatUpdate}>
+					<Select.Trigger class="w-full">
+						{dataExportFormatItems.find(i => i.value === selectedExportFormat)?.label ?? 'Select...'}
+					</Select.Trigger>
+					<Select.Content>
+						{#each dataExportFormatItems as item}
+							<Select.Item value={item.value} label={item.label}/>
 						{/each}
-					</select>
-				</div>
-			{/if}
-
-			{#if selectedExportFormat != null}
-				<div class="mt-4 text-sm font-medium leading-4">Folder location</div>
-				<div class="mt-1">
-					<FolderPicker value={($shadowConfig as any)["Export"]["Path"]} trimLongWords={true} onClick={build === 'windows' ? null : openFolderDialog} error={exportLocationError}/>
-				</div>
-			{/if}
-			{#if build === 'windows'}
-				<div class="mt-1 text-xs font-medium text-text-weak">To change folder location on Windows, move the executable to the new export folder</div>
-			{/if}
-
-			<div class="mt-4 text-sm font-medium leading-4">Export time zone</div>
-			<div class="mt-1">
-				<select class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-base" bind:value={selectedTimeZone}>
-					{#each timezoneItems as item}
-						<option value={item.value}>{item.label}</option>
-					{/each}
-				</select>
+					</Select.Content>
+				</Select.Root>
 			</div>
 
-			<div class="mt-4 text-sm font-medium leading-4">Include:</div>
-			<div class="mt-1 flex items-center gap-2">
-				<input type="checkbox" id="media" name="media" class="size-5 accent-primary" bind:checked={($shadowConfig as any)["Export"]["Media"]}/>
-				<label class="text-sm" for="media">Inspection media</label>
+			{#if ['mysql', 'postgres', 'sqlserver'].includes(selectedExportFormat)}
+				<div class="space-y-3">
+					<Label class="text-sm font-medium">Database details</Label>
+
+					<div class="space-y-1">
+						<Label class="text-xs text-muted-foreground">Host address</Label>
+						<Input bind:value={dbHost} class={dbHostShowError ? 'border-destructive' : ''}/>
+						{#if dbHostShowError}<p class="text-xs text-destructive">Host cannot be empty</p>{/if}
+					</div>
+
+					<div class="space-y-1">
+						<Label class="text-xs text-muted-foreground">Host port</Label>
+						<Input placeholder={dbPortPlaceholder} maxlength={5} bind:value={dbPort} oninput={handlePortInput} class={dbPortShowError ? 'border-destructive' : ''}/>
+						{#if dbPortShowError}<p class="text-xs text-destructive">Please enter a valid port number</p>{/if}
+					</div>
+
+					<div class="space-y-1">
+						<Label class="text-xs text-muted-foreground">Username</Label>
+						<Input bind:value={dbUser} class={dbUserShowError ? 'border-destructive' : ''}/>
+						{#if dbUserShowError}<p class="text-xs text-destructive">Username cannot be empty</p>{/if}
+					</div>
+
+					<div class="space-y-1">
+						<Label class="text-xs text-muted-foreground">Password</Label>
+						<Input type="password" bind:value={dbPassword} class={dbPasswordShowError ? 'border-destructive' : ''}/>
+						{#if dbPasswordShowError}<p class="text-xs text-destructive">Password cannot be empty</p>{/if}
+					</div>
+
+					<div class="space-y-1">
+						<Label class="text-xs text-muted-foreground">Database name</Label>
+						<Input bind:value={dbName} class={dbNameShowError ? 'border-destructive' : ''}/>
+						{#if dbNameShowError}<p class="text-xs text-destructive">Name cannot be empty</p>{/if}
+					</div>
+
+					<Separator/>
+				</div>
+			{/if}
+
+			{#if selectedExportFormat === 'reports'}
+				<div class="space-y-1.5">
+					<Label class="text-sm font-medium">Report format</Label>
+					<Select.Root type="single" bind:value={selectedReportFormat}>
+						<Select.Trigger class="w-full">
+							{reportFormatItems.find(i => i.value === selectedReportFormat)?.label ?? 'Select...'}
+						</Select.Trigger>
+						<Select.Content>
+							{#each reportFormatItems as item}
+								<Select.Item value={item.value} label={item.label}/>
+							{/each}
+						</Select.Content>
+					</Select.Root>
+				</div>
+			{/if}
+
+			{#if selectedExportFormat}
+				<div class="space-y-1.5">
+					<Label class="text-sm font-medium">Folder location</Label>
+					<Button
+						variant="outline"
+						class="h-10 w-full justify-between text-sm font-normal {exportLocationError ? 'border-destructive text-destructive' : ''}"
+						disabled={build === 'windows'}
+						onclick={openFolderDialog}
+						title={($shadowConfig as any)["Export"]["Path"]}
+					>
+						<span class="truncate">{trimPath(($shadowConfig as any)["Export"]["Path"])}</span>
+						<FolderIcon class="size-4 shrink-0 text-muted-foreground"/>
+					</Button>
+					{#if build === 'windows'}
+						<p class="text-xs text-muted-foreground">To change folder location on Windows, move the executable to the new export folder</p>
+					{/if}
+				</div>
+			{/if}
+
+			<div class="space-y-1.5">
+				<Label class="text-sm font-medium">Export time zone</Label>
+				<Select.Root type="single" bind:value={selectedTimeZone}>
+					<Select.Trigger class="w-full">
+						{selectedTimeZone || 'Select...'}
+					</Select.Trigger>
+					<Select.Content>
+						<Select.Item value="UTC" label="UTC"/>
+					</Select.Content>
+				</Select.Root>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<Checkbox id="media" bind:checked={($shadowConfig as any)["Export"]["Media"]}/>
+				<Label for="media" class="cursor-pointer text-sm">Inspection media</Label>
+			</div>
+
+			<div class="flex gap-2 pt-2">
+				<Button variant="outline" class="flex-1" onclick={handleSaveAndClose}>Save and close</Button>
+				<Button class="flex-1" onclick={handleSaveAndExport}>Save and export</Button>
 			</div>
 		</section>
 	</div>
 </div>
-
-<StatusBar/>

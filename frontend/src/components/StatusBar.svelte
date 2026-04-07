@@ -20,21 +20,25 @@
     let currentYear = new Date().getFullYear();
 </script>
 
-<div class="fixed bottom-0 flex w-full justify-between bg-bg-subtle px-4 py-3.5 text-foreground">
-    <div>
+<footer class="fixed bottom-0 left-0 flex w-full items-center justify-between border-t border-border bg-background px-4 py-2.5 text-xs text-muted-foreground">
+    <div class="flex items-center gap-3">
         {#if !isNullOrEmptyObject($latestVersion)}
-            <span>Current version: {$latestVersion['current']}</span>
+            <span>v{$latestVersion['current']}</span>
             {#if $latestVersion['current'] !== $latestVersion['latest'] && $latestVersion['latest'] !== ''}
+                <span class="text-border">|</span>
                 {#if $latestVersion['download_url'] !== ''}
-                <button class="ml-4 cursor-pointer text-primary" onclick={() => openURL($latestVersion['download_url'])}>Latest version available: {$latestVersion['latest']}</button>
+                    <button class="cursor-pointer text-xs text-primary hover:underline" onclick={() => openURL($latestVersion['download_url'])}>
+                        Update available: {$latestVersion['latest']}
+                    </button>
                 {:else}
-                <span class="ml-4">Latest version: {$latestVersion['latest']}</span>
+                    <span>Latest: {$latestVersion['latest']}</span>
                 {/if}
             {/if}
         {/if}
     </div>
-    <div>
-        <button class="cursor-pointer text-primary" onclick={openFolderDialog}>Open logs</button>
-        <span class="ml-4 text-sm">Copyright &copy; {currentYear}</span>
+    <div class="flex items-center gap-3">
+        <button class="cursor-pointer text-xs text-primary hover:underline" onclick={openFolderDialog}>Open logs</button>
+        <span class="text-border">|</span>
+        <span>&copy; {currentYear}</span>
     </div>
-</div>
+</footer>

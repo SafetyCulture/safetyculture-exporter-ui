@@ -1,7 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { EventsOn } from "../../../wailsjs/runtime/runtime.js";
-    import Pill from "./Pill.svelte";
+    import { Badge } from "$lib/components/ui/badge";
+    import * as Table from "$lib/components/ui/table";
 
     const statusQueued = "Queued"
     const statusFailed = "Failed"
@@ -26,60 +27,50 @@
         return str.toLowerCase().replace(/_/g, ' ').replace(/(^|\s)\S/g, (L) => L.toUpperCase());
     }
 
+    const badgeStyles = {
+        success: 'bg-emerald-50 text-emerald-800 hover:bg-emerald-50',
+        info: 'bg-sky-50 text-sky-700 hover:bg-sky-50',
+        neutral: 'bg-muted text-muted-foreground hover:bg-muted',
+        error: 'bg-destructive text-white hover:bg-destructive',
+        cancelled: 'bg-red-50 text-red-700 hover:bg-red-50',
+    } as const;
+
     onMount(() => {
         EventsOn("update-"+name, (newValue: Record<string, unknown>) => {
             counterDecremental = newValue['counter_decremental'] as boolean
             if (newValue['started'] === true && newValue['finished'] === false) {
                 switch (newValue['stage']) {
-                    case 'API_DOWNLOAD':
-                        status = statusDownloading
-                        break
-                    case 'CSV_EXPORT':
-                        status = statusExporting
-                        break
+                    case 'API_DOWNLOAD': status = statusDownloading; break
+                    case 'CSV_EXPORT': status = statusExporting; break
                 }
                 counter = newValue['counter'] as number
             }
 
             if (newValue['started'] === true && newValue['finished'] === true) {
-                if (newValue['has_error'] === false) {
-                    status = statusComplete
-                    counter = 0
-                } else {
-                    status = statusFailed
-                    counter = 0
-                }
+                status = newValue['has_error'] === false ? statusComplete : statusFailed
+                counter = 0
             }
 
             switch (status) {
-                case 'Complete':
-                    pillType = 'success'
-                    break
-                case 'Downloading':
-                case 'Exporting':
-                    pillType = 'info'
-                    break
-                case 'Queued':
-                    pillType = 'neutral'
-                    break
-                case 'Failed':
-                    pillType = 'error'
-                    break
+                case 'Complete': pillType = 'success'; break
+                case 'Downloading': case 'Exporting': pillType = 'info'; break
+                case 'Queued': pillType = 'neutral'; break
+                case 'Failed': pillType = 'error'; break
             }
         })
     })
 </script>
 
-<td class="w-[40%] py-4 text-left">{formatExportItemName(name)}</td>
-<td class="w-[20%] py-4 text-left">
-    {#if cancelled === true}
-        <Pill name="Cancelled" type="cancelled"/>
+<Table.Cell class="w-[40%]">{formatExportItemName(name)}</Table.Cell>
+<Table.Cell class="w-[20%]">
+    {#if cancelled}
+        <Badge variant="secondary" class={badgeStyles.cancelled}>Cancelled</Badge>
     {:else}
-        <Pill name={status} type={pillType}/>
+        <Badge variant="secondary" class={badgeStyles[pillType]}>{status}</Badge>
     {/if}
-</td>
-<td class="py-4 text-left">
-    {#if cancelled !== true}
-        {(counter === -1 || counter === 0) ? "" : counter + " " + (counterDecremental === true ? "remaining" : "exported")}
+</Table.Cell>
+<Table.Cell>
+    {#if !cancelled}
+        {(counter === -1 || counter === 0) ? "" : counter + " " + (counterDecremental ? "remaining" : "exported")}
     {/if}
-</td>
+</Table.Cell>

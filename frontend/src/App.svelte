@@ -8,23 +8,23 @@
     import DataSetFilter from "./routes/DataSetFilter.svelte";
     import ExportStatus from "./routes/ExportStatus.svelte";
     import Update from "./routes/Update.svelte";
+    import StatusBar from "./components/StatusBar.svelte";
+    import { Toaster } from "$lib/components/ui/sonner";
 </script>
 
-<div class="container">
-<Router routes={{
-	'/': Init,
-	'/update': Update,
-	'/welcome': Welcome,
-	'/config': Config,
-	'/config/templates': TemplateFilter,
-	'/config/datasets': DataSetFilter,
-	'/export/status': ExportStatus,
-	'*': Page404
-}} />
+<div class="flex h-screen flex-col">
+	<div class="flex-1 overflow-y-auto pb-10">
+		<Router routes={{
+			'/': Init,
+			'/update': Update,
+			'/welcome': Welcome,
+			'/config': Config,
+			'/config/templates': TemplateFilter,
+			'/config/datasets': DataSetFilter,
+			'/export/status': ExportStatus,
+			'*': Page404
+		}} />
+	</div>
+	<StatusBar/>
 </div>
-
-<style>
-    .container {
-        height: 100vh;
-    }
-</style>
+<Toaster position="top-center" richColors />

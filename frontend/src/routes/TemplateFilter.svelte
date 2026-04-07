@@ -4,10 +4,13 @@
     import { GetTemplates } from "../../wailsjs/go/main/App.js"
     import { push } from "@keenmate/svelte-spa-router";
     import { trim } from "../lib/utils";
-    import Button from "../components/Button.svelte";
-    import Overlay from "../components/Overlay.svelte";
-    import StatusBar from "../components/StatusBar.svelte";
-    import SearchText from "../components/SearchText.svelte";
+    import { Button } from "$lib/components/ui/button";
+    import { Input } from "$lib/components/ui/input";
+    import { Checkbox } from "$lib/components/ui/checkbox";
+    import * as Dialog from "$lib/components/ui/dialog";
+
+    import SearchIcon from '@lucide/svelte/icons/search';
+    import XCircleIcon from '@lucide/svelte/icons/x-circle';
 
     let searchFilter = $state("");
     let isChecked = $state(false);
@@ -16,15 +19,11 @@
     if (Array.isArray($templateCache)) {
         if ($templateCache.length === 0) {
             GetTemplates().then((result: any[]) => {
-                let niceFormat = result.map(elem => {
-                    return {
-                        id: elem.id,
-                        name: elem.name.length > 90
-                            ? `${elem.name.substring(0, 90)}…`
-                            : elem.name,
-                        modified_at: dayjs(elem.modified_at).format('DD-MMM-YYYY')
-                    }
-                }).slice(0, 3000)
+                let niceFormat = result.map(elem => ({
+                    id: elem.id,
+                    name: elem.name.length > 90 ? `${elem.name.substring(0, 90)}…` : elem.name,
+                    modified_at: dayjs(elem.modified_at).format('DD-MMM-YYYY')
+                })).slice(0, 3000)
                 templatesLoaded = true
                 templateCache.set(niceFormat)
                 checkAllSelected()
@@ -34,9 +33,13 @@
         }
     }
 
-    let showEmptyFilter = $derived(searchFilter.length >= 2 && ($templateCache as any[])
-        .filter((v: any) => v.name.toLowerCase().includes(searchFilter.toLowerCase()))
-        .length === 0);
+    let filteredTemplates = $derived(
+        searchFilter.length >= 2
+            ? ($templateCache as any[]).filter((v: any) => v.name.toLowerCase().includes(searchFilter.toLowerCase()))
+            : ($templateCache as any[])
+    );
+
+    let showEmptyFilter = $derived(searchFilter.length >= 2 && filteredTemplates.length === 0);
 
     function checkAllSelected() {
         if (($shadowConfig as any)["Export"]["TemplateIds"].length === 0) {
@@ -46,9 +49,7 @@
     }
 
     function toggleHeaderCheckbox() {
-        if (isChecked) {
-            isChecked = false;
-        }
+        if (isChecked) isChecked = false;
     }
 
     function toggleBodyCheckboxes() {
@@ -59,7 +60,7 @@
     }
 
     function handleDone() {
-        if (showEmptyFilter === true) {
+        if (showEmptyFilter) {
             push("/config")
             return
         }
@@ -68,16 +69,11 @@
         let selectedTemplates: string[] = [];
 
         for (const checkbox of checkboxes) {
-            if (checkbox.checked) {
-                selectedTemplates.push((checkbox as any).__value)
-            }
+            if (checkbox.checked) selectedTemplates.push((checkbox as any).__value)
         }
 
-        if (($templateCache as any[]).length === selectedTemplates.length) {
-            ($shadowConfig as any)["Export"]["TemplateIds"] = []
-        } else {
-            ($shadowConfig as any)["Export"]["TemplateIds"] = selectedTemplates
-        }
+        ($shadowConfig as any)["Export"]["TemplateIds"] =
+            ($templateCache as any[]).length === selectedTemplates.length ? [] : selectedTemplates;
 
         push("/config")
     }
@@ -85,78 +81,68 @@
     checkAllSelected()
 </script>
 
-{#if templatesLoaded === false}
-<Overlay>
-    <div class="pt-8">
-        <img src="../images/loading.gif" alt="loading"/>
-    </div>
-    <div class="pb-12 pt-2 text-center text-lg">Please wait while we processing your request ...</div>
-</Overlay>
+{#if !templatesLoaded}
+<Dialog.Root open={true}>
+    <Dialog.Content class="sm:max-w-md">
+        <Dialog.Header>
+            <Dialog.Title>Loading templates</Dialog.Title>
+            <Dialog.Description>Please wait while we process your request...</Dialog.Description>
+        </Dialog.Header>
+        <div class="flex justify-center py-4">
+            <img src="../images/loading.gif" alt="loading" class="size-12"/>
+        </div>
+    </Dialog.Content>
+</Dialog.Root>
 {/if}
 
-<div class="px-8 pt-8">
+<div class="px-8 pt-6">
     <div class="flex items-center justify-between">
-        <div class="flex items-center">
-            <div class="my-4 font-semibold text-2xl">Template selection</div>
-        </div>
-        <div class="flex items-center">
-            <Button label="Done" type="active-white" onClick={handleDone}/>
+        <h1 class="text-xl font-semibold">Template selection</h1>
+        <Button variant="outline" onclick={handleDone}>Done</Button>
+    </div>
+
+    <div class="mt-5 flex items-center justify-between">
+        <h2 class="text-base font-medium">Select templates</h2>
+        <div class="relative w-[260px]">
+            <SearchIcon class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"/>
+            <Input class="pl-9 pr-9" placeholder="Search" bind:value={searchFilter} />
+            {#if searchFilter.length > 0}
+                <button class="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground" onclick={() => searchFilter = ''}>
+                    <XCircleIcon class="size-4"/>
+                </button>
+            {/if}
         </div>
     </div>
 
-    <div class="mt-4 flex items-center justify-between">
-        <div class="flex items-center">
-            <div class="font-semibold text-xl">Select templates</div>
-        </div>
-        <div class="flex items-center">
-            <SearchText placeholder="Search" bind:value={searchFilter}/>
-        </div>
-    </div>
-
-    {#if showEmptyFilter === true}
-        <div class="mt-4 flex h-[60vh] items-center justify-center">
-            <div class="flex flex-col leading-6">
-                <img class="mx-auto" src="../images/empty_page.svg" alt="empty page"/>
-                <div class="pt-12">
-                    <div>Your search - <span class="font-semibold">{searchFilter.length > 15 ? searchFilter.substring(0, 15).concat(" ...") : searchFilter}</span> - did not match any template names.</div>
-                    <div class="pt-2">
-                        Suggestions:<br/>
-                        &#x2022; Make sure all the words are spelled correctly.<br/>
-                        &#x2022; Try different keywords.<br/>
-                    </div>
-                </div>
-            </div>
+    {#if showEmptyFilter}
+        <div class="mt-8 flex h-[50vh] flex-col items-center justify-center text-center">
+            <img src="../images/empty_page.svg" alt="empty page" class="mb-8"/>
+            <p class="text-sm">Your search - <span class="font-semibold">{searchFilter.length > 15 ? searchFilter.substring(0, 15) + "..." : searchFilter}</span> - did not match any template names.</p>
+            <p class="mt-2 text-sm text-muted-foreground">
+                Make sure all the words are spelled correctly, or try different keywords.
+            </p>
         </div>
     {:else}
-        <div class="mt-4 overflow-hidden">
-            <div class="bg-[#DBDFEB] text-text-gray">
-                <div class="flex h-9 items-center justify-between px-2">
-                    <div class="flex items-center">
-                        <input type="checkbox" class="size-5 accent-primary" onclick={toggleBodyCheckboxes} bind:checked={isChecked}/>
-                        <div class="ml-8">Template</div>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="mr-2">Last modified</div>
-                        <img src="../images/arrow-down.svg" alt="down"/>
-                    </div>
+        <div class="mt-4 overflow-hidden rounded-lg border border-border">
+            <div class="flex h-10 items-center justify-between bg-muted px-3">
+                <div class="flex items-center">
+                    <input type="checkbox" class="size-4 accent-primary" onclick={toggleBodyCheckboxes} bind:checked={isChecked}/>
+                    <span class="ml-4 text-sm font-medium text-muted-foreground">Template</span>
                 </div>
+                <span class="text-sm font-medium text-muted-foreground">Last modified</span>
             </div>
-            <div class="table-body mt-2 max-h-[calc(100vh-300px)] overflow-y-scroll text-text-gray">
-                {#each $templateCache as { id, name, modified_at }, i}
-                    <div class="flex h-13 items-center justify-between px-2 pr-2" class:hidden={searchFilter.length >= 2 && !(name as string).toLowerCase().includes(searchFilter.toLowerCase())}>
+            <div class="table-body max-h-[calc(100vh-280px)] overflow-y-auto">
+                {#each filteredTemplates as { id, name, modified_at }}
+                    <div class="flex h-11 items-center justify-between border-t border-border px-3">
                         <div class="flex items-center">
-                            <input type="checkbox" class="size-5 accent-primary" onclick={toggleHeaderCheckbox} bind:group={($shadowConfig as any)["Export"]["TemplateIds"]} value={id}/>
-                            <img class="ml-8" src="../images/template-icon.svg" alt="template"/>
-                            <div class="ml-2">{trim(name as string, 90)}</div>
+                            <input type="checkbox" class="size-4 accent-primary" onclick={toggleHeaderCheckbox} bind:group={($shadowConfig as any)["Export"]["TemplateIds"]} value={id}/>
+                            <img class="ml-4 size-4" src="../images/template-icon.svg" alt="template"/>
+                            <span class="ml-2 text-sm">{trim(name as string, 90)}</span>
                         </div>
-                        <div class="flex items-center">
-                            <div>{modified_at}</div>
-                        </div>
+                        <span class="text-sm text-muted-foreground">{modified_at}</span>
                     </div>
                 {/each}
             </div>
         </div>
     {/if}
 </div>
-
-<StatusBar/>

@@ -3,11 +3,12 @@
     import Status from "./../components/Export/Status.svelte";
     import { shadowConfig, exportConfig } from "../lib/store";
     import { onMount } from "svelte";
-    import { EventsOn, Quit } from "../../wailsjs/runtime/runtime.js";
-    import Button from "../components/Button.svelte";
+    import { EventsOn } from "../../wailsjs/runtime/runtime.js";
+    import { Button } from "$lib/components/ui/button";
+    import * as Dialog from "$lib/components/ui/dialog";
+    import * as Table from "$lib/components/ui/table";
     import { push } from "@keenmate/svelte-spa-router";
-    import Overlay from "../components/Overlay.svelte";
-    import StatusBar from "../components/StatusBar.svelte";
+
 
     let feedsToExport = ($exportConfig as any)['items'] as string[];
     let exportType = ($shadowConfig as any)["Session"]["ExportType"] as string;
@@ -17,97 +18,69 @@
 
     onMount(() => {
         EventsOn("finished-export", (newValue: boolean) => {
-            if (newValue === true) {
-                exportCompleted = true
-            }
+            if (newValue === true) exportCompleted = true
         })
     })
-
-    function handleCancel() {
-        cancelTriggered = true
-        CancelExport()
-    }
-
-    function handleClose() {
-        Quit()
-    }
-
-    function goBack() {
-        push("/config")
-    }
-
-    function openExportFolder() {
-        OpenDirectory(($shadowConfig as any)["Export"]["Path"])
-    }
 
     ReadExportStatus();
 </script>
 
-<div class="h-full bg-bg-light pt-8 pr-8 pl-8">
+<div class="px-8 pt-6">
     <section class="flex items-center justify-between">
-        <div class="flex items-center">
-            <div class="my-4 font-semibold text-2xl">Export status</div>
-        </div>
-        <div class="flex items-center">
-            <div class="inline">
-                {#if cancelTriggered}
-                    <img src='/images/warning-red.svg' alt="export cancelled icon">
-                {:else if exportCompleted}
-                    <img src='/images/complete.svg' alt="export completed icon">
-                {:else}
-                    <img src='/images/in-progress.svg' alt="export in progress icon">
-                {/if}
-            </div>
-            <div class="inline flex items-center px-2 pr-4 text-sm">
-                {#if cancelTriggered}
-                    Export cancelled
-                {:else if exportCompleted}
-                    Export complete
-                {:else}
-                    In progress
-                {/if}
-            </div>
+        <h1 class="text-xl font-semibold">Export status</h1>
+        <div class="flex items-center gap-2">
+            {#if cancelTriggered}
+                <img src='/images/warning-red.svg' alt="cancelled"/>
+                <span class="text-sm">Export cancelled</span>
+            {:else if exportCompleted}
+                <img src='/images/complete.svg' alt="complete"/>
+                <span class="text-sm">Export complete</span>
+            {:else}
+                <img src='/images/in-progress.svg' alt="in progress"/>
+                <span class="text-sm">In progress</span>
+            {/if}
 
             {#if !exportCompleted}
-                <Button label="Cancel export" type="active-red" onClick={handleCancel}/>
-            {:else}
-                {#if !cancelTriggered}
-                    {#if exportType === "csv" || exportType === "reports"}
-                        <Button label="Open export folder" type="active-white" onClick={openExportFolder}/>
-                    {/if}
-                    <Button label="Close" clazz="ml-2" type="active-purple" onClick={handleClose}/>
-                {:else}
-                    {#if exportType === "reports"}
-                        <Button label="Open export folder" type="active-white" onClick={openExportFolder}/>
-                    {/if}
-                    <Button label="Go Back" type="active-purple" onClick={goBack}/>
+                <Button variant="destructive" onclick={() => { cancelTriggered = true; CancelExport(); }}>Cancel export</Button>
+            {:else if !cancelTriggered}
+                {#if exportType === "csv" || exportType === "reports"}
+                    <Button variant="outline" onclick={() => OpenDirectory(($shadowConfig as any)["Export"]["Path"])}>Open export folder</Button>
                 {/if}
+                <Button onclick={() => push("/config")}>Done</Button>
+            {:else}
+                {#if exportType === "reports"}
+                    <Button variant="outline" onclick={() => OpenDirectory(($shadowConfig as any)["Export"]["Path"])}>Open export folder</Button>
+                {/if}
+                <Button onclick={() => push("/config")}>Go Back</Button>
             {/if}
         </div>
     </section>
 
-    <div id="overlay-cancel-export">
-        {#if cancelTriggered && exportCompleted === false}
-            <Overlay>Cancelling export...</Overlay>
-        {/if}
-    </div>
+    {#if cancelTriggered && !exportCompleted}
+        <Dialog.Root open={true}>
+            <Dialog.Content class="sm:max-w-md">
+                <Dialog.Header>
+                    <Dialog.Title>Cancelling export...</Dialog.Title>
+                    <Dialog.Description>Please wait while the export is being cancelled.</Dialog.Description>
+                </Dialog.Header>
+            </Dialog.Content>
+        </Dialog.Root>
+    {/if}
 
-    <div class="mt-4 h-[calc(100vh-200px)] overflow-y-scroll rounded-lg bg-white px-4 py-5">
-        <table class="w-full border-collapse">
-            <thead>
-                <tr class="text-sm font-medium text-text-weak">
-                    <th class="w-[40%] text-left">Export item</th>
-                    <th class="w-[20%] text-left">Status</th>
-                    <th class="text-left">&nbsp;</th>
-                </tr>
-            </thead>
-            <tbody>
-            {#each feedsToExport as feed}
-                <tr class="border-b border-[#EEF1F7] text-sm"><Status name={feed} cancelled={cancelTriggered}></Status></tr>
-            {/each}
-            </tbody>
-        </table>
+    <div class="mt-4 max-h-[calc(100vh-200px)] overflow-y-auto rounded-lg border border-border">
+        <Table.Root>
+            <Table.Header>
+                <Table.Row>
+                    <Table.Head class="w-[40%]">Export item</Table.Head>
+                    <Table.Head class="w-[20%]">Status</Table.Head>
+                    <Table.Head></Table.Head>
+                </Table.Row>
+            </Table.Header>
+            <Table.Body>
+                {#each feedsToExport as feed}
+                    <Table.Row><Status name={feed} cancelled={cancelTriggered}/></Table.Row>
+                {/each}
+            </Table.Body>
+        </Table.Root>
     </div>
 </div>
-
-<StatusBar/>
