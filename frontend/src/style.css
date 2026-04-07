@@ -1,3 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #4740D4;
+  --color-primary-light: #675DF4;
+  --color-danger: #C62F35;
+  --color-danger-dark: #A8242A;
+  --color-text: #1D2330;
+  --color-text-gray: #3F495A;
+  --color-text-weak: #545F70;
+  --color-text-muted: #97A3B5;
+  --color-border: #BFC5D4;
+  --color-bg-light: #E9EEF6;
+  --color-bg-subtle: #F8F9FC;
+
+  --font-sans: 'NotoSansRegular', Tahoma, sans-serif;
+  --font-light: 'NotoSansLight', Tahoma, sans-serif;
+  --font-medium: 'NotoSansMedium', Tahoma, sans-serif;
+  --font-semibold: 'NotoSansSemiBold', Tahoma, sans-serif;
+}
+
 *, *:before, *:after {
     box-sizing: border-box;
 }
@@ -22,7 +43,6 @@
     src: url('../fonts/NotoSans-Regular.ttf')
 }
 
-
 @font-face {
     font-family: 'NotoSansMedium';
     src: url('../fonts/NotoSans-Medium.ttf')
@@ -41,13 +61,13 @@ body {
     color: #1D2330;
     background-color: #FFFFFF;
 
-    -ms-overflow-style: none; /* for Internet Explorer, Edge */
-    scrollbar-width: none; /* for Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     overflow: auto;
     margin: 0;
     padding: 0;
 }
 
 body::-webkit-scrollbar {
-    display: none; /* for Chrome, Safari, and Opera */
+    display: none;
 }

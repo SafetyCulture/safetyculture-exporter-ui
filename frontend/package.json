@@ -15,9 +15,11 @@
   },
   "dependencies": {
     "@keenmate/svelte-spa-router": "^5.1.1",
+    "@tailwindcss/vite": "^4.2.2",
     "dayjs": "^1.11.7",
     "dayjs-plugin-utc": "^0.1.2",
     "svelte-select": "^5.0.0-beta.40",
-    "svelte-table": "^0.5.2"
+    "svelte-table": "^0.5.2",
+    "tailwindcss": "^4.2.2"
   }
 }
