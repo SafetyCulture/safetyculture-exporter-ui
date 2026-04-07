@@ -3,7 +3,7 @@
 
 	import {push} from '@keenmate/svelte-spa-router'
 	import {ValidateApiKey} from "../../wailsjs/go/main/App.js"
-	import {shadowConfig, templateCache} from '../lib/store.js';
+	import {shadowConfig, templateCache} from '../lib/store';
 	import ValidatableInput from "../components/ValidatableInput.svelte";
 	import Button from "../components/Button.svelte";
 	import StatusBar from "../components/StatusBar.svelte";

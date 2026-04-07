@@ -4,10 +4,10 @@
         GetSettingDir
     } from "../../wailsjs/go/main/App.js"
 
-    import {latestVersion} from '../lib/store.js';
+    import {latestVersion} from '../lib/store';
 
     import {BrowserOpenURL} from "../../wailsjs/runtime/runtime.js";
-    import {isNullOrEmptyObject} from "../lib/utils.js";
+    import {isNullOrEmptyObject} from "../lib/utils";
 
     async function openFolderDialog() {
         OpenDirectory(await GetSettingDir())

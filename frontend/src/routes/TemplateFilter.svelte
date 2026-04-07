@@ -1,10 +1,10 @@
 <script>
     import './common.css';
     import dayjs from 'dayjs';
-    import {shadowConfig, templateCache} from "../lib/store.js";
+    import {shadowConfig, templateCache} from "../lib/store";
     import {GetTemplates} from "../../wailsjs/go/main/App.js"
     import {push} from "@keenmate/svelte-spa-router";
-    import {trim} from "../lib/utils.js";
+    import {trim} from "../lib/utils";
     import Button from "../components/Button.svelte";
     import Overlay from "../components/Overlay.svelte";
     import StatusBar from "../components/StatusBar.svelte";

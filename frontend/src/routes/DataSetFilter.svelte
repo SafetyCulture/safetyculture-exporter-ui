@@ -1,6 +1,6 @@
 <script>
     import './common.css';
-    import {shadowConfig} from "../lib/store.js";
+    import {shadowConfig} from "../lib/store";
     import {push} from "@keenmate/svelte-spa-router";
     import Button from "../components/Button.svelte";
     import StatusBar from "../components/StatusBar.svelte";

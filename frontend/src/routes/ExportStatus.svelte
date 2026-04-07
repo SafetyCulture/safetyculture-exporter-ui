@@ -2,7 +2,7 @@
     import './common.css';
     import {CancelExport, ReadExportStatus, OpenDirectory} from "../../wailsjs/go/main/App.js"
     import Status from "./../components/Export/Status.svelte";
-    import {shadowConfig, exportConfig} from "../lib/store.js";
+    import {shadowConfig, exportConfig} from "../lib/store";
     import {onMount} from "svelte";
     import {EventsOn, Quit} from "../../wailsjs/runtime/runtime.js";
     import Button from "../components/Button.svelte";

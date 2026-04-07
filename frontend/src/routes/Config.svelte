@@ -14,8 +14,8 @@
 		SaveSettings,
 		SelectDirectory, ValidateExportDirectory
 	} from "../../wailsjs/go/main/App.js"
-	import {exportConfig, shadowConfig} from '../lib/store.js';
-	import {allTables} from "../lib/utils.js";
+	import {exportConfig, shadowConfig} from '../lib/store';
+	import {allTables} from "../lib/utils";
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
 	import {push} from "@keenmate/svelte-spa-router";
 	import FormTextInput from "../components/FormTextInput.svelte";

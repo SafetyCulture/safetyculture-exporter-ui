@@ -1,8 +1,8 @@
 <script>
     import {push} from '@keenmate/svelte-spa-router'
     import {ReadVersion, GetSettings, ValidateApiKey} from "../../wailsjs/go/main/App.js"
-    import {shadowConfig, latestVersion, emptyStores} from '../lib/store.js';
-    import {isNullOrEmptyObject} from "../lib/utils.js";
+    import {shadowConfig, latestVersion, emptyStores} from '../lib/store';
+    import {isNullOrEmptyObject} from "../lib/utils";
     
     async function processVersion() {
         return await ReadVersion().then(result => {
