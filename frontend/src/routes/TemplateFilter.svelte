@@ -6,15 +6,35 @@
   import { trim } from '../lib/utils';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
-
+  import { Checkbox } from '$lib/components/ui/checkbox';
   import * as Dialog from '$lib/components/ui/dialog';
+  import * as Table from '$lib/components/ui/table';
+  import { SortButton } from '$lib/components/ui/data-table';
+  import {
+    type ColumnDef,
+    type SortingState,
+    getCoreRowModel,
+    getSortedRowModel,
+    getFilteredRowModel,
+    createTable,
+    FlexRender,
+  } from '@tanstack/svelte-table';
+  import { renderComponent } from '@tanstack/svelte-table';
 
   import SearchIcon from '@lucide/svelte/icons/search';
   import XCircleIcon from '@lucide/svelte/icons/x-circle';
 
+  interface Template {
+    id: string;
+    name: string;
+    modified_at: string;
+    modified_at_raw: string;
+  }
+
   let searchFilter = $state('');
-  let isChecked = $state(false);
   let templatesLoaded = $state(false);
+  let tableData = $state<Template[]>([]);
+  let selectedIds = $state<Set<string>>(new Set());
 
   if (Array.isArray($templateCache)) {
     if ($templateCache.length === 0) {
@@ -24,71 +44,118 @@
             id: elem.id,
             name: elem.name.length > 90 ? `${elem.name.substring(0, 90)}…` : elem.name,
             modified_at: dayjs(elem.modified_at).format('DD-MMM-YYYY'),
+            modified_at_raw: elem.modified_at,
           }))
           .slice(0, 3000);
         templatesLoaded = true;
         templateCache.set(niceFormat);
-        checkAllSelected();
+        tableData = niceFormat;
+        initSelection();
       });
     } else {
       templatesLoaded = true;
+      tableData = $templateCache as Template[];
+      initSelection();
     }
   }
 
-  let filteredTemplates = $derived(
-    searchFilter.length >= 2
-      ? ($templateCache as any[]).filter((v: any) =>
-          v.name.toLowerCase().includes(searchFilter.toLowerCase()),
-        )
-      : ($templateCache as any[]),
-  );
-
-  let showEmptyFilter = $derived(searchFilter.length >= 2 && filteredTemplates.length === 0);
-
-  function checkAllSelected() {
-    if (($shadowConfig as any)['Export']['TemplateIds'].length === 0) {
-      ($shadowConfig as any)['Export']['TemplateIds'] = ($templateCache as any[]).map(
-        (e: any) => e.id,
-      );
-      isChecked = true;
+  function initSelection() {
+    const existing = ($shadowConfig as any)['Export']['TemplateIds'] as string[];
+    if (existing.length === 0) {
+      selectedIds = new Set(tableData.map((t) => t.id));
+      ($shadowConfig as any)['Export']['TemplateIds'] = tableData.map((t) => t.id);
+    } else {
+      selectedIds = new Set(existing);
     }
   }
 
-  function toggleHeaderCheckbox() {
-    if (isChecked) isChecked = false;
+  let allSelected = $derived(tableData.length > 0 && selectedIds.size === tableData.length);
+
+  function toggleAll() {
+    if (allSelected) {
+      selectedIds = new Set();
+    } else {
+      selectedIds = new Set(tableData.map((t) => t.id));
+    }
   }
 
-  function toggleBodyCheckboxes() {
-    const checkboxes = document.querySelectorAll(
-      '.table-body input[type="checkbox"]',
-    ) as NodeListOf<HTMLInputElement>;
-    for (const checkbox of checkboxes) {
-      checkbox.checked = !isChecked;
-    }
+  function toggleRow(id: string) {
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    selectedIds = next;
   }
 
   function handleDone() {
-    if (showEmptyFilter) {
-      push('/config');
-      return;
-    }
-
-    const checkboxes = document.querySelectorAll(
-      '.table-body input[type="checkbox"]',
-    ) as NodeListOf<HTMLInputElement>;
-    let selectedTemplates: string[] = [];
-
-    for (const checkbox of checkboxes) {
-      if (checkbox.checked) selectedTemplates.push((checkbox as any).__value);
-    }
-
+    const selected = [...selectedIds];
     ($shadowConfig as any)['Export']['TemplateIds'] =
-      ($templateCache as any[]).length === selectedTemplates.length ? [] : selectedTemplates;
-
+      selected.length === tableData.length ? [] : selected;
     push('/config');
   }
 
-  checkAllSelected();
+  // TanStack Table setup
+  let sorting = $state<SortingState>([]);
+  let globalFilter = $state('');
+
+  // Keep globalFilter in sync with searchFilter
+  $effect(() => {
+    globalFilter = searchFilter.length >= 2 ? searchFilter : '';
+  });
+
+  const columns: ColumnDef<Template>[] = [
+    {
+      id: 'select',
+      header: () => '',
+      cell: ({ row }) => row.original.id,
+      enableSorting: false,
+      enableGlobalFilter: false,
+    },
+    {
+      accessorKey: 'name',
+      header: 'Template',
+      cell: ({ row }) => trim(row.original.name, 90),
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'modified_at_raw',
+      header: ({ column }) =>
+        renderComponent(SortButton, {
+          column: column,
+          label: 'Last modified',
+        }),
+      cell: ({ row }) => row.original.modified_at,
+    },
+  ];
+
+  const table = createTable<Template>({
+    get data() {
+      return tableData;
+    },
+    columns,
+    state: {
+      get sorting() {
+        return sorting;
+      },
+      get globalFilter() {
+        return globalFilter;
+      },
+    },
+    onSortingChange: (updater) => {
+      sorting = typeof updater === 'function' ? updater(sorting) : updater;
+    },
+    onGlobalFilterChange: (updater) => {
+      globalFilter = typeof updater === 'function' ? updater(globalFilter) : updater;
+    },
+    globalFilterFn: (row, _columnId, filterValue) => {
+      return row.original.name.toLowerCase().includes(filterValue.toLowerCase());
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
+
+  let visibleRows = $derived(table.getRowModel().rows);
+  let showEmptyFilter = $derived(searchFilter.length >= 2 && visibleRows.length === 0);
 </script>
 
 {#if !templatesLoaded}
@@ -143,36 +210,53 @@
     </div>
   {:else}
     <div class="mt-4 overflow-hidden rounded-lg border border-border">
-      <div class="flex h-10 items-center justify-between bg-muted px-3">
-        <div class="flex items-center">
-          <input
-            type="checkbox"
-            class="size-4 accent-primary"
-            onclick={toggleBodyCheckboxes}
-            bind:checked={isChecked}
-          />
-          <span class="ml-4 text-sm font-medium text-muted-foreground">Template</span>
-        </div>
-        <span class="text-sm font-medium text-muted-foreground">Last modified</span>
-      </div>
-      <div class="table-body max-h-[calc(100vh-280px)] overflow-y-auto">
-        {#each filteredTemplates as { id, name, modified_at } (id)}
-          <div class="flex h-11 items-center justify-between border-t border-border px-3">
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                class="size-4 accent-primary"
-                onclick={toggleHeaderCheckbox}
-                bind:group={($shadowConfig as any)['Export']['TemplateIds']}
-                value={id}
-              />
-              <img class="ml-4 size-4" src="../images/template-icon.svg" alt="template" />
-              <span class="ml-2 text-sm">{trim(name as string, 90)}</span>
-            </div>
-            <span class="text-sm text-muted-foreground">{modified_at}</span>
-          </div>
-        {/each}
-      </div>
+      <Table.Root>
+        <Table.Header>
+          {#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
+            <Table.Row class="bg-muted hover:bg-muted">
+              {#each headerGroup.headers as header (header.id)}
+                <Table.Head>
+                  {#if header.id === 'select'}
+                    <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+                  {:else if !header.isPlaceholder}
+                    <FlexRender
+                      content={header.column.columnDef.header}
+                      context={header.getContext()}
+                    />
+                  {/if}
+                </Table.Head>
+              {/each}
+            </Table.Row>
+          {/each}
+        </Table.Header>
+        <Table.Body class="max-h-[calc(100vh-280px)] overflow-y-auto">
+          {#each visibleRows as row (row.id)}
+            <Table.Row>
+              {#each row.getVisibleCells() as cell (cell.id)}
+                <Table.Cell>
+                  {#if cell.column.id === 'select'}
+                    <Checkbox
+                      checked={selectedIds.has(row.original.id)}
+                      onCheckedChange={() => toggleRow(row.original.id)}
+                    />
+                  {:else if cell.column.id === 'name'}
+                    <div class="flex items-center">
+                      <img class="mr-2 size-4" src="../images/template-icon.svg" alt="template" />
+                      <span class="text-sm">{trim(row.original.name, 90)}</span>
+                    </div>
+                  {:else}
+                    <span class="text-sm text-muted-foreground">{row.original.modified_at}</span>
+                  {/if}
+                </Table.Cell>
+              {/each}
+            </Table.Row>
+          {:else}
+            <Table.Row>
+              <Table.Cell colspan={3} class="h-24 text-center">No results.</Table.Cell>
+            </Table.Row>
+          {/each}
+        </Table.Body>
+      </Table.Root>
     </div>
   {/if}
 </div>
