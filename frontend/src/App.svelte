@@ -1,5 +1,5 @@
 <script>
-    import Router from 'svelte-spa-router';
+    import { Router } from '@keenmate/svelte-spa-router';
     import Init from "./routes/Init.svelte"
     import Welcome from "./routes/Welcome.svelte"
     import Config from "./routes/Config.svelte";

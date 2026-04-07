@@ -17,7 +17,7 @@
 	import {exportConfig, shadowConfig} from '../lib/store.js';
 	import {allTables} from "../lib/utils.js";
 	import {Quit} from "../../wailsjs/runtime/runtime.js";
-	import {push} from "svelte-spa-router";
+	import {push} from "@keenmate/svelte-spa-router";
 	import FormTextInput from "../components/FormTextInput.svelte";
 	import Button from "../components/Button.svelte";
 	import Overlay from "../components/Overlay.svelte";

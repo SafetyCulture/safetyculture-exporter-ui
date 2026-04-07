@@ -3,7 +3,7 @@
     import dayjs from 'dayjs';
     import {shadowConfig, templateCache} from "../lib/store.js";
     import {GetTemplates} from "../../wailsjs/go/main/App.js"
-    import {push} from "svelte-spa-router";
+    import {push} from "@keenmate/svelte-spa-router";
     import {trim} from "../lib/utils.js";
     import Button from "../components/Button.svelte";
     import Overlay from "../components/Overlay.svelte";

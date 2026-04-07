@@ -1,5 +1,5 @@
 <script>
-    import {push} from 'svelte-spa-router'
+    import {push} from '@keenmate/svelte-spa-router'
     import {ReadVersion, GetSettings, ValidateApiKey} from "../../wailsjs/go/main/App.js"
     import {shadowConfig, latestVersion, emptyStores} from '../lib/store.js';
     import {isNullOrEmptyObject} from "../lib/utils.js";

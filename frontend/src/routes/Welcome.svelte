@@ -1,7 +1,7 @@
 <script>
 	import './common.css';
 
-	import {push} from 'svelte-spa-router'
+	import {push} from '@keenmate/svelte-spa-router'
 	import {ValidateApiKey} from "../../wailsjs/go/main/App.js"
 	import {shadowConfig, templateCache} from '../lib/store.js';
 	import ValidatableInput from "../components/ValidatableInput.svelte";

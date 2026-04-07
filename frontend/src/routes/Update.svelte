@@ -2,7 +2,7 @@
     import {latestVersion} from '../lib/store.js';
     import Button from "../components/Button.svelte";
     import {TriggerUpdate} from "../../wailsjs/go/main/App.js";
-    import {push} from "svelte-spa-router";
+    import {push} from "@keenmate/svelte-spa-router";
     import {BrowserOpenURL, Quit} from "../../wailsjs/runtime/runtime.js";
     
     let updateStatus = "updating"

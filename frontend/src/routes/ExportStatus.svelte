@@ -6,7 +6,7 @@
     import {onMount} from "svelte";
     import {EventsOn, Quit} from "../../wailsjs/runtime/runtime.js";
     import Button from "../components/Button.svelte";
-    import {push} from "svelte-spa-router";
+    import {push} from "@keenmate/svelte-spa-router";
     import Overlay from "../components/Overlay.svelte";
     import StatusBar from "../components/StatusBar.svelte";
 
