@@ -21,9 +21,6 @@
     "bits-ui": "^2.17.2",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.7",
-    "dayjs-plugin-utc": "^0.1.2",
-    "svelte-select": "^5.0.0-beta.40",
-    "svelte-table": "^0.5.2",
     "tailwind-merge": "^3.5.0",
     "tailwind-variants": "^3.2.2",
     "tailwindcss": "^4.2.2"
