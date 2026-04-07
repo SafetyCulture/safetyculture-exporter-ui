@@ -1,18 +1,40 @@
 @import "tailwindcss";
 
 @theme {
+  /* shadcn semantic colors mapped to app design tokens */
+  --color-background: #FFFFFF;
+  --color-foreground: #1D2330;
   --color-primary: #4740D4;
+  --color-primary-foreground: #FFFFFF;
   --color-primary-light: #675DF4;
+  --color-secondary: #F8F9FC;
+  --color-secondary-foreground: #1D2330;
+  --color-muted: #E9EEF6;
+  --color-muted-foreground: #545F70;
+  --color-accent: #E9EEF6;
+  --color-accent-foreground: #1D2330;
+  --color-destructive: #C62F35;
+  --color-destructive-foreground: #FFFFFF;
+  --color-border: #BFC5D4;
+  --color-input: #BFC5D4;
+  --color-ring: #4740D4;
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #1D2330;
+
+  /* app-specific colors */
   --color-danger: #C62F35;
   --color-danger-dark: #A8242A;
-  --color-text: #1D2330;
   --color-text-gray: #3F495A;
   --color-text-weak: #545F70;
   --color-text-muted: #97A3B5;
-  --color-border: #BFC5D4;
   --color-bg-light: #E9EEF6;
   --color-bg-subtle: #F8F9FC;
 
+  /* border radius */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  /* fonts */
   --font-sans: 'NotoSansRegular', Tahoma, sans-serif;
   --font-light: 'NotoSansLight', Tahoma, sans-serif;
   --font-medium: 'NotoSansMedium', Tahoma, sans-serif;

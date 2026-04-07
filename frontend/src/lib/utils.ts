@@ -1,3 +1,10 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
+
 export function trim(value: string, size: number): string {
     if (value.length > size) {
         return value.substring(0, size).concat(" ...")
