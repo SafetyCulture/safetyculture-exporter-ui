@@ -1,46 +1,46 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Force light mode — prevent dark: classes from activating on dark OS theme */
 @custom-variant dark (&.dark);
 
 @theme {
   /* shadcn semantic colors mapped to app design tokens */
-  --color-background: #FFFFFF;
-  --color-foreground: #1D2330;
-  --color-primary: #4740D4;
-  --color-primary-foreground: #FFFFFF;
-  --color-primary-light: #675DF4;
-  --color-secondary: #F8F9FC;
-  --color-secondary-foreground: #1D2330;
-  --color-muted: #E9EEF6;
-  --color-muted-foreground: #545F70;
-  --color-accent: #E9EEF6;
-  --color-accent-foreground: #1D2330;
-  --color-destructive: #C62F35;
-  --color-destructive-foreground: #FFFFFF;
-  --color-border: #BFC5D4;
-  --color-input: #BFC5D4;
-  --color-ring: #4740D4;
-  --color-popover: #FFFFFF;
-  --color-popover-foreground: #1D2330;
+  --color-background: #ffffff;
+  --color-foreground: #1d2330;
+  --color-primary: #4740d4;
+  --color-primary-foreground: #ffffff;
+  --color-primary-light: #675df4;
+  --color-secondary: #f8f9fc;
+  --color-secondary-foreground: #1d2330;
+  --color-muted: #e9eef6;
+  --color-muted-foreground: #545f70;
+  --color-accent: #e9eef6;
+  --color-accent-foreground: #1d2330;
+  --color-destructive: #c62f35;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #bfc5d4;
+  --color-input: #bfc5d4;
+  --color-ring: #4740d4;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1d2330;
 
   /* app-specific colors */
-  --color-danger: #C62F35;
-  --color-danger-dark: #A8242A;
-  --color-text-gray: #3F495A;
-  --color-text-weak: #545F70;
-  --color-text-muted: #97A3B5;
-  --color-bg-light: #E9EEF6;
-  --color-bg-subtle: #F8F9FC;
+  --color-danger: #c62f35;
+  --color-danger-dark: #a8242a;
+  --color-text-gray: #3f495a;
+  --color-text-weak: #545f70;
+  --color-text-muted: #97a3b5;
+  --color-bg-light: #e9eef6;
+  --color-bg-subtle: #f8f9fc;
 
   /* border radius */
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
 
   /* slightly larger base text for desktop app */
-  --text-xs: 0.8125rem;     /* 13px (was 12px) */
+  --text-xs: 0.8125rem; /* 13px (was 12px) */
   --text-xs--line-height: 1.25rem;
-  --text-sm: 0.9375rem;     /* 15px (was 14px) */
+  --text-sm: 0.9375rem; /* 15px (was 14px) */
   --text-sm--line-height: 1.375rem;
 
   /* fonts */
@@ -48,74 +48,76 @@
 }
 
 @font-face {
-    font-family: 'NotoSans';
-    src: url('/fonts/NotoSans-Thin.ttf') format('truetype');
-    font-weight: 100;
-    font-style: normal;
+  font-family: 'NotoSans';
+  src: url('/fonts/NotoSans-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'NotoSans';
-    src: url('/fonts/NotoSans-ExtraLight.ttf') format('truetype');
-    font-weight: 200;
-    font-style: normal;
+  font-family: 'NotoSans';
+  src: url('/fonts/NotoSans-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'NotoSans';
-    src: url('/fonts/NotoSans-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
+  font-family: 'NotoSans';
+  src: url('/fonts/NotoSans-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'NotoSans';
-    src: url('/fonts/NotoSans-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
+  font-family: 'NotoSans';
+  src: url('/fonts/NotoSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'NotoSans';
-    src: url('/fonts/NotoSans-Medium.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
+  font-family: 'NotoSans';
+  src: url('/fonts/NotoSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'NotoSans';
-    src: url('/fonts/NotoSans-SemiBold.ttf') format('truetype');
-    font-weight: 600;
-    font-style: normal;
+  font-family: 'NotoSans';
+  src: url('/fonts/NotoSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'NotoSans';
-    src: url('/fonts/NotoSans-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
+  font-family: 'NotoSans';
+  src: url('/fonts/NotoSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
 }
 
-*, *:before, *:after {
-    box-sizing: border-box;
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
 }
 
 #app {
-    height: 100vh;
+  height: 100vh;
 }
 
 body {
-    font-style: normal;
-    letter-spacing: .005rem;
-    color: #1D2330;
-    background-color: #FFFFFF;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    overflow: auto;
-    margin: 0;
-    padding: 0;
+  font-style: normal;
+  letter-spacing: 0.005rem;
+  color: #1d2330;
+  background-color: #ffffff;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
 }
 
 body::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
