@@ -136,7 +136,7 @@
   dayjs.extend(utc);
   dayjs.extend(timezone);
 
-  const minCalDate = calToday(getLocalTimeZone()).subtract({ years: 1 });
+  const minCalDate = calToday(getLocalTimeZone()).subtract({ years: 10 });
   const maxCalDate = calToday(getLocalTimeZone());
 
   function initCalendarDate(): CalendarDate {
@@ -153,21 +153,30 @@
   let calendarValue = $state<CalendarDate>(initCalendarDate());
   let datePickerOpen = $state(false);
   let dateInputValue = $state(formatCalDate(initCalendarDate()));
+  let dateInputError = $state(false);
 
   function formatCalDate(d: CalendarDate): string {
     return `${String(d.day).padStart(2, '0')}/${String(d.month).padStart(2, '0')}/${d.year}`;
   }
 
-  function handleDateInput() {
-    const match = dateInputValue.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-    if (!match) return;
+  function tryParseDate(input: string): CalendarDate | null {
+    const match = input.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (!match) return null;
     const [, dd, mm, yyyy] = match;
-    let parsed: CalendarDate;
     try {
-      parsed = new CalendarDate(+yyyy, +mm, +dd);
+      return new CalendarDate(+yyyy, +mm, +dd);
     } catch {
+      return null;
+    }
+  }
+
+  function handleDateInput() {
+    const parsed = tryParseDate(dateInputValue);
+    if (!parsed) {
+      dateInputError = true;
       return;
     }
+    dateInputError = false;
 
     if (parsed.compare(minCalDate) < 0) {
       toast.error(`Date cannot be earlier than ${formatCalDate(minCalDate)}`);
@@ -179,6 +188,17 @@
       dateInputValue = formatCalDate(maxCalDate);
     } else {
       calendarValue = parsed;
+    }
+  }
+
+  function handleDatePickerClose(open: boolean) {
+    if (!open) {
+      const parsed = tryParseDate(dateInputValue);
+      if (!parsed || parsed.compare(minCalDate) < 0 || parsed.compare(maxCalDate) > 0) {
+        toast.error('Invalid date (DD/MM/YYYY), reverting to previous value');
+        dateInputValue = formatCalDate(calendarValue);
+      }
+      dateInputError = false;
     }
   }
 
@@ -539,7 +559,7 @@
       <!-- Date range -->
       <div class="space-y-1.5">
         <Label class="text-sm font-medium">Date range from (UTC)</Label>
-        <Popover.Root bind:open={datePickerOpen}>
+        <Popover.Root bind:open={datePickerOpen} onOpenChange={handleDatePickerClose}>
           <Popover.Trigger>
             {#snippet child({ props })}
               <Button variant="outline" class="h-10 w-full justify-between font-normal" {...props}>
@@ -554,7 +574,7 @@
               placeholder="DD/MM/YYYY"
               bind:value={dateInputValue}
               oninput={handleDateInput}
-              class="mb-3"
+              class="mb-3 {dateInputError ? 'border-destructive ring-destructive/30 ring-2' : ''}"
             />
             <Calendar
               type="single"
