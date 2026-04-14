@@ -5,7 +5,7 @@ go 1.23
 toolchain go1.24.3
 
 require (
-	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20260407002038-4d628a811192
+	github.com/SafetyCulture/safetyculture-exporter v0.0.0-20260414010053-ea43ffed54c1
 	github.com/hashicorp/go-version v1.9.0
 	github.com/minio/selfupdate v0.6.0
 	github.com/stretchr/testify v1.11.1
