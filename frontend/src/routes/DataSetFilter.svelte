@@ -1,199 +1,134 @@
-<script>
-    import './common.css';
-    import {shadowConfig} from "../lib/store.js";
-    import {push} from "svelte-spa-router";
-    import Button from "../components/Button.svelte";
-    import StatusBar from "../components/StatusBar.svelte";
+<script lang="ts">
+  import { shadowConfig } from '../lib/store';
+  import { push } from '@keenmate/svelte-spa-router';
+  import { Button } from '$lib/components/ui/button';
 
+  interface DataItem {
+    id: string;
+    name: string;
+  }
+  interface DataRow {
+    left: DataItem | null;
+    right: DataItem | null;
+  }
 
-    let data = [
-        {
-            "left": { "id": "inspections", "name": "Inspections" },
-            "right": { "id": "inspection_items", "name": "Inspection Items"},
-        },
-        {
-            "left":  { "id": "templates", "name": "Templates" },
-            "right": { "id": "template_permissions", "name": "Template Permissions"}
-        },
-        {
-            "left":  { "id": "sites", "name": "Sites"},
-            "right": { "id": "site_members", "name": "Site Members"}
-        },
-        {
-            "left":  { "id": "groups", "name": "Groups"},
-            "right": { "id": "group_users", "name": "Group Users"}
-        },
-        {
-            "left":  { "id": "users", "name": "Users"},
-            "right": { "id": "schedules", "name": "Schedules"}
-        },
-        {
-            "left":  { "id": "schedule_assignees", "name": "Schedule Assignees"},
-            "right": { "id": "schedule_occurrences", "name": "Schedule Occurrences"}
-        },
-        {
-            "left":  { "id": "actions", "name": "Actions"},
-            "right": { "id": "issues", "name": "Issues"}
+  const data: DataRow[] = [
+    {
+      left: { id: 'inspections', name: 'Inspections' },
+      right: { id: 'inspection_items', name: 'Inspection Items' },
+    },
+    {
+      left: { id: 'templates', name: 'Templates' },
+      right: { id: 'template_permissions', name: 'Template Permissions' },
+    },
+    { left: { id: 'sites', name: 'Sites' }, right: { id: 'site_members', name: 'Site Members' } },
+    { left: { id: 'groups', name: 'Groups' }, right: { id: 'group_users', name: 'Group Users' } },
+    { left: { id: 'users', name: 'Users' }, right: { id: 'schedules', name: 'Schedules' } },
+    {
+      left: { id: 'schedule_assignees', name: 'Schedule Assignees' },
+      right: { id: 'schedule_occurrences', name: 'Schedule Occurrences' },
+    },
+    { left: { id: 'actions', name: 'Actions' }, right: { id: 'issues', name: 'Issues' } },
+    {
+      left: { id: 'action_timeline_items', name: 'Action Timeline Items' },
+      right: { id: 'issue_timeline_items', name: 'Issue Timeline Items' },
+    },
+    {
+      left: { id: 'action_assignees', name: 'Action Assignees' },
+      right: { id: 'issue_assignees', name: 'Issue Assignees' },
+    },
+    {
+      left: { id: 'assets', name: 'Assets' },
+      right: { id: 'training_course_progresses', name: 'Training course completions' },
+    },
+  ];
 
-        },
-        {
-            "left":  { "id": "action_timeline_items", "name": "Action Timeline Items"},
-            "right":  { "id": "issue_timeline_items", "name": "Issue Timeline Items"},
-        },
-        {
-            "left":  { "id": "action_assignees", "name": "Action Assignees"},
-            "right": { "id": "issue_assignees", "name": "Issue Assignees"}
-        },
-        {
-            "left": { "id": "assets", "name": "Assets"},
-            "right": { "id": "training_course_progresses", "name": "Training course completions"},
-        }
+  const allItems: DataItem[] = data.flatMap((row) =>
+    [row.left, row.right].filter((x): x is DataItem => x !== null),
+  );
 
-    ]
+  let isChecked = $state(false);
+  if (($shadowConfig as any)['Export']['Tables'].length === 0) {
+    ($shadowConfig as any)['Export']['Tables'] = allItems.map((e) => e.id);
+    isChecked = true;
+  }
 
-    function trim(org) {
-        if (org.length > 80) {
-            return org.substring(0, 80).concat(" ...")
-        }
-        return org
+  function toggleHeaderCheckbox() {
+    if (isChecked) isChecked = false;
+  }
+
+  function toggleBodyCheckboxes() {
+    const checkboxes = document.querySelectorAll(
+      '.table-body input[type="checkbox"]',
+    ) as NodeListOf<HTMLInputElement>;
+    for (const checkbox of checkboxes) {
+      checkbox.checked = !isChecked;
+    }
+  }
+
+  function handleDone() {
+    const checkboxes = document.querySelectorAll(
+      '.table-body input[type="checkbox"]',
+    ) as NodeListOf<HTMLInputElement>;
+    let selectedTables: string[] = [];
+    for (const checkbox of checkboxes) {
+      if (checkbox.checked) selectedTables.push((checkbox as any).__value);
     }
 
-    let isChecked = false;
-    if($shadowConfig["Export"]["Tables"].length === 0) {
-        let all = []
-        data.forEach(function (e) {
-            if (e.left !== null) {
-                all.push(e.left.id)
-            }
-            if (e.right !== null) {
-                all.push(e.right.id)
-            }
-        });
-        $shadowConfig["Export"]["Tables"] = all
-        isChecked = true;
-    }
+    ($shadowConfig as any)['Export']['Tables'] =
+      selectedTables.length === allItems.length ? [] : selectedTables;
 
-    function toggleHeaderCheckbox() {
-        if (isChecked) {
-            isChecked = false;
-        }
-    }
-
-    function toggleBodyCheckboxes() {
-        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
-        for (const checkbox of checkboxes) {
-            checkbox.checked = !isChecked;
-        }
-    }
-
-    function handleDone() {
-        let selectedTables = [];
-
-        const checkboxes = document.querySelectorAll('.table-body input[type="checkbox"]');
-        for (const checkbox of checkboxes) {
-            if (checkbox.checked) {
-                selectedTables.push(checkbox.__value)
-            }
-        }
-
-        let maxData = 0
-        data.forEach(function (e) {
-            if (e.left !== null) {
-                maxData++
-            }
-            if (e.right !== null) {
-                maxData++
-            }
-        });
-
-        if (selectedTables.length === maxData) {
-            $shadowConfig["Export"]["Tables"] = []
-        } else {
-            $shadowConfig["Export"]["Tables"] = selectedTables
-        }
-
-        push("/config")
-    }
+    push('/config');
+  }
 </script>
 
-<div class="table-filter-page">
-    <section class="top-nav">
-        <div class="nav-left">
-            <div class="h1">Data set selection</div>
-        </div>
-        <div class="nav-right">
-            <Button label="Done" type="active-white" onClick={handleDone}/>
-        </div>
-    </section>
+<div class="px-8 pt-6">
+  <section class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">Data set selection</h1>
+    <Button variant="outline" onclick={handleDone}>Done</Button>
+  </section>
 
-    <section class="m-top-16">
-        <div class="table-header text-gray-2">
-            <div class="table-row p-horiz-8">
-                <input type="checkbox" class="checkbox-purple" on:click="{toggleBodyCheckboxes}" bind:checked={isChecked}/>
-                <div class="m-left-32">Data set table</div>
+  <div class="mt-5 overflow-hidden rounded-lg border border-border">
+    <div class="flex h-10 items-center bg-muted px-3">
+      <input
+        type="checkbox"
+        class="size-4 accent-primary"
+        onclick={toggleBodyCheckboxes}
+        bind:checked={isChecked}
+      />
+      <span class="ml-4 text-sm font-medium text-muted-foreground">Data set</span>
+    </div>
+    <div class="table-body">
+      {#each data as { left, right }, i (i)}
+        <div class="flex h-11 border-t border-border">
+          {#if left}
+            <div class="flex w-1/2 items-center px-3">
+              <input
+                type="checkbox"
+                class="size-4 accent-primary"
+                onclick={toggleHeaderCheckbox}
+                bind:group={($shadowConfig as any)['Export']['Tables']}
+                value={left.id}
+              />
+              <img class="ml-4 size-4" src="../images/template-icon.svg" alt="dataset" />
+              <span class="ml-2 text-sm">{left.name}</span>
             </div>
-        </div>
-        <div class="table-body text-gray-2 m-top-8">
-        {#each data as { left, right }, i}
-            <div class="table-row p-horiz-8">
-                {#if left}
-                <div class="table-cell">
-                    <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["Tables"]} value="{left.id}"/>
-                    <img class="m-left-32" src="../images/template-icon.svg" alt="template"/>
-                    <div class="m-left-8">{trim(left.name)}</div>
-                </div>
-                {/if}
-
-                {#if right}
-                <div class="table-cell">
-                    <input type="checkbox" class="checkbox-purple" on:click={toggleHeaderCheckbox} bind:group={$shadowConfig["Export"]["Tables"]} value="{right.id}"/>
-                    <img class="m-left-32" src="../images/template-icon.svg" alt="template"/>
-                    <div class="m-left-8">{trim(right.name)}</div>
-                </div>
-                {/if}
+          {/if}
+          {#if right}
+            <div class="flex w-1/2 items-center px-3">
+              <input
+                type="checkbox"
+                class="size-4 accent-primary"
+                onclick={toggleHeaderCheckbox}
+                bind:group={($shadowConfig as any)['Export']['Tables']}
+                value={right.id}
+              />
+              <img class="ml-4 size-4" src="../images/template-icon.svg" alt="dataset" />
+              <span class="ml-2 text-sm">{right.name}</span>
             </div>
-        {/each}
+          {/if}
         </div>
-    </section>
+      {/each}
+    </div>
+  </div>
 </div>
-
-<StatusBar/>
-
-<style>
-    .table-filter-page {
-        padding-top: var(--main-gutter-top);
-        padding-left: var(--main-gutter-left);
-        padding-right: var(--main-gutter-right);
-    }
-
-    .table-body {
-        -ms-overflow-style: none; /* for Internet Explorer, Edge */
-        scrollbar-width: none; /* for Firefox */
-        overflow-y: hidden;
-    }
-
-    .table-header {
-        background-color: #DBDFEB;
-    }
-
-    .table-header > .table-row {
-        height: 36px;
-        display: flex;
-        align-items: center;
-    }
-
-    .table-body > .table-row {
-        height: 52px;
-    }
-
-    .table-body > .table-row {
-        width: 100%;
-        display: flex;
-    }
-
-    .table-row > .table-cell {
-        width: 50%;
-        display: flex;
-        align-items: center;
-    }
-</style>
