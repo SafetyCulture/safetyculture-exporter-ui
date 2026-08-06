@@ -1,64 +1,69 @@
-<script>
-    import {push} from 'svelte-spa-router'
-    import {ReadVersion, GetSettings, ValidateApiKey} from "../../wailsjs/go/main/App.js"
-    import {shadowConfig, latestVersion, emptyStores} from '../lib/store.js';
-    import {isNullOrEmptyObject} from "../lib/utils.js";
-    
-    async function processVersion() {
-        return await ReadVersion().then(result => {
-            if (result != null) {
-                latestVersion.set(result);
-            } else {
-                latestVersion.set({})
-            }
-        }).then(() => {
-            return shouldForceUpdate() === true; 
-        }) .catch(() => {
-            return false
-        }) 
-    }
-    
-    async function processAccessToken() {
-        if ("AccessToken" in $shadowConfig) {
-            const token = $shadowConfig["AccessToken"]
-            if (token.length === 0) {
-                return '/welcome'
-            } else {
-                // check if it can auth
-                return ValidateApiKey(token).then(res => {
-                    if (res !== "") {
-                        return '/welcome'
-                    } else {
-                        return '/config'
-                    }
-                })
-            }
+<script lang="ts">
+  import { push } from '@keenmate/svelte-spa-router';
+  import { ReadVersion, GetSettings, ValidateApiKey } from '../../wailsjs/go/main/App.js';
+  import { shadowConfig, latestVersion, emptyStores } from '../lib/store';
+  import { isNullOrEmptyObject } from '../lib/utils';
+
+  async function processVersion(): Promise<boolean> {
+    return await ReadVersion()
+      .then((result: Record<string, string> | null) => {
+        if (result != null) {
+          latestVersion.set(result);
         } else {
-            return '/welcome'
+          latestVersion.set({});
         }
+      })
+      .then(() => {
+        return shouldForceUpdate() === true;
+      })
+      .catch(() => {
+        return false;
+      });
+  }
+
+  async function processAccessToken(): Promise<string> {
+    if ('AccessToken' in $shadowConfig) {
+      const token = $shadowConfig['AccessToken'] as string;
+      if (token.length === 0) {
+        return '/welcome';
+      } else {
+        return ValidateApiKey(token).then((res: string) => {
+          if (res !== '') {
+            return '/welcome';
+          } else {
+            return '/config';
+          }
+        });
+      }
+    } else {
+      return '/welcome';
     }
+  }
 
-    function shouldForceUpdate() {
-        return !isNullOrEmptyObject($latestVersion)
-            && $latestVersion["should_update"] === true 
-            && $latestVersion['current'] !== 'v0.0.0-dev'
-            && $latestVersion['download_url'] !== ''
-    }
+  function shouldForceUpdate(): boolean {
+    return (
+      !isNullOrEmptyObject($latestVersion) &&
+      $latestVersion['should_update'] === true &&
+      $latestVersion['current'] !== 'v0.0.0-dev' &&
+      $latestVersion['download_url'] !== ''
+    );
+  }
 
-    emptyStores();
+  emptyStores();
 
-    GetSettings().then(result => {
-        shadowConfig.set(result);
-    }).then(() => {
-        processVersion().then(shouldUpdate => {
-            if (shouldUpdate === true) {
-                push('/update')
-            } else {
-                processAccessToken().then(page => {
-                    push(page)
-                })
-            }
-        })
+  GetSettings()
+    .then((result: Record<string, unknown>) => {
+      shadowConfig.set(result);
     })
-
+    .then(() => {
+      processVersion().then((shouldUpdate: boolean) => {
+        if (shouldUpdate === true) {
+          push('/update');
+        } else {
+          processAccessToken().then((page: string) => {
+            push(page);
+          });
+        }
+      });
+    });
 </script>
