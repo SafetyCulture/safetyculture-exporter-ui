@@ -4,6 +4,7 @@
 package release
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -47,14 +48,20 @@ type ghRelease struct {
 // is not older than that release. It never returns an error: any failure
 // (network, API, malformed response) results in nil so callers fail open and
 // the app remains usable.
-func Check(currentVersion string) *Info {
-	return checkAt(apiURL, currentVersion)
+func Check(ctx context.Context, currentVersion string) *Info {
+	return checkAt(ctx, apiURL, currentVersion)
 }
 
-func checkAt(url, currentVersion string) *Info {
+func checkAt(ctx context.Context, url, currentVersion string) *Info {
+	// A nil context must never disable the release check: the request falls
+	// back to a background context so the migration still runs.
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
 	client := &http.Client{Timeout: requestTimeout}
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil
 	}

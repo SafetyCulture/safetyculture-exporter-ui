@@ -265,7 +265,7 @@ func (a *App) ReadVersion() *VersionResponse {
 	// This is the final release of safetyculture-exporter-ui: updates are now
 	// published by the mitti-exporter project, so existing users are migrated
 	// to its latest desktop app release.
-	releaseInfo := release.Check(current)
+	releaseInfo := release.Check(a.ctx, current)
 	if releaseInfo != nil {
 		latest = releaseInfo.Version
 		downloadURL = releaseInfo.DownloadURL

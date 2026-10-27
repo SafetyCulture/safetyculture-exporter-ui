@@ -1,6 +1,7 @@
 package release
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	osRuntime "runtime"
@@ -39,7 +40,7 @@ func TestCheckAt_MigrationReleaseSeesMittiAsNewer(t *testing.T) {
 		{"name":"mitti-exporter-windows-x86_64.zip","browser_download_url":"https://github.com/SafetyCulture/mitti-exporter/releases/download/v6.3.0/mitti-exporter-windows-x86_64.zip"}]}`)
 	defer srv.Close()
 
-	info := checkAt(srv.URL, "v2.0.0")
+	info := checkAt(context.Background(), srv.URL, "v2.0.0")
 	require.NotNil(t, info)
 	assert.EqualValues(t, "v6.3.0", info.Version)
 	// the download URL for the host platform matches the expected desktop
@@ -47,12 +48,32 @@ func TestCheckAt_MigrationReleaseSeesMittiAsNewer(t *testing.T) {
 	assert.EqualValues(t, assetURL(goosForTest(), mittiV630Assets), info.DownloadURL)
 }
 
+func TestCheckAt_NilContextFallsBackToBackground(t *testing.T) {
+	srv := newReleaseServer(t, `{"tag_name":"v6.3.0","assets":[]}`)
+	defer srv.Close()
+
+	// a nil context must not silently disable the release check
+	info := checkAt(nil, srv.URL, "v2.0.0")
+	require.NotNil(t, info)
+	assert.EqualValues(t, "v6.3.0", info.Version)
+}
+
+func TestCheckAt_CancelledContextReturnsNil(t *testing.T) {
+	srv := newReleaseServer(t, `{"tag_name":"v6.3.0","assets":[]}`)
+	defer srv.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	assert.Nil(t, checkAt(ctx, srv.URL, "v2.0.0"))
+}
+
 func TestCheckAt_ReturnsNilWhenCurrentIsNewerOrEqual(t *testing.T) {
 	srv := newReleaseServer(t, `{"tag_name":"v6.3.0","assets":[]}`)
 	defer srv.Close()
 
-	assert.Nil(t, checkAt(srv.URL, "v6.3.0"))
-	assert.Nil(t, checkAt(srv.URL, "v6.4.0"))
+	assert.Nil(t, checkAt(context.Background(), srv.URL, "v6.3.0"))
+	assert.Nil(t, checkAt(context.Background(), srv.URL, "v6.4.0"))
 }
 
 func TestCheckAt_ReturnsNilOnHTTPError(t *testing.T) {
@@ -61,28 +82,28 @@ func TestCheckAt_ReturnsNilOnHTTPError(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	assert.Nil(t, checkAt(srv.URL, "v2.0.0"))
+	assert.Nil(t, checkAt(context.Background(), srv.URL, "v2.0.0"))
 }
 
 func TestCheckAt_ReturnsNilOnMalformedResponse(t *testing.T) {
 	srv := newReleaseServer(t, "not-json")
 	defer srv.Close()
 
-	assert.Nil(t, checkAt(srv.URL, "v2.0.0"))
+	assert.Nil(t, checkAt(context.Background(), srv.URL, "v2.0.0"))
 }
 
 func TestCheckAt_ReturnsNilWhenServerUnreachable(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	srv.Close()
 
-	assert.Nil(t, checkAt(srv.URL, "v2.0.0"))
+	assert.Nil(t, checkAt(context.Background(), srv.URL, "v2.0.0"))
 }
 
 func TestCheckAt_ReturnsNilOnMissingTag(t *testing.T) {
 	srv := newReleaseServer(t, `{"assets":[]}`)
 	defer srv.Close()
 
-	assert.Nil(t, checkAt(srv.URL, "v2.0.0"))
+	assert.Nil(t, checkAt(context.Background(), srv.URL, "v2.0.0"))
 }
 
 func TestAssetURL_PicksDesktopAssetsNotCLIAssets(t *testing.T) {
