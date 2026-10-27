@@ -112,7 +112,8 @@ jobs:
             # binary. Add a duplicate zip entry under the expected path so the
             # updater in already-shipped apps can find and self-apply the binary.
             LEGACY = "SafetyCulture-Exporter.app/Contents/MacOS/SafetyCulture-Exporter"
-            BINARY = "SafetyCulture-Exporter.app/Contents/MacOS/safetyculture-exporter"
+            # match the binary entry regardless of the bundle directory's casing
+            BINARY_SUFFIX = "/Contents/MacOS/safetyculture-exporter"
 
             for zip_path in ("safetyculture-exporter-darwin-arm64.zip", "safetyculture-exporter-darwin-amd64.zip"):
                 if not os.path.exists(zip_path):
@@ -123,10 +124,11 @@ jobs:
                     if LEGACY in names:
                         print(f"{LEGACY} already present in {zip_path}")
                         continue
-                    if BINARY not in names:
-                        sys.exit(f"error: {BINARY} not found in {zip_path}")
-                    binary_info = infos[names.index(BINARY)]
-                    payload = archive.read(BINARY)
+                    matches = [info for info in infos if info.filename.endswith(BINARY_SUFFIX)]
+                    if not matches:
+                        sys.exit(f"error: no entry ending in {BINARY_SUFFIX} found in {zip_path}")
+                    binary_info = matches[0]
+                    payload = archive.read(binary_info.filename)
                     entries = [(info, archive.read(info.filename)) for info in infos]
                 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as updated:
                     for info, data in entries:
