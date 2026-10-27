@@ -12,14 +12,12 @@ import (
 	osRuntime "runtime"
 	"time"
 
+	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/release"
 	"github.com/SafetyCulture/safetyculture-exporter-ui/internal/version"
 	exporterAPI "github.com/SafetyCulture/safetyculture-exporter/pkg/api"
 	"github.com/SafetyCulture/safetyculture-exporter/pkg/httpapi"
-	"github.com/SafetyCulture/safetyculture-exporter/pkg/update"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
-
-const gitRepoExporterUI string = "safetyculture-exporter-ui"
 
 // App struct
 type App struct {
@@ -264,7 +262,10 @@ func (a *App) ReadVersion() *VersionResponse {
 	var downloadURL string
 	var shouldUpdate bool
 
-	releaseInfo := update.Check(current, gitRepoExporterUI)
+	// This is the final release of safetyculture-exporter-ui: updates are now
+	// published by the mitti-exporter project, so existing users are migrated
+	// to its latest desktop app release.
+	releaseInfo := release.Check(a.ctx, current)
 	if releaseInfo != nil {
 		latest = releaseInfo.Version
 		downloadURL = releaseInfo.DownloadURL

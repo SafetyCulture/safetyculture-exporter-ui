@@ -164,7 +164,8 @@ func readZipFile(url string) (io.ReadCloser, error) {
 	var search string
 	switch runtime.GOOS {
 	case "darwin":
-		search = "SafetyCulture-Exporter.app/Contents/MacOS/SafetyCulture-Exporter"
+		// the mitti-exporter desktop app bundle
+		search = "Mitti-Exporter.app/Contents/MacOS/mitti-exporter-ui"
 	case "windows":
 		search = "build/bin/safetyculture-exporter.exe"
 	default:

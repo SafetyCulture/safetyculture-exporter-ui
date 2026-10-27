@@ -17,6 +17,18 @@ func TestShouldUpdate(t *testing.T) {
 
 	tests := []test{
 		{
+			name:         "Migration: v1.x users are forced onto the final safetyculture-exporter-ui release",
+			current:      "v1.21.1",
+			new:          "v2.0.0",
+			shouldUpdate: true,
+		},
+		{
+			name:         "Migration: the final release is forced onto the mitti-exporter release",
+			current:      "v2.0.0",
+			new:          "v6.3.0",
+			shouldUpdate: true,
+		},
+		{
 			name:         "Dev",
 			current:      "v0.0.0-dev",
 			new:          "v1.1.3",

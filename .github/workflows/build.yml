@@ -14,19 +14,19 @@ jobs:
         matrix:
           go-version: [1.23]
           node-version: [16]
-          os: [windows-latest, ubuntu-22.04, macos-latest]
+          os: [windows-latest, macos-latest]
       runs-on: ${{ matrix.os }}
       steps:
         - name: Install Go
-          uses: actions/setup-go@v2
+          uses: actions/setup-go@v5
           with:
             go-version: ${{ matrix.go-version }}
 
         - name: Checkout code
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4
 
         - name: Use Node.js ${{ matrix.node-version }}
-          uses: actions/setup-node@v3
+          uses: actions/setup-node@v4
           with:
             node-version: ${{ matrix.node-version }}
 
@@ -99,6 +99,45 @@ jobs:
 
             echo "Cleaning up"
             rm -rf build/bin/SafetyCulture Exporter.app
+
+            echo "Adding legacy binary path alias for the built-in updater"
+            python3 - <<'EOF'
+            import copy
+            import os
+            import sys
+            import zipfile
+
+            # Deployed safetyculture-exporter-ui releases look for a capitalised
+            # binary path inside the update zip, but the bundle ships a lowercase
+            # binary. Add a duplicate zip entry under the expected path so the
+            # updater in already-shipped apps can find and self-apply the binary.
+            LEGACY = "SafetyCulture-Exporter.app/Contents/MacOS/SafetyCulture-Exporter"
+            # match the binary entry regardless of the bundle directory's casing
+            BINARY_SUFFIX = "/Contents/MacOS/safetyculture-exporter"
+
+            for zip_path in ("safetyculture-exporter-darwin-arm64.zip", "safetyculture-exporter-darwin-amd64.zip"):
+                if not os.path.exists(zip_path):
+                    sys.exit(f"error: {zip_path} not found")
+                with zipfile.ZipFile(zip_path) as archive:
+                    infos = archive.infolist()
+                    names = [info.filename for info in infos]
+                    if LEGACY in names:
+                        print(f"{LEGACY} already present in {zip_path}")
+                        continue
+                    matches = [info for info in infos if info.filename.endswith(BINARY_SUFFIX)]
+                    if not matches:
+                        sys.exit(f"error: no entry ending in {BINARY_SUFFIX} found in {zip_path}")
+                    binary_info = matches[0]
+                    payload = archive.read(binary_info.filename)
+                    entries = [(info, archive.read(info.filename)) for info in infos]
+                with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as updated:
+                    for info, data in entries:
+                        updated.writestr(info, data)
+                    alias = copy.copy(binary_info)
+                    alias.filename = LEGACY
+                    updated.writestr(alias, payload)
+                print(f"added {LEGACY} ({len(payload)} bytes) to {zip_path}")
+            EOF
 
             echo "${{ secrets.APPSTORE_API_KEY }}" > appstore_api_key.p8
             xcrun notarytool submit "safetyculture-exporter-darwin-arm64.zip" --key "appstore_api_key.p8" --key-id "${{ secrets.APPSTORE_API_KEY_ID }}" --issuer "${{ secrets.APPSTORE_API_ISSUER_ID }}" --wait
